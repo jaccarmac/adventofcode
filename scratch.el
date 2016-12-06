@@ -7,13 +7,27 @@
 (equal '(:right . 2) (segmentspec->segment "R2"))
 (equal '(:left . 10) (segmentspec->segment "L10"))
 
-(defun pathspec->path (pathspec)
-  (mapcar #'segmentspec->segment (split-string pathspec ", ")))
+(defun segmentspec->steps (segmentspec)
+  (let ((segment (segmentspec->segment segmentspec)))
+    (append (list (car segment)) (make-list (cdr segment) :forward))))
 
-(equal '((:right . 2) (:left . 3)) (pathspec->path "R2, L3"))
-(equal '((:right . 2) (:right . 2) (:right . 2)) (pathspec->path "R2, R2, R2"))
-(equal '((:right . 5) (:left . 5) (:right . 5) (:right . 3))
-       (pathspec->path "R5, L5, R5, R3"))
+(equal '(:right :forward :forward) (segmentspec->steps "R2"))
+(equal '(:left :forward
+               :forward
+               :forward
+               :forward
+               :forward
+               :forward
+               :forward
+               :forward
+               :forward
+               :forward) (segmentspec->steps "L10"))
+
+(defun pathspec->path (pathspec)
+  (apply #'append (mapcar #'segmentspec->steps (split-string pathspec ", "))))
+
+(equal '(:right :forward :forward
+                :left :forward :forward :forward) (pathspec->path "R2, L3"))
 
 (defun new-direction (old-direction turn-direction)
   (cond ((eq :left turn-direction)
@@ -48,8 +62,29 @@
                                           y
                                           new-direction)))))
 
+(defun walk-step (position step)
+  (let ((x (car position))
+        (y (cadr position))
+        (old-direction (caddr position)))
+    (cond ((eq :left step) (list x y (new-direction old-direction :left)))
+          ((eq :right step) (list x y (new-direction old-direction :right)))
+          ((eq :forward step) (cond
+                               ((eq :north old-direction) (list x
+                                                                (+ y 1)
+                                                                old-direction))
+                               ((eq :east old-direction) (list (+ x 1)
+                                                               y
+                                                               old-direction))
+                               ((eq :south old-direction) (list x
+                                                                (- y 1)
+                                                                old-direction))
+                               ((eq :west old-direction)
+                                (list (- x 1)
+                                      y
+                                      old-direction)))))))
+
 (defun howfarawayis (pathspec)
-  (let ((destination (reduce #'walk-segment
+  (let ((destination (reduce #'walk-step
                              (pathspec->path pathspec)
                              :initial-value '(0 0 :north))))
     (+ (abs (car destination)) (abs (cadr destination)))))
@@ -66,10 +101,26 @@
 
 (solve-problem-1)
 
+(defun walk-step-until-cross (positions step)
+  (let ((position (car positions))
+        (old-positions (cdr positions)))
+    (if (member (butlast position) (butlast old-positions))
+        positions
+      (cons (walk-step position step)
+            (append old-positions (list (butlast position)))))))
+
+(defun howfarawayiscross (pathspec)
+  (let ((destination (car (reduce #'walk-step-until-cross
+                                  (pathspec->path pathspec)
+                                  :initial-value '((0 0 :north) . nil)))))
+    (+ (abs (car destination)) (abs (cadr destination)))))
+
 (defun solve-problem-2 ()
-  (howfarawayis
+  (howfarawayiscross
    (with-temp-buffer
      (insert-file-contents "problem.txt")
      (string-trim (buffer-string)))))
 
 (solve-problem-2)
+
+(howfarawayiscross "R8, R4, R4, R8")
