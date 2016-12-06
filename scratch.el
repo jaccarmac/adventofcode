@@ -58,10 +58,18 @@
 (= 2 (howfarawayis "R2, R2, R2"))
 (= 12 (howfarawayis "R5, L5, R5, R3"))
 
-(defun solve-problem ()
+(defun solve-problem-1 ()
   (howfarawayis
    (with-temp-buffer
      (insert-file-contents "problem.txt")
      (string-trim (buffer-string)))))
 
-(solve-problem)
+(solve-problem-1)
+
+(defun solve-problem-2 ()
+  (howfarawayis
+   (with-temp-buffer
+     (insert-file-contents "problem.txt")
+     (string-trim (buffer-string)))))
+
+(solve-problem-2)
