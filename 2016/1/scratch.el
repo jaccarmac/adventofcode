@@ -122,5 +122,3 @@
      (string-trim (buffer-string)))))
 
 (solve-problem-2)
-
-(howfarawayiscross "R8, R4, R4, R8")
