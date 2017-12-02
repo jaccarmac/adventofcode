@@ -1,6 +1,11 @@
 module Main where
 
-import Lib
+import           Data.List.Split
+import           Lib
 
 main :: IO ()
-main = someFunc
+main = do
+  puzzleContents <- readFile "puzzle.txt"
+  let puzzle = filter (not.null) (map (map (read::String->Int)) (map words (splitOn "\n" puzzleContents)))
+  print (part1 puzzle)
+  print (part2 puzzle)
