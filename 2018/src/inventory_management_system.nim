@@ -23,3 +23,14 @@ for id in ids:
     withDoubles = if doubles: withDoubles + 1 else: withDoubles
     withTriples = if triples: withTriples + 1 else: withTriples
 echo withDoubles * withTriples
+
+func hamming(first, second: string): int =
+    result = 0
+    for i in countup(0, (len first) - 1):
+        result = if first[i] == second[i]: result else: result + 1
+
+for i, firstId in pairs ids:
+    for secondId in ids[i..^1]:
+        if hamming(firstId, secondId) == 1:
+            echo firstId
+            echo secondId
