@@ -3,13 +3,13 @@ import os
 import sequtils
 import strutils
 
-let input = if paramCount() > 0: readFile paramStr 1
+let input = if paramCount() > 0: (readFile paramStr 1)[0..^2]
     else: readAll stdin
 
 func parseChange(line: string): (char, int) =
     (line[0], parseInt line[1..^1])
 
-let changes = map(splitLines input[0..^2], parseChange)
+let changes = map(splitLines input, parseChange)
 
 func changeFrequency(start: int, change: (char, int)): int =
     case change[0]
