@@ -1,0 +1,67 @@
+This is my attempt to do a little daily coding practice, finish a full Advent
+of Code, learn Nim better, and stretch my literate programming efforts. I'd
+also like to learn the GNU Build System, but that might be overkill. I
+certainly won't be starting with Autoconf and Automake.
+
+* Day 1: Chronal Calibration
+
+  While I've never finished a full AoC I have done all of the Day 1 problems up
+  to this point. They all seem relatively similar, having to do with
+  counting. I imagine that's so that people can make sure their tools and
+  project skeletons are properly set up before attempting the rest of the
+  month. In any case, the problem itself is rather simple: Read a sign and
+  number from each line, sum up said numbers, output the answer. I imagine the
+  second star will be something like finding the max or min reached, when zero
+  is crossed, etc. etc. For now no need to worry about that though.
+
+  Some test data as given on the site:
+
+  #+begin_src text :tangle data/test-1-0.txt
+    +1
+    -2
+    +3
+    +1
+  #+end_src
+
+  That should result in ~3~.
+
+  #+begin_src text :tangle data/test-1-1.txt
+    +1
+    +1
+    +1
+  #+end_src
+
+  That should result in ~3~.
+
+  #+begin_src text :tangle data/test-1-2.txt
+    +1
+    +1
+    -2
+  #+end_src
+
+  That should result in ~0~.
+
+  #+begin_src text :tangle data/test-1-3.txt
+    -1
+    -2
+    -3
+  #+end_src
+
+  That should result in ~-6~.
+
+  My real data is in the same directory (=data/1.txt=).
+
+  The file reading code is shamelessly stolen from [[http://howistart.org/posts/nim/1/index.html][the Nim How I Start]].
+
+  #+begin_src nim :tangle src/chronal_calibration.nim
+    let code = if par
+  #+end_src
+
+  Run like:
+
+  #+begin_src sh
+    nim c -r src/chronal_calibration
+  #+end_src
+
+  At this point Emacs stopped wanting to play nice with Nim (or vice versa). I
+  will return.
