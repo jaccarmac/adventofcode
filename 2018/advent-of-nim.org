@@ -1,7 +1,7 @@
 This is my attempt to do a little daily coding practice, finish a full Advent
 of Code, learn Nim better, and stretch my literate programming efforts.
 
-* Day 1: Chronal Calibration
+* COMMENT Day 1: Chronal Calibration
 
   While I've never finished a full AoC I have done all of the Day 1 problems up
   to this point. They all seem relatively similar, having to do with
@@ -163,4 +163,67 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   #+begin_src sh
     nim c -r src/inventory_management_system data/2.txt
+  #+end_src
+
+* Day 3: No Matter How You Slice It
+
+  I imagine this will follow the same pattern...
+
+  #+begin_src sh
+    nim c -r src/no_matter_how_you_slice_it data/3.txt
+  #+end_src
+
+  It's an overlap problem. I feel like this is something easily solvable with
+  math, but brute forcing at least the first part should work for now. First of
+  all can pull in and modify the file reading code from the revised first
+  day. This time with real types!
+
+  First part is super messy and I'm not happy with the syntactic choices I
+  made.
+
+  #+begin_src nim :tangle src/no_matter_how_you_slice_it.nim
+    import os
+    import sequtils
+    import strutils
+    import tables
+
+    type Claim = tuple[id, x, y, width, height: int]
+
+    let claims = map(splitLines(
+      if paramCount() > 0: (readFile paramStr 1)
+      else: readAll stdin
+    )[0..^2]) do (line: string) -> Claim:
+      let segments = splitWhitespace line
+      result.id = parseInt segments[0][1..^1]
+      let coords = split(segments[2], ",")
+      result.x = parseInt coords[0]
+      result.y = parseInt coords[1][0..^2]
+      let dims = split(segments[3], "x")
+      result.width = parseInt dims[0]
+      result.height = parseInt dims[1]
+
+    var fabric = initTable[(int, int), seq[int]]()
+
+    iterator coordsFor(claim: Claim): (int, int) =
+      for x in countup(claim.x, claim.x + claim.width - 1):
+        for y in countup(claim.y, claim.y + claim.height - 1):
+          yield (x, y)
+
+    for claim in claims:
+      for coord in coordsFor claim:
+        let x = coord[0]
+        let y = coord[1]
+        if not hasKey(fabric, (x, y)): fabric[(x, y)] = @[claim.id]
+        else:
+          fabric[(x, y)].add(claim.id)
+
+    echo len filter(
+      map(toSeq values fabric) do (cs: seq[int]) -> int: len cs
+    ) do (l: int) -> bool: l > 1
+  #+end_src
+
+  #+begin_src text :tangle data/test-3-0.txt
+    #1 @ 1,3: 4x4
+    #2 @ 3,1: 4x4
+    #3 @ 5,5: 2x2
   #+end_src

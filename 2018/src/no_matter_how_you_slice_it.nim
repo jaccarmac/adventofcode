@@ -1,0 +1,38 @@
+import os
+import sequtils
+import strutils
+import tables
+
+type Claim = tuple[id, x, y, width, height: int]
+
+let claims = map(splitLines(
+  if paramCount() > 0: (readFile paramStr 1)
+  else: readAll stdin
+)[0..^2]) do (line: string) -> Claim:
+  let segments = splitWhitespace line
+  result.id = parseInt segments[0][1..^1]
+  let coords = split(segments[2], ",")
+  result.x = parseInt coords[0]
+  result.y = parseInt coords[1][0..^2]
+  let dims = split(segments[3], "x")
+  result.width = parseInt dims[0]
+  result.height = parseInt dims[1]
+
+var fabric = initTable[(int, int), seq[int]]()
+
+iterator coordsFor(claim: Claim): (int, int) =
+  for x in countup(claim.x, claim.x + claim.width - 1):
+    for y in countup(claim.y, claim.y + claim.height - 1):
+      yield (x, y)
+
+for claim in claims:
+  for coord in coordsFor claim:
+    let x = coord[0]
+    let y = coord[1]
+    if not hasKey(fabric, (x, y)): fabric[(x, y)] = @[claim.id]
+    else:
+      fabric[(x, y)].add(claim.id)
+
+echo len filter(
+  map(toSeq values fabric) do (cs: seq[int]) -> int: len cs
+) do (l: int) -> bool: l > 1
