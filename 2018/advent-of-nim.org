@@ -58,7 +58,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   Run like:
 
   #+begin_src sh
-    nim c -r src/chronal_calibration
+    nim c -r src/chronal_calibration data/1.txt
   #+end_src
 
   At this point Emacs stopped wanting to play nice with Nim (or vice versa). I
@@ -157,4 +157,10 @@ of Code, learn Nim better, and stretch my literate programming efforts.
             if hamming(firstId, secondId) == 1:
                 echo firstId
                 echo secondId
+  #+end_src
+
+  Run it similarly.
+
+  #+begin_src sh
+    nim c -r src/inventory_management_system data/2.txt
   #+end_src
