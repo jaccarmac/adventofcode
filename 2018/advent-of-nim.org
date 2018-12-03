@@ -225,6 +225,13 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       filter(toSeq values fabric) do (cs: HashSet[int]) -> bool: len(cs) > 1
 
     echo len contestedClaims
+
+    var goodClaims = toSet map(claims) do (c: Claim) -> int: c.id
+
+    for contestedClaim in contestedClaims:
+      excl goodClaims, contestedClaim
+
+    echo goodClaims
   #+end_src
 
   #+begin_src text :tangle data/test-3-0.txt

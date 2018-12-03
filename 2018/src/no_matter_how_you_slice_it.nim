@@ -38,3 +38,10 @@ let contestedClaims =
   filter(toSeq values fabric) do (cs: HashSet[int]) -> bool: len(cs) > 1
 
 echo len contestedClaims
+
+var goodClaims = toSet map(claims) do (c: Claim) -> int: c.id
+
+for contestedClaim in contestedClaims:
+  excl goodClaims, contestedClaim
+
+echo goodClaims
