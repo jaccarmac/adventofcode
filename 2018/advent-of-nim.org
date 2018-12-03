@@ -1,7 +1,5 @@
 This is my attempt to do a little daily coding practice, finish a full Advent
-of Code, learn Nim better, and stretch my literate programming efforts. I'd
-also like to learn the GNU Build System, but that might be overkill. I
-certainly won't be starting with Autoconf and Automake.
+of Code, learn Nim better, and stretch my literate programming efforts.
 
 * Day 1: Chronal Calibration
 
@@ -53,7 +51,7 @@ certainly won't be starting with Autoconf and Automake.
 
   The file reading code is shamelessly stolen from [[http://howistart.org/posts/nim/1/index.html][the Nim How I Start]].
 
-  #+begin_src nim :tangle src/chronal_calibration.nim
+  #+begin_src nim
     let code = if par
   #+end_src
 
@@ -64,4 +62,54 @@ certainly won't be starting with Autoconf and Automake.
   #+end_src
 
   At this point Emacs stopped wanting to play nice with Nim (or vice versa). I
-  will return.
+  hacked together the code in VSCode, came back and fixed Emacs, then dumped
+  the code here. I rewrote the second bit to be functional, and it is very slow
+  now.
+
+  #+begin_src nim :tangle src/chronal_calibration.nim
+    import os
+    import sequtils
+    import sets
+    import strutils
+
+    let changes = map(splitLines(
+      if paramCount() > 0: (readFile paramStr 1)
+      else: readAll stdin
+    )[0..^2]) do (line: string) -> (char, int): (line[0], parseInt line[1..^1])
+
+    func changeFrequency(start: int, change: (char, int)): int =
+      case change[0]
+      of '+':
+        start + change[1]
+      of '-':
+        start - change[1]
+      else:
+        raise newException(AssertionError, "invalid leading character")
+
+    echo foldl(changes, changeFrequency(a, b), 0)
+
+    func firstRevisited(
+      changes: seq[(char, int)], changeIndex, frequency: int, visited: HashSet[int]
+    ): (int, int, HashSet[int]) =
+        let newChangeIndex = if changeIndex >= len(changes) - 1: 0
+                             else: changeIndex + 1
+        let newFrequency = changeFrequency(frequency, changes[changeIndex])
+        var newVisited = initSet[int]()
+        incl newVisited, frequency
+        if contains(visited, newFrequency): (changeIndex, newFrequency, visited)
+        else: (newChangeIndex, newFrequency, visited + newVisited)
+
+    func firstRevisited(changes: seq[(char, int)]): int =
+      var changeIndex = 0
+      var frequency = 0
+      var visited = initSet[int]()
+      while true:
+        let nextArgs = firstRevisited(changes, changeIndex, frequency, visited)
+        if nextArgs[0] == changeIndex: return nextArgs[1]
+        else:
+          changeIndex = nextArgs[0]
+          frequency = nextArgs[1]
+          visited = nextArgs[2]
+
+    echo firstRevisited(changes)
+  #+end_src

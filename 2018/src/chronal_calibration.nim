@@ -22,7 +22,8 @@ echo foldl(changes, changeFrequency(a, b), 0)
 func firstRevisited(
   changes: seq[(char, int)], changeIndex, frequency: int, visited: HashSet[int]
 ): (int, int, HashSet[int]) =
-    let newChangeIndex = if changeIndex >= len(changes) - 1: 0 else: changeIndex + 1
+    let newChangeIndex = if changeIndex >= len(changes) - 1: 0
+                         else: changeIndex + 1
     let newFrequency = changeFrequency(frequency, changes[changeIndex])
     var newVisited = initSet[int]()
     incl newVisited, frequency
