@@ -1,7 +1,7 @@
 This is my attempt to do a little daily coding practice, finish a full Advent
 of Code, learn Nim better, and stretch my literate programming efforts.
 
-* COMMENT Day 1: Chronal Calibration
+* Day 1: Chronal Calibration
 
   While I've never finished a full AoC I have done all of the Day 1 problems up
   to this point. They all seem relatively similar, having to do with
