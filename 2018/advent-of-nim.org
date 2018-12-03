@@ -181,9 +181,13 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   First part is super messy and I'm not happy with the syntactic choices I
   made.
 
+  Glad I decided to store claim info though. I've got a really nice data
+  structure that I can just pull exactly what I need out of.
+
   #+begin_src nim :tangle src/no_matter_how_you_slice_it.nim
     import os
     import sequtils
+    import sets
     import strutils
     import tables
 
@@ -202,7 +206,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       result.width = parseInt dims[0]
       result.height = parseInt dims[1]
 
-    var fabric = initTable[(int, int), seq[int]]()
+    var fabric = initTable[(int, int), HashSet[int]]()
 
     iterator coordsFor(claim: Claim): (int, int) =
       for x in countup(claim.x, claim.x + claim.width - 1):
@@ -213,13 +217,14 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       for coord in coordsFor claim:
         let x = coord[0]
         let y = coord[1]
-        if not hasKey(fabric, (x, y)): fabric[(x, y)] = @[claim.id]
+        if not hasKey(fabric, (x, y)): fabric[(x, y)] = toSet @[claim.id]
         else:
-          fabric[(x, y)].add(claim.id)
+          incl fabric[(x, y)], claim.id
 
-    echo len filter(
-      map(toSeq values fabric) do (cs: seq[int]) -> int: len cs
-    ) do (l: int) -> bool: l > 1
+    let contestedClaims =
+      filter(toSeq values fabric) do (cs: HashSet[int]) -> bool: len(cs) > 1
+
+    echo len contestedClaims
   #+end_src
 
   #+begin_src text :tangle data/test-3-0.txt

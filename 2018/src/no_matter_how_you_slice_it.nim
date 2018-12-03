@@ -1,5 +1,6 @@
 import os
 import sequtils
+import sets
 import strutils
 import tables
 
@@ -18,7 +19,7 @@ let claims = map(splitLines(
   result.width = parseInt dims[0]
   result.height = parseInt dims[1]
 
-var fabric = initTable[(int, int), seq[int]]()
+var fabric = initTable[(int, int), HashSet[int]]()
 
 iterator coordsFor(claim: Claim): (int, int) =
   for x in countup(claim.x, claim.x + claim.width - 1):
@@ -29,10 +30,11 @@ for claim in claims:
   for coord in coordsFor claim:
     let x = coord[0]
     let y = coord[1]
-    if not hasKey(fabric, (x, y)): fabric[(x, y)] = @[claim.id]
+    if not hasKey(fabric, (x, y)): fabric[(x, y)] = toSet @[claim.id]
     else:
-      fabric[(x, y)].add(claim.id)
+      incl fabric[(x, y)], claim.id
 
-echo len filter(
-  map(toSeq values fabric) do (cs: seq[int]) -> int: len cs
-) do (l: int) -> bool: l > 1
+let contestedClaims =
+  filter(toSeq values fabric) do (cs: HashSet[int]) -> bool: len(cs) > 1
+
+echo len contestedClaims
