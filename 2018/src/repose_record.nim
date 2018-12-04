@@ -57,15 +57,12 @@ let records = unsortedRecords.sorted do (x, y: ReposeRecord) -> int:
   if result == 0:
     result = x.minute.cmp y.minute
 
-var calendar = initTable[(int, int, int), seq[int]]()
 var guards = initTable[int, CountTable[int]]()
 var currentGuard: int
 var lastAsleep: int
 
 for record in records:
   let today = (record.year, record.month, record.day)
-  if not calendar.contains today:
-      calendar[today] = @[]
   case record.kind
   of rrDuty:
     currentGuard = record.id
@@ -79,7 +76,6 @@ for record in records:
         guards[currentGuard][minute] = 1
       else:
         guards[currentGuard][minute].inc
-      calendar[today].add minute
 
 let bestGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
   toSeq(x[1].values).sum.cmp toSeq(y[1].values).sum
