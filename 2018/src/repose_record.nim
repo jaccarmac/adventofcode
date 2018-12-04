@@ -46,15 +46,15 @@ let unsortedRecords = (
     raise newException(AssertionError, "invalid leading character")
 
 let records = unsortedRecords.sorted do (x, y: ReposeRecord) -> int:
-  result = cmp(x.year, y.year)
+  result = x.year.cmp y.year
   if result == 0:
-    result = cmp(x.year, y.year)
+    result = x.month.cmp y.month
   if result == 0:
-    result = cmp(x.year, y.year)
+    result = x.day.cmp y.day
   if result == 0:
-    result = cmp(x.year, y.year)
+    result = x.hour.cmp y.hour
   if result == 0:
-    result = cmp(x.year, y.year)
+    result = x.minute.cmp y.minute
 
 var calendar = initTable[(int, int, int), (int, seq[int])]()
 var guards = initTable[int, CountTable[int]]()
