@@ -1,13 +1,20 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%201:%20Chronal%20Calibration][Day 1: Chronal Calibration:7]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%201:%20Chronal%20Calibration][Day 1: Chronal Calibration:8]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-1-problem-line][day-1-problem-line]]
+type ProblemLine = (char, int)
+# day-1-problem-line ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]
 import os
 import sequtils
-import sets
 import strutils
 
-let changes = map(splitLines(
-  if paramCount() > 0: (readFile paramStr 1)
-  else: readAll stdin
-)[0..^2]) do (line: string) -> (char, int): (line[0], parseInt line[1..^1])
+let problem = (
+  if paramCount() > 0: readFile paramStr 1 else: readAll stdin
+)[0..^2].splitLines.map do (line: string) -> ProblemLine:
+# read-problem-lines ends here
+  (line[0], parseInt line[1..^1])
+
+import sets
 
 func changeFrequency(start: int, change: (char, int)): int =
   case change[0]
@@ -18,7 +25,7 @@ func changeFrequency(start: int, change: (char, int)): int =
   else:
     raise newException(AssertionError, "invalid leading character")
 
-echo foldl(changes, changeFrequency(a, b), 0)
+echo foldl(problem, changeFrequency(a, b), 0)
 
 func firstRevisited(
   changes: seq[(char, int)], changeIndex, frequency: int, visited: HashSet[int]
@@ -43,5 +50,5 @@ func firstRevisited(changes: seq[(char, int)]): int =
       frequency = nextArgs[1]
       visited = nextArgs[2]
 
-echo firstRevisited(changes)
-# Day 1: Chronal Calibration:7 ends here
+echo firstRevisited(problem)
+# Day 1: Chronal Calibration:8 ends here

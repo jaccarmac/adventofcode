@@ -1,4 +1,4 @@
-#+PROPERTY: header-args :comments link
+#+PROPERTY: header-args :comments noweb :noweb yes
 
 This is my attempt to do a little daily coding practice, finish a full Advent
 of Code, learn Nim better, and stretch my literate programming efforts.
@@ -51,10 +51,21 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   My real data is in the same directory (=data/1.txt=).
 
-  The file reading code is shamelessly stolen from [[http://howistart.org/posts/nim/1/index.html][the Nim How I Start]].
+  The file reading code is shamelessly stolen from [[http://howistart.org/posts/nim/1/index.html][the Nim How I Start]]. It
+  reads in a file or stdin line by line, discards the last character (so we
+  don't have to deal with the last newline creating an empty record), and opens
+  a ~do~ block to map each line to an object. The ~ProblemLine~ type should be
+  aliased in each day's solution to the proper type of each parsed line.
 
+  #+name: read-problem-lines
   #+begin_src nim
-    let code = if par
+    import os
+    import sequtils
+    import strutils
+
+    let problem = (
+      if paramCount() > 0: readFile paramStr 1 else: readAll stdin
+    )[0..^2].splitLines.map do (line: string) -> ProblemLine:
   #+end_src
 
   Run like:
@@ -68,16 +79,21 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   the code here. I rewrote the second bit to be functional, and it is very slow
   now.
 
-  #+begin_src nim :tangle src/chronal_calibration.nim
-    import os
-    import sequtils
-    import sets
-    import strutils
+  In this case each problem line is a tuple of ~char~ (~'+'~ or ~'-'~) and
+  ~int~, the value to add or subtract.
 
-    let changes = map(splitLines(
-      if paramCount() > 0: (readFile paramStr 1)
-      else: readAll stdin
-    )[0..^2]) do (line: string) -> (char, int): (line[0], parseInt line[1..^1])
+  #+name: day-1-problem-line
+  #+begin_src nim
+    type ProblemLine = (char, int)
+  #+end_src
+
+  #+begin_src nim :tangle src/chronal_calibration.nim
+    <<day-1-problem-line>>
+
+    <<read-problem-lines>>
+      (line[0], parseInt line[1..^1])
+
+    import sets
 
     func changeFrequency(start: int, change: (char, int)): int =
       case change[0]
@@ -88,7 +104,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       else:
         raise newException(AssertionError, "invalid leading character")
 
-    echo foldl(changes, changeFrequency(a, b), 0)
+    echo foldl(problem, changeFrequency(a, b), 0)
 
     func firstRevisited(
       changes: seq[(char, int)], changeIndex, frequency: int, visited: HashSet[int]
@@ -113,7 +129,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
           frequency = nextArgs[1]
           visited = nextArgs[2]
 
-    echo firstRevisited(changes)
+    echo firstRevisited(problem)
   #+end_src
 
 * Day 2: Inventory Management System
