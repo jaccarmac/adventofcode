@@ -239,3 +239,16 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     #2 @ 3,1: 4x4
     #3 @ 5,5: 2x2
   #+end_src
+
+* Day 4: Repose Record
+
+  #+begin_src sh
+    nim c -r src/repose_record data/4.txt
+  #+end_src
+
+  #+begin_src nim :tangle src/repose_record.nim
+    let claims = map(splitLines(
+      if paramCount() > 0: (readFile paramStr 1)
+      else: readAll stdin
+    )[0..^2]) do (line: string) ->
+  #+end_src
