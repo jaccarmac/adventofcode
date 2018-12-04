@@ -173,24 +173,31 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
 * Day 2: Inventory Management System
 
-  Likewise, a dump. This has not been rewritten for either style or speed
-  yet. It doesn't even fully solve the second problem: You have to read the
-  results and figure out the letters yourself.
+  Today's problem doesn't even need a fancy type. It's just strings!
 
-  #+begin_src nim :comments noweb :tangle src/inventory_management_system.nim
-    import os
-    import sequtils
-    import strutils
+  #+name: day-2-problem-line
+  #+begin_src nim
+    type ProblemLine = string
+  #+end_src
+
+  No parsing necessary.
+
+  #+name: day-2-parse-line
+  #+begin_src nim
+    line
+  #+end_src
+
+  Another couple dumps. This has not been rewritten for either style or speed
+  yet.
+
+  #+name: day-2-solution-1
+  #+begin_src nim
     import tables
-
-    let input = if paramCount() > 0: (readFile paramStr 1)[0..^2]
-        else: readAll stdin
-
-    let ids = splitLines input
 
     var withDoubles = 0
     var withTriples = 0
-    for id in ids:
+
+    for id in problem:
         var letters = initTable[char, int]()
         for letter in id:
             letters[letter] = if contains(letters, letter): letters[letter] + 1
@@ -202,18 +209,38 @@ of Code, learn Nim better, and stretch my literate programming efforts.
             if letters[letter] == 3: triples = true
         withDoubles = if doubles: withDoubles + 1 else: withDoubles
         withTriples = if triples: withTriples + 1 else: withTriples
-    echo withDoubles * withTriples
 
+    echo withDoubles * withTriples
+  #+end_src
+
+  This doesn't even fully solve the second problem: You have to read the
+  results and figure out the letters yourself.
+
+  #+name: day-2-solution-2
+  #+begin_src nim
     func hamming(first, second: string): int =
         result = 0
         for i in countup(0, (len first) - 1):
             result = if first[i] == second[i]: result else: result + 1
 
-    for i, firstId in pairs ids:
-        for secondId in ids[i..^1]:
+    for i, firstId in pairs problem:
+        for secondId in problem[i..^1]:
             if hamming(firstId, secondId) == 1:
                 echo firstId
                 echo secondId
+  #+end_src
+
+  Everything together.
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/inventory_management_system.nim
+    <<day-2-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-2-parse-line>>
+
+    <<day-2-solution-1>>
+
+    <<day-2-solution-2>>
   #+end_src
 
   Run it similarly.
