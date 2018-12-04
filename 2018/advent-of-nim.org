@@ -80,21 +80,28 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   now.
 
   In this case each problem line is a tuple of ~char~ (~'+'~ or ~'-'~) and
-  ~int~, the value to add or subtract.
+  ~int~, the value to add or subtract. To parse this value, we can simply slice
+  the line up and parse part of it using the standard lib.
 
   #+name: day-1-problem-line
   #+begin_src nim
     type ProblemLine = (char, int)
   #+end_src
 
-  #+begin_src nim :tangle src/chronal_calibration.nim
-    <<day-1-problem-line>>
+  #+name: day-1-parse-line
+  #+begin_src nim
+    (line[0], parseInt line[1..^1])
+  #+end_src
 
-    <<read-problem-lines>>
-      (line[0], parseInt line[1..^1])
+  The first half of the problem is extremely simple, a fold over each operation
+  in the input. Since we parsed the problem input into a sequence of tuples
+  there is a small helper function to dispatch addition or subtraction from a
+  tuple and apply it to the input of each fold step. There may be a more
+  elegant way to deal with the exceptional case, but it's basically unreachable
+  code if we give the program good data.
 
-    import sets
-
+  #+name: change-frequency
+  #+begin_src nim
     func changeFrequency(start: int, change: (char, int)): int =
       case change[0]
       of '+':
@@ -103,8 +110,27 @@ of Code, learn Nim better, and stretch my literate programming efforts.
         start - change[1]
       else:
         raise newException(AssertionError, "invalid leading character")
+  #+end_src
 
+  As said above, the fold itself is trivial. We output it right away as it's
+  the answer.
+
+  #+name: day-1-solution-1
+  #+begin_src nim
     echo foldl(problem, changeFrequency(a, b), 0)
+  #+end_src
+
+  #+begin_src nim :tangle src/chronal_calibration.nim
+    <<day-1-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-1-parse-line>>
+
+    <<change-frequency>>
+
+    <<day-1-solution-1>>
+  
+    import sets
 
     func firstRevisited(
       changes: seq[(char, int)], changeIndex, frequency: int, visited: HashSet[int]
