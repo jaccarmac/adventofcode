@@ -1,5 +1,3 @@
-#+PROPERTY: header-args :comments noweb :noweb yes
-
 This is my attempt to do a little daily coding practice, finish a full Advent
 of Code, learn Nim better, and stretch my literate programming efforts.
 
@@ -16,7 +14,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Some test data as given on the site:
 
-  #+begin_src text :tangle data/test-1-0.txt :comments no
+  #+begin_src text :tangle data/test-1-0.txt
     +1
     -2
     +3
@@ -25,7 +23,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   That should result in ~3~.
 
-  #+begin_src text :tangle data/test-1-1.txt :comments no
+  #+begin_src text :tangle data/test-1-1.txt
     +1
     +1
     +1
@@ -33,7 +31,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   That should result in ~3~.
 
-  #+begin_src text :tangle data/test-1-2.txt :comments no
+  #+begin_src text :tangle data/test-1-2.txt
     +1
     +1
     -2
@@ -41,7 +39,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   That should result in ~0~.
 
-  #+begin_src text :tangle data/test-1-3.txt :comments no
+  #+begin_src text :tangle data/test-1-3.txt
     -1
     -2
     -3
@@ -160,7 +158,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Finally, putting it all together.
 
-  #+begin_src nim :tangle src/chronal_calibration.nim
+  #+begin_src nim :comments noweb :noweb yes :tangle src/chronal_calibration.nim
     <<day-1-problem-line>>
 
     <<read-problem-lines>>
@@ -179,7 +177,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   yet. It doesn't even fully solve the second problem: You have to read the
   results and figure out the letters yourself.
 
-  #+begin_src nim :tangle src/inventory_management_system.nim
+  #+begin_src nim :comments noweb :tangle src/inventory_management_system.nim
     import os
     import sequtils
     import strutils
@@ -243,7 +241,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   Glad I decided to store claim info though. I've got a really nice data
   structure that I can just pull exactly what I need out of.
 
-  #+begin_src nim :tangle src/no_matter_how_you_slice_it.nim
+  #+begin_src nim :comments noweb :tangle src/no_matter_how_you_slice_it.nim
     import os
     import sequtils
     import sets
@@ -293,7 +291,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo goodClaims
   #+end_src
 
-  #+begin_src text :tangle data/test-3-0.txt :comments no
+  #+begin_src text :tangle data/test-3-0.txt
     #1 @ 1,3: 4x4
     #2 @ 3,1: 4x4
     #3 @ 5,5: 2x2
@@ -305,7 +303,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     nim c -r src/repose_record data/4.txt
   #+end_src
 
-  #+begin_src nim :tangle src/repose_record.nim
+  #+begin_src nim :comments noweb :tangle src/repose_record.nim
     import algorithm
     import math
     import os
@@ -403,7 +401,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   The test data from the problem page.
 
-  #+begin_src text :tangle data/test-4-0.txt :comments no
+  #+begin_src text :tangle data/test-4-0.txt
     [1518-11-01 00:00] Guard #10 begins shift
     [1518-11-01 00:05] falls asleep
     [1518-11-01 00:25] wakes up
@@ -425,7 +423,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Knock one record out of order to make sure the sorting implementation works.
 
-  #+begin_src text :tangle data/test-4-1.txt :comments no
+  #+begin_src text :tangle data/test-4-1.txt
     [1518-11-05 00:55] wakes up
     [1518-11-01 00:00] Guard #10 begins shift
     [1518-11-01 00:05] falls asleep
