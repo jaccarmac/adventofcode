@@ -62,7 +62,6 @@ var currentGuard: int
 var lastAsleep: int
 
 for record in records:
-  let today = (record.year, record.month, record.day)
   case record.kind
   of rrDuty:
     currentGuard = record.id
@@ -83,3 +82,12 @@ let sleepyGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) 
 let sleepiestGuard = sleepyGuards[^1]
 
 echo sleepiestGuard[0] * sleepiestGuard[1].largest[0]
+
+let consistentGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
+  let xLargest = if x[1].len == 0: 0 else: x[1].largest[1]
+  let yLargest = if y[1].len == 0: 0 else: y[1].largest[1]
+  result = xLargest.cmp yLargest
+
+let mostConsistentGuard = consistentGuards[^1]
+
+echo mostConsistentGuard[0] * mostConsistentGuard[1].largest[0]
