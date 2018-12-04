@@ -1,3 +1,4 @@
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%202:%20Inventory%20Management%20System][Day 2: Inventory Management System:1]]
 import os
 import sequtils
 import strutils
@@ -34,3 +35,4 @@ for i, firstId in pairs ids:
         if hamming(firstId, secondId) == 1:
             echo firstId
             echo secondId
+# Day 2: Inventory Management System:1 ends here

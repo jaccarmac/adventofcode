@@ -1,3 +1,4 @@
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%201:%20Chronal%20Calibration][Day 1: Chronal Calibration:7]]
 import os
 import sequtils
 import sets
@@ -43,3 +44,4 @@ func firstRevisited(changes: seq[(char, int)]): int =
       visited = nextArgs[2]
 
 echo firstRevisited(changes)
+# Day 1: Chronal Calibration:7 ends here

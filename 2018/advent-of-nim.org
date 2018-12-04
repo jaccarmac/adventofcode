@@ -1,3 +1,5 @@
+#+PROPERTY: header-args :comments link
+
 This is my attempt to do a little daily coding practice, finish a full Advent
 of Code, learn Nim better, and stretch my literate programming efforts.
 
@@ -14,7 +16,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Some test data as given on the site:
 
-  #+begin_src text :tangle data/test-1-0.txt
+  #+begin_src text :tangle data/test-1-0.txt :comments no 
     +1
     -2
     +3
@@ -23,7 +25,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   That should result in ~3~.
 
-  #+begin_src text :tangle data/test-1-1.txt
+  #+begin_src text :tangle data/test-1-1.txt :comments no
     +1
     +1
     +1
@@ -31,7 +33,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   That should result in ~3~.
 
-  #+begin_src text :tangle data/test-1-2.txt
+  #+begin_src text :tangle data/test-1-2.txt :comments no
     +1
     +1
     -2
@@ -39,7 +41,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   That should result in ~0~.
 
-  #+begin_src text :tangle data/test-1-3.txt
+  #+begin_src text :tangle data/test-1-3.txt :comments no
     -1
     -2
     -3
@@ -234,7 +236,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo goodClaims
   #+end_src
 
-  #+begin_src text :tangle data/test-3-0.txt
+  #+begin_src text :tangle data/test-3-0.txt :comments no
     #1 @ 1,3: 4x4
     #2 @ 3,1: 4x4
     #3 @ 5,5: 2x2
@@ -344,7 +346,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   The test data from the problem page.
 
-  #+begin_src text :tangle data/test-4-0.txt
+  #+begin_src text :tangle data/test-4-0.txt :comments no
     [1518-11-01 00:00] Guard #10 begins shift
     [1518-11-01 00:05] falls asleep
     [1518-11-01 00:25] wakes up
@@ -366,7 +368,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Knock one record out of order to make sure the sorting implementation works.
 
-  #+begin_src text :tangle data/test-4-1.txt
+  #+begin_src text :tangle data/test-4-1.txt :comments no
     [1518-11-05 00:55] wakes up
     [1518-11-01 00:00] Guard #10 begins shift
     [1518-11-01 00:05] falls asleep

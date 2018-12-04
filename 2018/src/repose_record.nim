@@ -1,3 +1,4 @@
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%204:%20Repose%20Record][Day 4: Repose Record:2]]
 import algorithm
 import math
 import os
@@ -91,3 +92,4 @@ let consistentGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int
 let mostConsistentGuard = consistentGuards[^1]
 
 echo mostConsistentGuard[0] * mostConsistentGuard[1].largest[0]
+# Day 4: Repose Record:2 ends here

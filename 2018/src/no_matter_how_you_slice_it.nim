@@ -1,3 +1,4 @@
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%203:%20No%20Matter%20How%20You%20Slice%20It][Day 3: No Matter How You Slice It:2]]
 import os
 import sequtils
 import sets
@@ -45,3 +46,4 @@ for contestedClaim in contestedClaims:
   excl goodClaims, contestedClaim
 
 echo goodClaims
+# Day 3: No Matter How You Slice It:2 ends here
