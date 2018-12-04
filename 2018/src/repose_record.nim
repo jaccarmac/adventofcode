@@ -1,4 +1,5 @@
 import algorithm
+import math
 import os
 import sequtils
 import strutils
@@ -56,32 +57,33 @@ let records = unsortedRecords.sorted do (x, y: ReposeRecord) -> int:
   if result == 0:
     result = x.minute.cmp y.minute
 
-var calendar = initTable[(int, int, int), (int, seq[int])]()
+var calendar = initTable[(int, int, int), seq[int]]()
 var guards = initTable[int, CountTable[int]]()
 var currentGuard: int
 var lastAsleep: int
 
-echo records[0].kind
-
 for record in records:
   let today = (record.year, record.month, record.day)
+  if not calendar.contains today:
+      calendar[today] = @[]
   case record.kind
   of rrDuty:
-    echo "d"
     currentGuard = record.id
-    echo currentGuard
     if not guards.contains currentGuard:
       guards[currentGuard] = initCountTable[int]()
-    if not calendar.contains today:
-      calendar[today] = (currentGuard, @[])
   of rrSleep:
-    echo "s"
     lastAsleep = record.minute
   of rrWake:
-    echo "w"
     for minute in lastAsleep.countup(record.minute - 1):
       if not guards[currentGuard].contains minute:
         guards[currentGuard][minute] = 1
       else:
         guards[currentGuard][minute].inc
-      calendar[today][1].add minute
+      calendar[today].add minute
+
+let bestGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
+  toSeq(x[1].values).sum.cmp toSeq(y[1].values).sum
+
+let bestGuard = bestGuards[^1]
+
+echo bestGuard[0] * bestGuard[1].largest[0]
