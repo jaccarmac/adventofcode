@@ -247,8 +247,105 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   #+begin_src nim :tangle src/repose_record.nim
-    let claims = map(splitLines(
-      if paramCount() > 0: (readFile paramStr 1)
-      else: readAll stdin
-    )[0..^2]) do (line: string) ->
+    import algorithm
+    import os
+    import sequtils
+    import strutils
+    import tables
+
+    type
+      ReposeRecordKind = enum
+        rrDuty
+        rrWake
+        rrSleep
+      ReposeRecord = ref ReposeRecordObj
+      ReposeRecordObj = object
+        year: int
+        month: int
+        day: int
+        hour: int
+        minute: int
+        case kind: ReposeRecordKind
+        of rrDuty: id: int
+        of rrWake, rrSleep: nil
+
+    let unsortedRecords = (
+      if paramCount() > 0: readFile paramStr 1 else: readAll stdin
+    )[0..^2].splitLines.map do (line: string) -> ReposeRecord:
+      result = ReposeRecordObj.new
+      let dateSplit = line.split ']'
+      let dateTimeSplit = dateSplit[0][1..^1].split ' '
+      let dateParts = dateTimeSplit[0].split '-'
+      result.year = parseInt dateParts[0]
+      result.month = parseInt dateParts[1]
+      result.day = parseInt dateParts[2]
+      let timeParts = dateTimeSplit[1].split ':'
+      result.hour = parseInt timeParts[0]
+      result.minute = parseInt timeParts[1]
+      let recordParts = dateSplit[1][1..^1].split ' '
+      case recordParts[0][0]
+      of 'G':
+        result.kind = rrDuty
+        result.id = parseInt recordParts[1][1..^1]
+      of 'f':
+        result.kind = rrSleep
+      of 'w':
+        result.kind = rrWake
+      else:
+        raise newException(AssertionError, "invalid leading character")
+
+    let records = unsortedRecords.sorted do (x, y: ReposeRecord) -> int:
+      result = x.year.cmp y.year
+      if result == 0:
+        result = x.year.cmp y.year
+      if result == 0:
+        result = x.year.cmp y.year
+      if result == 0:
+        result = x.year.cmp y.year
+      if result == 0:
+        result = x.year.cmp y.year
+  #+end_src
+
+  The test data from the problem page.
+
+  #+begin_src text :tangle data/test-4-0.txt
+    [1518-11-01 00:00] Guard #10 begins shift
+    [1518-11-01 00:05] falls asleep
+    [1518-11-01 00:25] wakes up
+    [1518-11-01 00:30] falls asleep
+    [1518-11-01 00:55] wakes up
+    [1518-11-01 23:58] Guard #99 begins shift
+    [1518-11-02 00:40] falls asleep
+    [1518-11-02 00:50] wakes up
+    [1518-11-03 00:05] Guard #10 begins shift
+    [1518-11-03 00:24] falls asleep
+    [1518-11-03 00:29] wakes up
+    [1518-11-04 00:02] Guard #99 begins shift
+    [1518-11-04 00:36] falls asleep
+    [1518-11-04 00:46] wakes up
+    [1518-11-05 00:03] Guard #99 begins shift
+    [1518-11-05 00:45] falls asleep
+    [1518-11-05 00:55] wakes up
+  #+end_src
+
+  Knock one record out of order to make sure the sorting implementation works.
+
+  #+begin_src text :tangle data/test-4-1.txt
+    [1518-11-05 00:55] wakes up
+    [1518-11-01 00:00] Guard #10 begins shift
+    [1518-11-01 00:05] falls asleep
+    [1518-11-01 00:25] wakes up
+    [1518-11-01 00:30] falls asleep
+    [1518-11-01 00:55] wakes up
+    [1518-11-01 23:58] Guard #99 begins shift
+    [1518-11-02 00:40] falls asleep
+    [1518-11-02 00:50] wakes up
+    [1518-11-03 00:05] Guard #10 begins shift
+    [1518-11-03 00:24] falls asleep
+    [1518-11-03 00:29] wakes up
+    [1518-11-04 00:02] Guard #99 begins shift
+    [1518-11-04 00:36] falls asleep
+    [1518-11-04 00:46] wakes up
+    [1518-11-05 00:03] Guard #99 begins shift
+    [1518-11-05 00:45] falls asleep
   #+end_src
