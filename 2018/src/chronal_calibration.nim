@@ -1,4 +1,4 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%201:%20Chronal%20Calibration][Day 1: Chronal Calibration:11]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%201:%20Chronal%20Calibration][Day 1: Chronal Calibration:12]]
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-1-problem-line][day-1-problem-line]]
 type ProblemLine = (char, int)
 # day-1-problem-line ends here
@@ -31,6 +31,7 @@ func changeFrequency(start: int, change: (char, int)): int =
 echo foldl(problem, changeFrequency(a, b), 0)
 # day-1-solution-1 ends here
 
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-1-solution-2][day-1-solution-2]]
 import sets
 
 func firstRevisited(
@@ -57,4 +58,5 @@ func firstRevisited(changes: seq[(char, int)]): int =
       visited = nextArgs[2]
 
 echo firstRevisited(problem)
-# Day 1: Chronal Calibration:11 ends here
+# day-1-solution-2 ends here
+# Day 1: Chronal Calibration:12 ends here

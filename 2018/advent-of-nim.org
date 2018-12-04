@@ -16,7 +16,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Some test data as given on the site:
 
-  #+begin_src text :tangle data/test-1-0.txt :comments no 
+  #+begin_src text :tangle data/test-1-0.txt :comments no
     +1
     -2
     +3
@@ -120,16 +120,16 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo foldl(problem, changeFrequency(a, b), 0)
   #+end_src
 
-  #+begin_src nim :tangle src/chronal_calibration.nim
-    <<day-1-problem-line>>
+  I hacked together a loop for the second problem, then came back and tried a
+  recursive solution, blew the stack, then wrote a little trampoline to avoid
+  blowing the stack. It was a fun exercise but the code is extremely
+  slow. Dumping it all here to be fixed later; The goal is something both more
+  functional and more Nim-my. I'll quite possibly have to write something
+  similar to the existing code in ~sequtils~, but for infinite sequences a la
+  Clojure.
 
-    <<read-problem-lines>>
-      <<day-1-parse-line>>
-
-    <<change-frequency>>
-
-    <<day-1-solution-1>>
-  
+  #+name: day-1-solution-2
+  #+begin_src nim
     import sets
 
     func firstRevisited(
@@ -156,6 +156,21 @@ of Code, learn Nim better, and stretch my literate programming efforts.
           visited = nextArgs[2]
 
     echo firstRevisited(problem)
+  #+end_src
+
+  Finally, putting it all together.
+
+  #+begin_src nim :tangle src/chronal_calibration.nim
+    <<day-1-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-1-parse-line>>
+
+    <<change-frequency>>
+
+    <<day-1-solution-1>>
+
+    <<day-1-solution-2>>
   #+end_src
 
 * Day 2: Inventory Management System
