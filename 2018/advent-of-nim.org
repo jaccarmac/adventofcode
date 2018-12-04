@@ -258,37 +258,36 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   It's an overlap problem. I feel like this is something easily solvable with
-  math, but brute forcing at least the first part should work for now. First of
-  all can pull in and modify the file reading code from the revised first
-  day. This time with real types!
+  math, but brute forcing at least the first part should work for now. This
+  time the file reading is with real types! A tuple with named fields to be
+  precise.
+
+  #+name: day-3-problem-line
+  #+begin_src nim
+    type
+      Claim = tuple[id, x, y, width, height: int]
+      ProblemLine = Claim
+  #+end_src
+
+  #+name: day-3-parse-line
+  #+begin_src nim
+    let segments = splitWhitespace line
+    result.id = parseInt segments[0][1..^1]
+    let coords = split(segments[2], ",")
+    result.x = parseInt coords[0]
+    result.y = parseInt coords[1][0..^2]
+    let dims = split(segments[3], "x")
+    result.width = parseInt dims[0]
+    result.height = parseInt dims[1]
+  #+end_src
 
   First part is super messy and I'm not happy with the syntactic choices I
   made.
 
-  Glad I decided to store claim info though. I've got a really nice data
-  structure that I can just pull exactly what I need out of.
-
-  #+begin_src nim :comments noweb :tangle src/no_matter_how_you_slice_it.nim
-    import os
-    import sequtils
+  #+name: day-3-solution-1
+  #+begin_src nim
     import sets
-    import strutils
     import tables
-
-    type Claim = tuple[id, x, y, width, height: int]
-
-    let claims = map(splitLines(
-      if paramCount() > 0: (readFile paramStr 1)
-      else: readAll stdin
-    )[0..^2]) do (line: string) -> Claim:
-      let segments = splitWhitespace line
-      result.id = parseInt segments[0][1..^1]
-      let coords = split(segments[2], ",")
-      result.x = parseInt coords[0]
-      result.y = parseInt coords[1][0..^2]
-      let dims = split(segments[3], "x")
-      result.width = parseInt dims[0]
-      result.height = parseInt dims[1]
 
     var fabric = initTable[(int, int), HashSet[int]]()
 
@@ -297,7 +296,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
         for y in countup(claim.y, claim.y + claim.height - 1):
           yield (x, y)
 
-    for claim in claims:
+    for claim in problem:
       for coord in coordsFor claim:
         let x = coord[0]
         let y = coord[1]
@@ -309,13 +308,30 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       filter(toSeq values fabric) do (cs: HashSet[int]) -> bool: len(cs) > 1
 
     echo len contestedClaims
+  #+end_src
 
-    var goodClaims = toSet map(claims) do (c: Claim) -> int: c.id
+  Glad I decided to store claim info though. I've got a really nice data
+  structure that I can just pull exactly what I need out of.
+
+  #+name: day-3-solution-2
+  #+begin_src nim
+    var goodClaims = toSet map(problem) do (c: Claim) -> int: c.id
 
     for contestedClaim in contestedClaims:
       excl goodClaims, contestedClaim
 
     echo goodClaims
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/no_matter_how_you_slice_it.nim
+    <<day-3-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-3-parse-line>>
+
+    <<day-3-solution-1>>
+
+    <<day-3-solution-2>>
   #+end_src
 
   #+begin_src text :tangle data/test-3-0.txt
