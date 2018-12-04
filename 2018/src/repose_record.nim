@@ -77,9 +77,9 @@ for record in records:
       else:
         guards[currentGuard][minute].inc
 
-let bestGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
+let sleepyGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
   toSeq(x[1].values).sum.cmp toSeq(y[1].values).sum
 
-let bestGuard = bestGuards[^1]
+let sleepiestGuard = sleepyGuards[^1]
 
-echo bestGuard[0] * bestGuard[1].largest[0]
+echo sleepiestGuard[0] * sleepiestGuard[1].largest[0]
