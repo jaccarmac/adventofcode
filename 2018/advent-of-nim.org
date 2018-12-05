@@ -517,14 +517,15 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     import os
     import streams
 
-    let problem =
-      if paramCount() > 0:
-        (proc (): Stream =
-             let problemFile = open paramStr 1
-             newFileStream problemFile)
-      else:
-        let stdinString = readAll stdin
-        (proc (): Stream {.gcsafe.} = newStringStream stdinString)
+    var problem: proc(): Stream
+    if paramCount() > 0:
+      problem = proc (): Stream =
+        let problemFile = open paramStr 1
+        newFileStream problemFile
+    else:
+      let stdinString = readAll stdin
+      problem = proc (): Stream =
+        newStringStream stdinString
   #+end_src
 
   The basic operation is to iterate over the stream with ~readChar~.

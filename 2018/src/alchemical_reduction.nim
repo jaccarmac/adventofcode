@@ -3,14 +3,15 @@
 import os
 import streams
 
-let problem =
-  if paramCount() > 0:
-    (proc (): Stream =
-         let problemFile = open paramStr 1
-         newFileStream problemFile)
-  else:
-    let stdinString = readAll stdin
-    (proc (): Stream {.gcsafe.} = newStringStream stdinString)
+var problem: proc(): Stream
+if paramCount() > 0:
+  problem = proc (): Stream =
+    let problemFile = open paramStr 1
+    newFileStream problemFile
+else:
+  let stdinString = readAll stdin
+  problem = proc (): Stream =
+    newStringStream stdinString
 # read-problem-stream ends here
 
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-5-solution-1][day-5-solution-1]]
