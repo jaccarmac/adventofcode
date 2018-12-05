@@ -501,3 +501,58 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     [1518-11-05 00:03] Guard #99 begins shift
     [1518-11-05 00:45] falls asleep
   #+end_src
+
+* Day 5: Alchemical Reduction.
+
+  #+begin_src sh
+    nim c -r src/alchemical_reduction data/5.txt
+  #+end_src
+
+  This problem's a bit different. The input is all one line: A *big* line. This
+  means we don't deal with parsing the input line by line but rather as a
+  stream we can read in character by character.
+
+  #+name: read-problem-stream
+  #+begin_src nim
+    import os
+    import streams
+
+    let problem = (
+      if paramCount() > 0: open paramStr 1 else: stdin
+    ).newFileStream
+  #+end_src
+
+  The basic operation is to iterate over the stream with ~readChar~.
+
+  We use a deque to solve the first problem. Don't like duplicating the loop
+  code very much, maybe an iterator will be better here eventually. The loop
+  logic is also super nasty.
+
+  #+name: day-5-solution-1
+  #+begin_src nim
+    import deques
+    import strutils
+
+    var reagents = initDeque[char]()
+
+    reagents.addLast readChar problem
+    var nextReagent = readChar problem
+    while nextReagent != '\n':
+      if reagents.len() > 0:
+        let previousReagent = peekLast reagents
+        if toLowerAscii(previousReagent) == toLowerAscii(nextReagent) and previousReagent != nextReagent:
+          popLast reagents
+        else:
+          reagents.addLast nextReagent
+      else:
+        reagents.addLast nextReagent
+      nextReagent = readChar problem
+
+    echo len reagents
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/alchemical_reduction.nim
+    <<read-problem-stream>>
+
+    <<day-5-solution-1>>
+  #+end_src
