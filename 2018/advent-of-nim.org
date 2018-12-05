@@ -517,9 +517,14 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     import os
     import streams
 
-    let problem = (
-      if paramCount() > 0: open paramStr 1 else: stdin
-    ).newFileStream
+    let problem =
+      if paramCount() > 0:
+        (proc (): Stream =
+             let problemFile = open paramStr 1
+             newFileStream problemFile)
+      else:
+        let stdinString = readAll stdin
+        (proc (): Stream {.gcsafe.} = newStringStream stdinString)
   #+end_src
 
   The basic operation is to iterate over the stream with ~readChar~.
@@ -533,26 +538,59 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     import deques
     import strutils
 
-    var reagents = initDeque[char]()
-
-    reagents.addLast readChar problem
-    var nextReagent = readChar problem
-    while nextReagent != '\n':
-      if reagents.len() > 0:
-        let previousReagent = peekLast reagents
-        if toLowerAscii(previousReagent) == toLowerAscii(nextReagent) and previousReagent != nextReagent:
-          popLast reagents
+    func polymerLength(polymer: iterator(): char): int =
+      var reagents = initDeque[char]()
+      for nextReagent in polymer():
+        if reagents.len() > 0:
+          let previousReagent = peekLast reagents
+          if toLowerAscii(previousReagent) == toLowerAscii(nextReagent) and previousReagent != nextReagent:
+            popLast reagents
+          else:
+            reagents.addLast nextReagent
         else:
           reagents.addLast nextReagent
-      else:
-        reagents.addLast nextReagent
-      nextReagent = readChar problem
+      len reagents
 
-    echo len reagents
+    iterator solution1Polymer(): char {.closure.} =
+      let inStream = problem()
+      var nextReagent = readChar inStream
+      while nextReagent != '\n':
+        yield nextReagent
+        nextReagent = readChar inStream
+
+    echo polymerLength(solution1Polymer)
+  #+end_src
+
+  The second half is real interesting. Could possibly just loop 26 times, once
+  for each letter, and see what the best result is... First I go back and
+  change the stream code into a thunk so I can read a file or stdin multiple
+  times. Then I need to change the first solution into a proc that takes an
+  iterator. Finally I can write a loop that creates an iterator excluding a
+  certain reagent and passes it to said proc.
+
+  #+name: day-5-solution-2
+  #+begin_src nim
+    func solution2Polymer(exclude: char): iterator(): char {.closure.} =
+      (iterator(): char {.closure.} =
+         let inStream = problem()
+         var nextReagent = readChar inStream
+         while nextReagent != '\n':
+           if toLowerAscii(nextReagent) != toLowerAscii(exclude):
+             yield nextReagent
+           nextReagent = readChar inStream)
+
+    var minLength = high(int)
+
+    for reagent in countup('a', 'z'):
+      minLength = minLength.min polymerLength solution2Polymer reagent
+
+    echo minLength
   #+end_src
 
   #+begin_src nim :comments noweb :noweb yes :tangle src/alchemical_reduction.nim
     <<read-problem-stream>>
 
     <<day-5-solution-1>>
+
+    <<day-5-solution-2>>
   #+end_src
