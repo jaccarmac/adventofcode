@@ -626,14 +626,11 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       abs(x[0] - y[0]) + abs(x[1] - y[1])
   #+end_src
 
-  On the other hand this code is both ugly and gives the wrong answer. Fix it
-  later.
+  Then we find the boundaries of our canvas by finding the min and max
+  coordinates given.
 
-  #+name: day-6-solution-1
+  #+name: day-6-min-max-x-y
   #+begin_src nim
-    import algorithm
-    import tables
-
     var minX = problem[0][0]
     var maxX = problem[0][0]
     var minY = problem[0][1]
@@ -644,33 +641,61 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       maxX = maxX.max coord[0]
       minY = minY.min coord[1]
       maxY = maxY.max coord[1]
+  #+end_src
+
+  Then we need a function to find the closest given coord to a given point.
+
+  #+name: day-6-distances
+  #+begin_src nim
+    import algorithm
+    import options
+
+    proc closestProblemCoord(coord: (int, int)): Option[(int, int)] =
+      let distances = problem.map do (c: (int, int)) -> ((int, int), int):
+        (c, c.manhattan coord)
+      let sortedDistances = distances.sorted do (x, y: ((int, int), int)) -> int:
+        x[1].cmp y[1]
+      if sortedDistances[0][1] != sortedDistances[1][1]:
+        result = some sortedDistances[0][0]
+  #+end_src
+
+  We walk the edges of the grid using the distance function to create a set of
+  excluded infinite point sets.
+
+  #+name: day-6-excluded
+  #+begin_src nim
+    import sets
+
+    var infiniteAreas = initSet[(int, int)]()
+
+    for x in countup(minX, maxX):
+      for coord in @[(x, minY), (x, maxY)]:
+        coord.closestProblemCoord().map do (input: (int, int)):
+          infiniteAreas.incl input
+
+    for y in countup(minY, maxY):
+      for coord in @[(minX, y), (maxX, y)]:
+        coord.closestProblemCoord().map do (input: (int, int)):
+          infiniteAreas.incl input
+  #+end_src
+
+  Then we can get to solving by checking all the other points.
+
+  #+name: day-6-solution-1
+  #+begin_src nim
+    import tables
 
     var areas = initCountTable[(int, int)]()
 
-    for x in minX.countup maxX:
-      for y in minY.countup maxY:
+    for x in countup(minX + 1, maxX - 1):
+      for y in countup(minY + 1, maxY - 1):
         let coord = (x, y)
-        let distances = problem.map do (c: (int, int)) -> ((int, int), int):
-          (c, c.manhattan coord)
-        let sortedDistances = distances.sorted do (x, y: ((int, int), int)) -> int:
-          x[1].cmp y[1]
-        if sortedDistances[0][1] != sortedDistances[1][1] and
-           sortedDistances[0][0][0] != minX and
-           sortedDistances[0][0][0] != maxX and
-           sortedDistances[0][0][1] != minY and
-           sortedDistances[0][0][1] != maxY:
-          if not areas.contains sortedDistances[0][0]:
-            areas[sortedDistances[0][0]] = 1
-          else:
-            areas[sortedDistances[0][0]].inc
+        coord.closestProblemCoord().map do (input: (int, int)):
+          if not infiniteAreas.contains input:
+            areas.inc input
 
     areas.sort()
 
-    echo minX
-    echo maxX
-    echo minY
-    echo maxY
-    echo areas
     echo toSeq(areas.values)[0]
   #+end_src
 
@@ -681,6 +706,12 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       <<day-6-parse-line>>
 
     <<manhattan>>
+
+    <<day-6-min-max-x-y>>
+
+    <<day-6-distances>>
+
+    <<day-6-excluded>>
 
     <<day-6-solution-1>>
   #+end_src

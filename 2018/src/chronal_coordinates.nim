@@ -1,4 +1,4 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%206:%20Chronal%20Coordinates][Day 6: Chronal Coordinates:6]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%206:%20Chronal%20Coordinates][Day 6: Chronal Coordinates:9]]
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-problem-line][day-6-problem-line]]
 type ProblemLine = tuple[x, y: int]
 # day-6-problem-line ends here
@@ -22,10 +22,7 @@ func manhattan(x, y: (int, int)): int =
   abs(x[0] - y[0]) + abs(x[1] - y[1])
 # manhattan ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-solution-1][day-6-solution-1]]
-import algorithm
-import tables
-
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-min-max-x-y][day-6-min-max-x-y]]
 var minX = problem[0][0]
 var maxX = problem[0][0]
 var minY = problem[0][1]
@@ -36,33 +33,51 @@ for coord in problem[1..^1]:
   maxX = maxX.max coord[0]
   minY = minY.min coord[1]
   maxY = maxY.max coord[1]
+# day-6-min-max-x-y ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-distances][day-6-distances]]
+import algorithm
+import options
+
+proc closestProblemCoord(coord: (int, int)): Option[(int, int)] =
+  let distances = problem.map do (c: (int, int)) -> ((int, int), int):
+    (c, c.manhattan coord)
+  let sortedDistances = distances.sorted do (x, y: ((int, int), int)) -> int:
+    x[1].cmp y[1]
+  if sortedDistances[0][1] != sortedDistances[1][1]:
+    result = some sortedDistances[0][0]
+# day-6-distances ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-excluded][day-6-excluded]]
+import sets
+
+var infiniteAreas = initSet[(int, int)]()
+
+for x in countup(minX, maxX):
+  for coord in @[(x, minY), (x, maxY)]:
+    coord.closestProblemCoord().map do (input: (int, int)):
+      infiniteAreas.incl input
+
+for y in countup(minY, maxY):
+  for coord in @[(minX, y), (maxX, y)]:
+    coord.closestProblemCoord().map do (input: (int, int)):
+      infiniteAreas.incl input
+# day-6-excluded ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-solution-1][day-6-solution-1]]
+import tables
 
 var areas = initCountTable[(int, int)]()
 
-for x in minX.countup maxX:
-  for y in minY.countup maxY:
+for x in countup(minX + 1, maxX - 1):
+  for y in countup(minY + 1, maxY - 1):
     let coord = (x, y)
-    let distances = problem.map do (c: (int, int)) -> ((int, int), int):
-      (c, c.manhattan coord)
-    let sortedDistances = distances.sorted do (x, y: ((int, int), int)) -> int:
-      x[1].cmp y[1]
-    if sortedDistances[0][1] != sortedDistances[1][1] and
-       sortedDistances[0][0][0] != minX and
-       sortedDistances[0][0][0] != maxX and
-       sortedDistances[0][0][1] != minY and
-       sortedDistances[0][0][1] != maxY:
-      if not areas.contains sortedDistances[0][0]:
-        areas[sortedDistances[0][0]] = 1
-      else:
-        areas[sortedDistances[0][0]].inc
+    coord.closestProblemCoord().map do (input: (int, int)):
+      if not infiniteAreas.contains input:
+        areas.inc input
 
 areas.sort()
 
-echo minX
-echo maxX
-echo minY
-echo maxY
-echo areas
 echo toSeq(areas.values)[0]
 # day-6-solution-1 ends here
-# Day 6: Chronal Coordinates:6 ends here
+# Day 6: Chronal Coordinates:9 ends here
