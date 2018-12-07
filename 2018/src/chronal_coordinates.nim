@@ -1,4 +1,4 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%206:%20Chronal%20Coordinates][Day 6: Chronal Coordinates:9]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%206:%20Chronal%20Coordinates][Day 6: Chronal Coordinates:10]]
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-problem-line][day-6-problem-line]]
 type ProblemLine = tuple[x, y: int]
 # day-6-problem-line ends here
@@ -80,4 +80,8 @@ areas.sort()
 
 echo toSeq(areas.values)[0]
 # day-6-solution-1 ends here
-# Day 6: Chronal Coordinates:9 ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-solution-2][day-6-solution-2]]
+
+# day-6-solution-2 ends here
+# Day 6: Chronal Coordinates:10 ends here
