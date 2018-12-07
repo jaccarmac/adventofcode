@@ -81,10 +81,7 @@ for record in records:
     lastAsleep = record.minute
   of rrWake:
     for minute in lastAsleep.countup(record.minute - 1):
-      if not guards[currentGuard].contains minute:
-        guards[currentGuard][minute] = 1
-      else:
-        guards[currentGuard][minute].inc
+      guards[currentGuard].inc minute
 
 let sleepyGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
   toSeq(x[1].values).sum.cmp toSeq(y[1].values).sum
