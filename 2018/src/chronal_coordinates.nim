@@ -82,6 +82,14 @@ echo toSeq(areas.values)[0]
 # day-6-solution-1 ends here
 
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-6-solution-2][day-6-solution-2]]
+var closeArea = 0
+
+for x in countup(minX, maxX):
+  for y in countup(minY, maxY):
+    let coord = (x, y)
+    coord.closestProblemCoord().map do (input: (int, int)):
+      if not infiniteAreas.contains input:
+        areas.inc input
 
 # day-6-solution-2 ends here
 # Day 6: Chronal Coordinates:10 ends here

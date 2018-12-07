@@ -700,8 +700,20 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo toSeq(areas.values)[0]
   #+end_src
 
+  Hiccup. The second solution requires we use an out-of-input-file-band value
+  as part of our behavior. Time for a default command line arg I guess? Anyway
+  let's hash out the solution for the smaller test case anyway.
+
   #+name: day-6-solution-2
   #+begin_src nim
+    var closeArea = 0
+
+    for x in countup(minX, maxX):
+      for y in countup(minY, maxY):
+        let coord = (x, y)
+        coord.closestProblemCoord().map do (input: (int, int)):
+          if not infiniteAreas.contains input:
+            areas.inc input
 
   #+end_src
 
