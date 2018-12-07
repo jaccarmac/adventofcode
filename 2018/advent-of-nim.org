@@ -599,7 +599,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   Manhattan distance but not infinite in number.
 
   #+begin_src sh
-    nim c -r src/chronal_coordinates data/6.txt
+    nim c -r src/chronal_coordinates data/6.txt 10000
   #+end_src
 
   The input is a simple list of coords.
@@ -640,17 +640,24 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       maxY = maxY.max coord[1]
   #+end_src
 
-  Then we need a function to find the closest given coord to a given point.
+  Calculate the distances from a given coord to a given point.
 
   #+name: day-6-distances
+  #+begin_src nim
+    proc coordDistances(coord: (int, int)): seq[((int, int), int)] =
+      problem.map do (c: (int, int)) -> ((int, int), int):
+        (c, c.manhattan coord)
+  #+end_src
+
+  Then we need a function to find the closest given coord to a given point.
+
+  #+name: day-6-closest-problem-coord
   #+begin_src nim
     import algorithm
     import options
 
     proc closestProblemCoord(coord: (int, int)): Option[(int, int)] =
-      let distances = problem.map do (c: (int, int)) -> ((int, int), int):
-        (c, c.manhattan coord)
-      let sortedDistances = distances.sorted do (x, y: ((int, int), int)) -> int:
+      let sortedDistances = coord.coordDistances().sorted do (x, y: ((int, int), int)) -> int:
         x[1].cmp y[1]
       if sortedDistances[0][1] != sortedDistances[1][1]:
         result = some sortedDistances[0][0]
@@ -701,20 +708,24 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   Hiccup. The second solution requires we use an out-of-input-file-band value
-  as part of our behavior. Time for a default command line arg I guess? Anyway
-  let's hash out the solution for the smaller test case anyway.
+  as part of our behavior. Pull in another arg or stdin!
 
   #+name: day-6-solution-2
   #+begin_src nim
+    let maxDistance = if paramCount() > 1:
+                        parseInt paramStr 2
+                      else:
+                        parseInt strip readAll stdin
     var closeArea = 0
 
     for x in countup(minX, maxX):
       for y in countup(minY, maxY):
         let coord = (x, y)
-        coord.closestProblemCoord().map do (input: (int, int)):
-          if not infiniteAreas.contains input:
-            areas.inc input
+        let totalDistance = coord.coordDistances().foldl(a + b[1], 0)
+        if totalDistance < maxDistance:
+          inc closeArea
 
+    echo closeArea
   #+end_src
 
   #+begin_src nim :comments noweb :noweb yes :tangle src/chronal_coordinates.nim
@@ -728,6 +739,8 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     <<day-6-min-max-x-y>>
 
     <<day-6-distances>>
+
+    <<day-6-closest-problem-coord>>
 
     <<day-6-excluded>>
 
