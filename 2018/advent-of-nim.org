@@ -605,8 +605,84 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     nim c -r src/chronal_coordinates data/6.txt
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/chronal_coordinates.nim
+  The input is a simple list of coords.
 
+  #+name: day-6-problem-line
+  #+begin_src nim
+    type ProblemLine = tuple[x, y: int]
+  #+end_src
+
+  #+name: day-6-parse-line
+  #+begin_src nim
+    let coords = (line.split ',').map do (n: string) -> int: parseInt n.strip()
+    (coords[0], coords[1])
+  #+end_src
+
+  The implementation of manhattan for coords is fairly simple.
+
+  #+name: manhattan
+  #+begin_src nim
+    func manhattan(x, y: (int, int)): int =
+      abs(x[0] - y[0]) + abs(x[1] - y[1])
+  #+end_src
+
+  On the other hand this code is both ugly and gives the wrong answer. Fix it
+  later.
+
+  #+name: day-6-solution-1
+  #+begin_src nim
+    import algorithm
+    import tables
+
+    var minX = problem[0][0]
+    var maxX = problem[0][0]
+    var minY = problem[0][1]
+    var maxY = problem[0][1]
+
+    for coord in problem[1..^1]:
+      minX = minX.min coord[0]
+      maxX = maxX.max coord[0]
+      minY = minY.min coord[1]
+      maxY = maxY.max coord[1]
+
+    var areas = initCountTable[(int, int)]()
+
+    for x in minX.countup maxX:
+      for y in minY.countup maxY:
+        let coord = (x, y)
+        let distances = problem.map do (c: (int, int)) -> ((int, int), int):
+          (c, c.manhattan coord)
+        let sortedDistances = distances.sorted do (x, y: ((int, int), int)) -> int:
+          x[1].cmp y[1]
+        if sortedDistances[0][1] != sortedDistances[1][1] and
+           sortedDistances[0][0][0] != minX and
+           sortedDistances[0][0][0] != maxX and
+           sortedDistances[0][0][1] != minY and
+           sortedDistances[0][0][1] != maxY:
+          if not areas.contains sortedDistances[0][0]:
+            areas[sortedDistances[0][0]] = 1
+          else:
+            areas[sortedDistances[0][0]].inc
+
+    areas.sort()
+
+    echo minX
+    echo maxX
+    echo minY
+    echo maxY
+    echo areas
+    echo toSeq(areas.values)[0]
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/chronal_coordinates.nim
+    <<day-6-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-6-parse-line>>
+
+    <<manhattan>>
+
+    <<day-6-solution-1>>
   #+end_src
 
   Test data should result in ~17~.
