@@ -502,7 +502,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     [1518-11-05 00:45] falls asleep
   #+end_src
 
-* Day 5: Alchemical Reduction.
+* Day 5: Alchemical Reduction
 
   #+begin_src sh
     nim c -r src/alchemical_reduction data/5.txt
@@ -595,3 +595,32 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
     <<day-5-solution-2>>
   #+end_src
+
+* Day 6: Chronal Coordinates
+
+  Find the largest area of points that are closest to a given point by
+  Manhattan distance but not infinite in number.
+
+  #+begin_src sh
+    nim c -r src/chronal_coordinates data/6.txt
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/chronal_coordinates.nim
+
+  #+end_src
+
+  Test data should result in ~17~.
+
+* Day 7: The Sum of Its Parts
+
+  Resolve conflicts in graph by doing alphabetically primary steps first.
+
+  #+begin_src sh
+    nim c -r src/the_sum_of_its_parts data/7.txt
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/the_sum_of_its_parts.nim
+
+  #+end_src
+
+  Test data should result in ~CABDFE~.

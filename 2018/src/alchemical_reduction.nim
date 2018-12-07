@@ -1,4 +1,4 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%205:%20Alchemical%20Reduction.][Day 5: Alchemical Reduction.:5]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%205:%20Alchemical%20Reduction][Day 5: Alchemical Reduction:5]]
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]
 import os
 import streams
@@ -58,4 +58,4 @@ for reagent in countup('a', 'z'):
 
 echo minLength
 # day-5-solution-2 ends here
-# Day 5: Alchemical Reduction.:5 ends here
+# Day 5: Alchemical Reduction:5 ends here
