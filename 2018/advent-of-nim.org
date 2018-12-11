@@ -811,6 +811,8 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo instructions
   #+end_src
 
+  UGH MORE ARGUMENTS BUT NOW THERE ARE TWO.
+
   #+name: day-7-solution-2
   #+begin_src nim
 
