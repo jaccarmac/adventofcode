@@ -757,7 +757,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   Resolve conflicts in graph by doing alphabetically primary steps first.
 
   #+begin_src sh
-    nim c -r src/the_sum_of_its_parts data/7.txt
+    nim c -r src/the_sum_of_its_parts data/7.txt 5 61
   #+end_src
 
   There's a lot of text in the file, but in essence each line describes one
