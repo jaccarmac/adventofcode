@@ -715,6 +715,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     let maxDistance = if paramCount() > 1:
                         parseInt paramStr 2
                       else:
+                        echo "max distance"
                         parseInt strip readAll stdin
     var closeArea = 0
 
@@ -780,6 +781,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+name: day-7-solution-1
   #+begin_src nim
     import algorithm
+    import options
     import tables
     import sets
 
@@ -792,17 +794,18 @@ of Code, learn Nim better, and stretch my literate programming efforts.
         dependencies[dependency.dependsOn] = initSet[char]()
       dependencies[dependency.step].incl dependency.dependsOn
 
-    func nextStep(dependencies: Table): char =
+    func nextStep(dependencies: Table): Option[char] =
       let validSteps = toSeq(dependencies.pairs).filter do (pair: (char, HashSet[char])) -> bool:
         len(pair[1]) == 0
       let sortedSteps = validSteps.sorted do (x, y: (char, HashSet[char])) -> int:
         x[0].cmp y[0]
-      sortedSteps[0][0]
+      if len(sortedSteps) > 0:
+        result = some(sortedSteps[0][0])
 
     var instructions = ""
 
     while len(dependencies) > 0:
-      let step = nextStep dependencies
+      let step = get nextStep dependencies
       instructions &= step
       dependencies.del step
       for k in dependencies.keys:
@@ -813,9 +816,56 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   UGH MORE ARGUMENTS BUT NOW THERE ARE TWO.
 
+  Thankfully the way I wrote this makes it rather easy to solve the problem.
+  We just need to change the loop so the second part only happens when a worker
+  finishes a step.
+
+  This is a good opportunity to use a heap but I'm too lazy to do that for just
+  five elves.
+
   #+name: day-7-solution-2
   #+begin_src nim
+    let elfCount = if paramCount() > 1:
+                     parseInt paramStr 2
+                   else:
+                     echo "elf count"
+                     parseInt strip readAll stdin
 
+    let timeForA = if paramCount() > 2:
+                     parseInt paramStr 3
+                   else:
+                     echo "time to perform step A"
+                     parseInt strip readAll stdin
+
+    for dependency in problem:
+      if not dependencies.contains dependency.step:
+        dependencies[dependency.step] = initSet[char]()
+      if not dependencies.contains dependency.dependsOn:
+        dependencies[dependency.dependsOn] = initSet[char]()
+      dependencies[dependency.step].incl dependency.dependsOn
+
+    var time = 0
+    var elves: seq[(char, int)] = @[]
+
+    func timeFor(timeForA: int, step: char): int =
+      timeForA + (ord(step) - ord('A'))
+
+    while len(dependencies) + len(elves) > 0:
+      for i, elf in elves:
+        if elf[1] == time:
+          let step = elf[0]
+          for k in dependencies.keys:
+            dependencies[k].excl step
+          elves.del i
+      if len(elves) < elfCount:
+        let step = nextStep dependencies
+        if isSome step:
+          elves.add (get step, time + timeForA.timeFor get step)
+          dependencies.del get step
+          continue
+      inc time
+
+    echo time - 1
   #+end_src
 
   #+begin_src nim :comments noweb :noweb yes :tangle src/the_sum_of_its_parts.nim

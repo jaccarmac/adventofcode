@@ -89,6 +89,7 @@ echo toSeq(areas.values)[0]
 let maxDistance = if paramCount() > 1:
                     parseInt paramStr 2
                   else:
+                    echo "max distance"
                     parseInt strip readAll stdin
 var closeArea = 0
 
