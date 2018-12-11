@@ -759,8 +759,72 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     nim c -r src/the_sum_of_its_parts data/7.txt
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/the_sum_of_its_parts.nim
+  There's a lot of text in the file, but in essence each line describes one
+  dependency relationship.
 
+  #+name: day-7-problem-line
+  #+begin_src nim
+    type ProblemLine = tuple[step, dependsOn: char]
+  #+end_src
+
+  #+name: day-7-parse-line
+  #+begin_src nim
+    let words = line.split ' '
+    (words[7][0], words[1][0])
+  #+end_src
+
+  I slightly misunderstood the problem's alphabetizing constraint, but it opens
+  up what I think of as a relatively elegant solution. Seed a table of
+  relatioships then loop through it until it is empty.
+
+  #+name: day-7-solution-1
+  #+begin_src nim
+    import algorithm
+    import tables
+    import sets
+
+    var dependencies = initTable[char, HashSet[char]]()
+
+    for dependency in problem:
+      if not dependencies.contains dependency.step:
+        dependencies[dependency.step] = initSet[char]()
+      if not dependencies.contains dependency.dependsOn:
+        dependencies[dependency.dependsOn] = initSet[char]()
+      dependencies[dependency.step].incl dependency.dependsOn
+
+    func nextStep(dependencies: Table): char =
+      let validSteps = toSeq(dependencies.pairs).filter do (pair: (char, HashSet[char])) -> bool:
+        len(pair[1]) == 0
+      let sortedSteps = validSteps.sorted do (x, y: (char, HashSet[char])) -> int:
+        x[0].cmp y[0]
+      sortedSteps[0][0]
+
+    var instructions = ""
+
+    while len(dependencies) > 0:
+      let step = nextStep dependencies
+      instructions &= step
+      dependencies.del step
+      for k in dependencies.keys:
+        dependencies[k].excl step
+
+    echo instructions
+  #+end_src
+
+  #+name: day-7-solution-2
+  #+begin_src nim
+
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/the_sum_of_its_parts.nim
+    <<day-7-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-7-parse-line>>
+
+    <<day-7-solution-1>>
+
+    <<day-7-solution-2>>
   #+end_src
 
   Test data should result in ~CABDFE~.
