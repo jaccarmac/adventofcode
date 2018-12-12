@@ -908,13 +908,36 @@ of Code, learn Nim better, and stretch my literate programming efforts.
       yield parseInt num
   #+end_src
 
+  Building the tree is pretty simple stuff. I remember a fully recursive way to
+  do it from school but based on Nim's iterators I think it's simpler just to
+  do it partially imperatively.
+
+  #+name: day-8-build-tree
+  #+begin_src nim
+    type
+      Header = tuple[children, metadata: int]
+      Node = ref object
+        header: Header
+        children: seq[Node]
+        metadata: seq[int]
+
+    var treeSource = problemInts
+
+    proc buildTree(source: iterator(): int): Node =
+      new result
+      result.header.children = treeSource()
+      result.header.metadata = treeSource()
+      for _ in 1.countup result.header.children:
+        result.children.add buildTree source
+      for _ in 1.countup result.header.metadata:
+        result.metadata.add treeSource()
+
+    var root = buildTree treeSource
+  #+end_src
+
   #+name: day-8-solution-1
   #+begin_src nim
-    var treeSource = problemInts
-    while true:
-      let value = treeSource()
-      if finished treeSource: break
-      echo value
+
   #+end_src
 
   #+name: day-8-solution-2
@@ -926,6 +949,8 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     <<read-problem-stream>>
 
     <<problem-ints>>
+
+    <<day-8-build-tree>>
 
     <<day-8-solution-1>>
 

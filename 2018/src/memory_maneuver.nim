@@ -1,4 +1,4 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%208:%20Memory%20Maneuver][Day 8: Memory Maneuver:5]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%208:%20Memory%20Maneuver][Day 8: Memory Maneuver:6]]
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]
 import os
 import streams
@@ -31,15 +31,33 @@ iterator problemInts(): int {.closure.} =
   yield parseInt num
 # problem-ints ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-solution-1][day-8-solution-1]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-build-tree][day-8-build-tree]]
+type
+  Header = tuple[children, metadata: int]
+  Node = ref object
+    header: Header
+    children: seq[Node]
+    metadata: seq[int]
+
 var treeSource = problemInts
-while true:
-  let value = treeSource()
-  if finished treeSource: break
-  echo value
+
+proc buildTree(source: iterator(): int): Node =
+  new result
+  result.header.children = treeSource()
+  result.header.metadata = treeSource()
+  for _ in 1.countup result.header.children:
+    result.children.add buildTree source
+  for _ in 1.countup result.header.metadata:
+    result.metadata.add treeSource()
+
+var root = buildTree treeSource
+# day-8-build-tree ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-solution-1][day-8-solution-1]]
+
 # day-8-solution-1 ends here
 
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-solution-2][day-8-solution-2]]
 
 # day-8-solution-2 ends here
-# Day 8: Memory Maneuver:5 ends here
+# Day 8: Memory Maneuver:6 ends here
