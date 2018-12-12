@@ -888,5 +888,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   #+begin_src nim :comments noweb :noweb yes :tangle src/memory_maneuver.nim
-  
+
   #+end_src
+
+  Test data should result in ~138~.
