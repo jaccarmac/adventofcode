@@ -887,8 +887,49 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     nim c -r src/memory_maneuver data/8.txt
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/memory_maneuver.nim
+  We're reusing the problem stream from day 5, but creating an iterator to
+  consume the integers on top of it.
 
+  #+name: problem-ints
+  #+begin_src nim
+    import strutils
+
+    iterator problemInts(): int {.closure.} =
+      let inStream = problem()
+      var next = readChar inStream
+      var num = ""
+      while next != '\n':
+        if next == ' ':
+          yield parseInt num
+          num = ""
+        else:
+          num &= next
+        next = readChar inStream
+      yield parseInt num
+  #+end_src
+
+  #+name: day-8-solution-1
+  #+begin_src nim
+    var treeSource = problemInts
+    while true:
+      let value = treeSource()
+      if finished treeSource: break
+      echo value
+  #+end_src
+
+  #+name: day-8-solution-2
+  #+begin_src nim
+
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/memory_maneuver.nim
+    <<read-problem-stream>>
+
+    <<problem-ints>>
+
+    <<day-8-solution-1>>
+
+    <<day-8-solution-2>>
   #+end_src
 
   Test data should result in ~138~.
