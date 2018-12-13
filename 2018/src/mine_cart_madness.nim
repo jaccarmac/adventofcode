@@ -1,4 +1,4 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%2013:%20Mine%20Cart%20Madness][Day 13: Mine Cart Madness:6]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%2013:%20Mine%20Cart%20Madness][Day 13: Mine Cart Madness:7]]
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-problem-line][day-13-problem-line]]
 import tables
 
@@ -86,7 +86,7 @@ proc sort(carts: var seq[CartSimulation]) =
     if result == 0:
       result = x.loc.col.cmp y.loc.col
 
-proc nextLocation(cart: CartSimulation): Coord =
+func nextLocation(cart: CartSimulation): Coord =
   case cart.dir
   of N: (cart.loc.col, cart.loc.row - 1)
   of E: (cart.loc.col + 1, cart.loc.row)
@@ -171,4 +171,27 @@ proc solution1() =
 
 solution1()
 # day-13-solution-1 ends here
-# Day 13: Mine Cart Madness:6 ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-solution-2][day-13-solution-2]]
+import sets
+
+proc solution2() =
+  var sim: TrackSimulation = (track, @[])
+  for cart in startingCarts:
+    sim.carts.add (cart[0], cart[1], Right)
+  while len(sim.carts) > 1:
+    var crashes = initSet[Coord]()
+    sort sim.carts
+    for i in 0 ..< sim.carts.len:
+      sim.track.move sim.carts[i]
+      let crash = sim.carts.filter do (c: CartSimulation) -> bool:
+        c.loc == sim.carts[i].loc
+      if len(crash) > 1:
+        crashes.incl crash[0].loc
+    sim.carts = sim.carts.filter do (c: CartSimulation) -> bool:
+          not crashes.contains c.loc
+  echo sim.carts[0].loc
+
+solution2()
+# day-13-solution-2 ends here
+# Day 13: Mine Cart Madness:7 ends here

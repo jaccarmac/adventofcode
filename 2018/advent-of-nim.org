@@ -1161,7 +1161,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
         if result == 0:
           result = x.loc.col.cmp y.loc.col
 
-    proc nextLocation(cart: CartSimulation): Coord =
+    func nextLocation(cart: CartSimulation): Coord =
       case cart.dir
       of N: (cart.loc.col, cart.loc.row - 1)
       of E: (cart.loc.col + 1, cart.loc.row)
@@ -1248,6 +1248,34 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     solution1()
   #+end_src
 
+  What a merciful problem. We just have to treat crashes differently. Woo.
+
+  #+name: day-13-solution-2
+  #+begin_src nim
+    import sets
+
+    proc solution2() =
+      var sim: TrackSimulation = (track, @[])
+      for cart in startingCarts:
+        sim.carts.add (cart[0], cart[1], Right)
+      while len(sim.carts) > 1:
+        var crashes = initSet[Coord]()
+        sort sim.carts
+        for i in 0 ..< sim.carts.len:
+          sim.track.move sim.carts[i]
+          let crash = sim.carts.filter do (c: CartSimulation) -> bool:
+            c.loc == sim.carts[i].loc
+          if len(crash) > 1:
+            crashes.incl crash[0].loc
+        sim.carts = sim.carts.filter do (c: CartSimulation) -> bool:
+              not crashes.contains c.loc
+      echo sim.carts[0].loc
+
+    solution2()
+  #+end_src
+
+  New test file, it should result in ~6,4~.
+
   #+begin_src nim :comments noweb :noweb yes :tangle src/mine_cart_madness.nim
     <<day-13-problem-line>>
 
@@ -1257,6 +1285,8 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     <<day-13-simulation-funcs>>
 
     <<day-13-solution-1>>
+
+    <<day-13-solution-2>>
   #+end_src
 
   Test data should result in ~7,3~.
