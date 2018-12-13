@@ -1055,7 +1055,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Test data is on the page. The one in the test file should give ~32~.
 
-* COMMENT Day 13: Mine Cart Madness
+* Day 13: Mine Cart Madness
 
   #+begin_src sh
     nim c -r src/mine_cart_madness data/13.txt
@@ -1165,7 +1165,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
         if result == 0:
           result = x.loc.col.cmp y.loc.col
 
-    func nextLocation(cart: CartSimulation): Coord =
+    proc nextLocation(cart: CartSimulation): Coord =
       case cart.dir
       of N: (cart.loc.col, cart.loc.row - 1)
       of NE: (cart.loc.col + 1, cart.loc.row - 1)
@@ -1270,14 +1270,16 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     var solution1Sim: TrackSimulation = (track, @[])
     for cart in startingCarts:
       solution1Sim.carts.add (cart[0], cart[1], Right)
-    sort solution1Sim.carts
-    for cart in solution1Sim.carts:
-      solution1Sim.track.move cart
-      let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
-        c.loc == cart.loc
-      if len(crash) > 1:
-        echo c.loc
-        break
+    while true:
+      sort solution1Sim.carts
+      echo solution1Sim.carts
+      for i in 0 ..< solution1Sim.carts.len:
+        solution1Sim.track.move solution1Sim.carts[i]
+        let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
+          c.loc == solution1Sim.carts[i].loc
+        if len(crash) > 1:
+          echo crash[0].loc
+          break
   #+end_src
 
   #+begin_src nim :comments noweb :noweb yes :tangle src/mine_cart_madness.nim

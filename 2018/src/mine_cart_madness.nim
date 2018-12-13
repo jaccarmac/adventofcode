@@ -1,0 +1,208 @@
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%2013:%20Mine%20Cart%20Madness][Day 13: Mine Cart Madness:6]]
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-problem-line][day-13-problem-line]]
+import tables
+
+type
+  TrackSegment = enum
+    Verti
+    Horiz
+    DiagR
+    DiagL
+    Inter
+  CartDirection = enum
+    N
+    NE
+    E
+    SE
+    S
+    SW
+    W
+    NW
+  Coord = tuple[col, row: int]
+  Track = Table[Coord, TrackSegment]
+  TurnDirection = enum
+    Left
+    Right
+    Straight
+  CartSimulation = tuple
+    loc: Coord
+    dir: CartDirection
+    lastTurn: TurnDirection
+  TrackSimulation = tuple
+    track: Track
+    carts: seq[CartSimulation]
+  ProblemLine = bool
+
+var startingCarts: seq[(Coord, CartDirection)]
+var track = initTable[Coord, TrackSegment]()
+
+var row = 0
+# day-13-problem-line ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]
+import os
+import sequtils
+import strutils
+
+let problem = (
+  if paramCount() > 0: readFile paramStr 1 else: readAll stdin
+)[0..^2].splitLines.map do (line: string) -> ProblemLine:
+# read-problem-lines ends here
+  # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-parse-line][day-13-parse-line]]
+  var col = 0
+  
+  for c in line:
+    case c
+    of '|':
+      track[(col, row)] = Verti
+    of '-':
+      track[(col, row)] = Horiz
+    of '/':
+      track[(col, row)] = DiagR
+    of '\\':
+      track[(col, row)] = DiagL
+    of '+':
+      track[(col, row)] = Inter
+    of '^':
+      track[(col, row)] = Verti
+      startingCarts.add ((col, row), N)
+    of 'v':
+      track[(col, row)] = Verti
+      startingCarts.add ((col, row), S)
+    of '>':
+      track[(col, row)] = Horiz
+      startingCarts.add ((col, row), E)
+    of '<':
+      track[(col, row)] = Horiz
+      startingCarts.add ((col, row), W)
+    else: discard
+    inc col
+  
+  inc row
+  # day-13-parse-line ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-simulation-funcs][day-13-simulation-funcs]]
+import algorithm
+
+proc sort(carts: var seq[CartSimulation]) =
+  carts.sort do (x, y: CartSimulation) -> int:
+    result = x.loc.row.cmp y.loc.row
+    if result == 0:
+      result = x.loc.col.cmp y.loc.col
+
+proc nextLocation(cart: CartSimulation): Coord =
+  case cart.dir
+  of N: (cart.loc.col, cart.loc.row - 1)
+  of NE: (cart.loc.col + 1, cart.loc.row - 1)
+  of E: (cart.loc.col + 1, cart.loc.row)
+  of SE: (cart.loc.col + 1, cart.loc.row + 1)
+  of S: (cart.loc.col, cart.loc.row + 1)
+  of SW: (cart.loc.col - 1, cart.loc.row + 1)
+  of W: (cart.loc.col - 1, cart.loc.row)
+  of NW: (cart.loc.col - 1, cart.loc.row - 1)
+
+proc turn(cart: var CartSimulation): TurnDirection =
+  case cart.lastTurn
+  of Left:
+    result = Straight
+  of Straight:
+    result = Right
+  of Right:
+    result = Left
+  cart.lastTurn = result
+
+proc move(track: Track, cart: var CartSimulation) =
+  let endCoord = nextLocation cart
+  let newDirection = case cart.dir
+                     of N:
+                       case track[endCoord]
+                       of Verti: N
+                       of DiagR: NE
+                       of DiagL: NW
+                       of Inter:
+                         case turn cart
+                         of Left: W
+                         of Straight: N
+                         of Right: E
+                       else: raise newException(AssertionError, "bad turn")
+                     of NE:
+                       case track[endCoord]
+                       of Horiz: E
+                       of Verti: N
+                       of DiagR: NE
+                       of DiagL: NW
+                       else: raise newException(AssertionError, "bad turn")
+                     of E:
+                       case track[endCoord]
+                       of Horiz: E
+                       of DiagR: NE
+                       of DiagL: SE
+                       of Inter:
+                         case turn cart
+                         of Left: N
+                         of Straight: E
+                         of Right: S
+                       else: raise newException(AssertionError, "bad turn")
+                     of SE:
+                       case track[endCoord]
+                       of Horiz: E
+                       of Verti: S
+                       of DiagR: SW
+                       of DiagL: SE
+                       else: raise newException(AssertionError, "unreachable")
+                     of S:
+                       case track[endCoord]
+                       of Verti: S
+                       of DiagR: SW
+                       of DiagL: SE
+                       of Inter:
+                         case turn cart
+                         of Left: E
+                         of Straight: S
+                         of Right: W
+                       else: raise newException(AssertionError, "unreachable")
+                     of SW:
+                       case track[endCoord]
+                       of Horiz: W
+                       of Verti: S
+                       of DiagR: SW
+                       of DiagL: SE
+                       else: raise newException(AssertionError, "unreachable")
+                     of W:
+                       case track[endCoord]
+                       of Horiz: W
+                       of DiagR: SW
+                       of DiagL: NW
+                       of Inter:
+                         case turn cart
+                         of Left: S
+                         of Straight: W
+                         of Right: N
+                       else: raise newException(AssertionError, "bad turn")
+                     of NW:
+                       case track[endCoord]
+                       of Horiz: W
+                       of Verti: N
+                       of DiagR: NE
+                       of DiagL: NW
+                       else: raise newException(AssertionError, "bad turn")
+  cart.loc = endCoord
+  cart.dir = newDirection
+# day-13-simulation-funcs ends here
+
+# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-solution-1][day-13-solution-1]]
+var solution1Sim: TrackSimulation = (track, @[])
+for cart in startingCarts:
+  solution1Sim.carts.add (cart[0], cart[1], Right)
+while true:
+  sort solution1Sim.carts
+  echo solution1Sim.carts
+  for i in 0 ..< solution1Sim.carts.len:
+    solution1Sim.track.move solution1Sim.carts[i]
+    let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
+      c.loc == solution1Sim.carts[i].loc
+    if len(crash) > 1:
+      echo crash[0].loc
+      break
+# day-13-solution-1 ends here
+# Day 13: Mine Cart Madness:6 ends here
