@@ -1061,6 +1061,92 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     nim c -r src/mine_cart_madness data/13.txt
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/mine_cart_madness.nim
+  Another simulation problem. I'm skipping from day 9 to here, and think this
+  problem seems simple. Maybe I'm getting a grasp on the type of the problem,
+  maybe it's coincidental, maybe the second part will knock my socks off. In
+  any case we can neatly separate the track and cart parts of the problem. I'll
+  parse each line as a row just because it's easier to deal with. Could also
+  stream in each character. Track segments go in a sparse matrix, carts go in a
+  sequence that we'll sort.
 
+  We need a special place to store starting cart locations, so the line parsing
+  will be effectful anyway. This means the ~ProblemLine~ type itself is empty.
+
+  #+name: day-13-problem-line
+  #+begin_src nim
+    import tables
+
+    type
+      TrackSegment = enum
+        Verti
+        Horiz
+        DiagR
+        DiagL
+        Inter
+      CartDirection = enum
+        N
+        NE
+        E
+        SE
+        S
+        SW
+        W
+        NW
+      ProblemLine = bool
+
+    var startingCarts: seq[((int, int), CartDirection)]
+    var track = initTable[(int, int), TrackSegment]()
+
+    var row = 0
   #+end_src
+
+  #+name: day-13-parse-line
+  #+begin_src nim
+    var col = 0
+
+    for c in line:
+      case c
+      of '|':
+        track[(col, row)] = Verti
+      of '-':
+        track[(col, row)] = Horiz
+      of '/':
+        track[(col, row)] = DiagR
+      of '\\':
+        track[(col, row)] = DiagL
+      of '+':
+        track[(col, row)] = Inter
+      of '^':
+        track[(col, row)] = Verti
+        startingCarts.add ((col, row), N)
+      of 'v':
+        track[(col, row)] = Verti
+        startingCarts.add ((col, row), S)
+      of '>':
+        track[(col, row)] = Horiz
+        startingCarts.add ((col, row), E)
+      of '<':
+        track[(col, row)] = Horiz
+        startingCarts.add ((col, row), W)
+      else: discard
+      inc col
+
+    inc row
+  #+end_src
+
+  #+name: day-13-solution-1
+  #+begin_src nim
+    echo startingCarts
+    echo track
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/mine_cart_madness.nim
+    <<day-13-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-13-parse-line>>
+
+    <<day-13-solution-1>>
+  #+end_src
+
+  Test data should result in ~7,3~.
