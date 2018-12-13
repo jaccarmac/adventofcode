@@ -1055,7 +1055,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Test data is on the page. The one in the test file should give ~32~.
 
-* Day 13: Mine Cart Madness
+* COMMENT Day 13: Mine Cart Madness
 
   #+begin_src sh
     nim c -r src/mine_cart_madness data/13.txt
@@ -1092,10 +1092,23 @@ of Code, learn Nim better, and stretch my literate programming efforts.
         SW
         W
         NW
+      Coord = tuple[col, row: int]
+      Track = Table[Coord, TrackSegment]
+      TurnDirection = enum
+        Left
+        Right
+        Straight
+      CartSimulation = tuple
+        loc: Coord
+        dir: CartDirection
+        lastTurn: TurnDirection
+      TrackSimulation = tuple
+        track: Track
+        carts: seq[CartSimulation]
       ProblemLine = bool
 
-    var startingCarts: seq[((int, int), CartDirection)]
-    var track = initTable[(int, int), TrackSegment]()
+    var startingCarts: seq[(Coord, CartDirection)]
+    var track = initTable[Coord, TrackSegment]()
 
     var row = 0
   #+end_src
@@ -1134,10 +1147,137 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     inc row
   #+end_src
 
+  OK, that's the data structure we want. Now the functions necessary to run the
+  simulation. According to the problem specification that means another format
+  for storing carts with information about their last turn. Also a way to sort
+  that list of carts by row then column. Also a way to choose which direction a
+  cart goes. Also a way to determine if that resulted in a crash. All right,
+  let's write them. The types have been added above so we can use them in
+  parsing the track.
+
+  #+name: day-13-simulation-funcs
+  #+begin_src nim
+    import algorithm
+
+    proc sort(carts: var seq[CartSimulation]) =
+      carts.sort do (x, y: CartSimulation) -> int:
+        result = x.loc.row.cmp y.loc.row
+        if result == 0:
+          result = x.loc.col.cmp y.loc.col
+
+    func nextLocation(cart: CartSimulation): Coord =
+      case cart.dir
+      of N: (cart.loc.col, cart.loc.row - 1)
+      of NE: (cart.loc.col + 1, cart.loc.row - 1)
+      of E: (cart.loc.col + 1, cart.loc.row)
+      of SE: (cart.loc.col + 1, cart.loc.row + 1)
+      of S: (cart.loc.col, cart.loc.row + 1)
+      of SW: (cart.loc.col - 1, cart.loc.row + 1)
+      of W: (cart.loc.col - 1, cart.loc.row)
+      of NW: (cart.loc.col - 1, cart.loc.row - 1)
+
+    proc turn(cart: var CartSimulation): TurnDirection =
+      case cart.lastTurn
+      of Left:
+        result = Straight
+      of Straight:
+        result = Right
+      of Right:
+        result = Left
+      cart.lastTurn = result
+
+    proc move(track: Track, cart: var CartSimulation) =
+      let endCoord = nextLocation cart
+      let newDirection = case cart.dir
+                         of N:
+                           case track[endCoord]
+                           of Verti: N
+                           of DiagR: NE
+                           of DiagL: NW
+                           of Inter:
+                             case turn cart
+                             of Left: W
+                             of Straight: N
+                             of Right: E
+                           else: raise newException(AssertionError, "bad turn")
+                         of NE:
+                           case track[endCoord]
+                           of Horiz: E
+                           of Verti: N
+                           of DiagR: NE
+                           of DiagL: NW
+                           else: raise newException(AssertionError, "bad turn")
+                         of E:
+                           case track[endCoord]
+                           of Horiz: E
+                           of DiagR: NE
+                           of DiagL: SE
+                           of Inter:
+                             case turn cart
+                             of Left: N
+                             of Straight: E
+                             of Right: S
+                           else: raise newException(AssertionError, "bad turn")
+                         of SE:
+                           case track[endCoord]
+                           of Horiz: E
+                           of Verti: S
+                           of DiagR: SW
+                           of DiagL: SE
+                           else: raise newException(AssertionError, "unreachable")
+                         of S:
+                           case track[endCoord]
+                           of Verti: S
+                           of DiagR: SW
+                           of DiagL: SE
+                           of Inter:
+                             case turn cart
+                             of Left: E
+                             of Straight: S
+                             of Right: W
+                           else: raise newException(AssertionError, "unreachable")
+                         of SW:
+                           case track[endCoord]
+                           of Horiz: W
+                           of Verti: S
+                           of DiagR: SW
+                           of DiagL: SE
+                           else: raise newException(AssertionError, "unreachable")
+                         of W:
+                           case track[endCoord]
+                           of Horiz: W
+                           of DiagR: SW
+                           of DiagL: NW
+                           of Inter:
+                             case turn cart
+                             of Left: S
+                             of Straight: W
+                             of Right: N
+                           else: raise newException(AssertionError, "bad turn")
+                         of NW:
+                           case track[endCoord]
+                           of Horiz: W
+                           of Verti: N
+                           of DiagR: NE
+                           of DiagL: NW
+                           else: raise newException(AssertionError, "bad turn")
+      cart.loc = endCoord
+      cart.dir = newDirection
+  #+end_src
+
   #+name: day-13-solution-1
   #+begin_src nim
-    echo startingCarts
-    echo track
+    var solution1Sim: TrackSimulation = (track, @[])
+    for cart in startingCarts:
+      solution1Sim.carts.add (cart[0], cart[1], Right)
+    sort solution1Sim.carts
+    for cart in solution1Sim.carts:
+      solution1Sim.track.move cart
+      let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
+        c.loc == cart.loc
+      if len(crash) > 1:
+        echo c.loc
+        break
   #+end_src
 
   #+begin_src nim :comments noweb :noweb yes :tangle src/mine_cart_madness.nim
@@ -1145,6 +1285,8 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
     <<read-problem-lines>>
       <<day-13-parse-line>>
+
+    <<day-13-simulation-funcs>>
 
     <<day-13-solution-1>>
   #+end_src
