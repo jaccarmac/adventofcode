@@ -1251,6 +1251,8 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   What a merciful problem. We just have to treat crashes differently. Woo.
 
+  That paragraph aged HORRIBLY.
+
   #+name: day-13-solution-2
   #+begin_src nim
     import sets
