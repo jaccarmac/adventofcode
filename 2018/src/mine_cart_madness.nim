@@ -24,6 +24,7 @@ type
     loc: Coord
     dir: CartDirection
     lastTurn: TurnDirection
+    alive: bool
   TrackSimulation = tuple
     track: Track
     carts: seq[CartSimulation]
@@ -158,7 +159,7 @@ proc move(track: Track, cart: var CartSimulation) =
 proc solution1() =
   var solution1Sim: TrackSimulation = (track, @[])
   for cart in startingCarts:
-    solution1Sim.carts.add (cart[0], cart[1], Right)
+    solution1Sim.carts.add (cart[0], cart[1], Right, true)
   while true:
     sort solution1Sim.carts
     for i in 0 ..< solution1Sim.carts.len:
@@ -178,19 +179,25 @@ import sets
 proc solution2() =
   var sim: TrackSimulation = (track, @[])
   for cart in startingCarts:
-    sim.carts.add (cart[0], cart[1], Right)
-  while len(sim.carts) > 1:
-    var crashes = initSet[Coord]()
+    sim.carts.add (cart[0], cart[1], Right, true)
+  while true:
     sort sim.carts
     for i in 0 ..< sim.carts.len:
-      sim.track.move sim.carts[i]
-      let crash = sim.carts.filter do (c: CartSimulation) -> bool:
-        c.loc == sim.carts[i].loc
-      if len(crash) > 1:
-        crashes.incl crash[0].loc
-    sim.carts = sim.carts.filter do (c: CartSimulation) -> bool:
-          not crashes.contains c.loc
-  echo sim.carts[0].loc
+      if sim.carts[i].alive:
+        sim.track.move sim.carts[i]
+        let crash = sim.carts.filter do (c: CartSimulation) -> bool:
+          c.alive and c.loc == sim.carts[i].loc
+        if len(crash) > 1:
+          var removed = 0
+          for j in 0 ..< sim.carts.len:
+            if sim.carts[j].loc == crash[0].loc and sim.carts[j].alive and removed < 2:
+              inc removed
+              sim.carts[j].alive = false
+    var alive = sim.carts.filter do (c: CartSimulation) -> bool:
+      c.alive
+    if len(alive) == 1:
+      echo alive[0].loc
+      return
 
 solution2()
 # day-13-solution-2 ends here
