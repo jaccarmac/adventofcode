@@ -11,13 +11,9 @@ type
     Inter
   CartDirection = enum
     N
-    NE
     E
-    SE
     S
-    SW
     W
-    NW
   Coord = tuple[col, row: int]
   Track = Table[Coord, TrackSegment]
   TurnDirection = enum
@@ -93,13 +89,9 @@ proc sort(carts: var seq[CartSimulation]) =
 proc nextLocation(cart: CartSimulation): Coord =
   case cart.dir
   of N: (cart.loc.col, cart.loc.row - 1)
-  of NE: (cart.loc.col + 1, cart.loc.row - 1)
   of E: (cart.loc.col + 1, cart.loc.row)
-  of SE: (cart.loc.col + 1, cart.loc.row + 1)
   of S: (cart.loc.col, cart.loc.row + 1)
-  of SW: (cart.loc.col - 1, cart.loc.row + 1)
   of W: (cart.loc.col - 1, cart.loc.row)
-  of NW: (cart.loc.col - 1, cart.loc.row - 1)
 
 proc turn(cart: var CartSimulation): TurnDirection =
   case cart.lastTurn
@@ -117,92 +109,66 @@ proc move(track: Track, cart: var CartSimulation) =
                      of N:
                        case track[endCoord]
                        of Verti: N
-                       of DiagR: NE
-                       of DiagL: NW
+                       of DiagR: E
+                       of DiagL: W
                        of Inter:
                          case turn cart
                          of Left: W
                          of Straight: N
                          of Right: E
                        else: raise newException(AssertionError, "bad turn")
-                     of NE:
-                       case track[endCoord]
-                       of Horiz: E
-                       of Verti: N
-                       of DiagR: NE
-                       of DiagL: NW
-                       else: raise newException(AssertionError, "bad turn")
                      of E:
                        case track[endCoord]
                        of Horiz: E
-                       of DiagR: NE
-                       of DiagL: SE
+                       of DiagR: N
+                       of DiagL: S
                        of Inter:
                          case turn cart
                          of Left: N
                          of Straight: E
                          of Right: S
                        else: raise newException(AssertionError, "bad turn")
-                     of SE:
-                       case track[endCoord]
-                       of Horiz: E
-                       of Verti: S
-                       of DiagR: SW
-                       of DiagL: SE
-                       else: raise newException(AssertionError, "unreachable")
                      of S:
                        case track[endCoord]
                        of Verti: S
-                       of DiagR: SW
-                       of DiagL: SE
+                       of DiagR: W
+                       of DiagL: E
                        of Inter:
                          case turn cart
                          of Left: E
                          of Straight: S
                          of Right: W
                        else: raise newException(AssertionError, "unreachable")
-                     of SW:
-                       case track[endCoord]
-                       of Horiz: W
-                       of Verti: S
-                       of DiagR: SW
-                       of DiagL: SE
-                       else: raise newException(AssertionError, "unreachable")
                      of W:
                        case track[endCoord]
                        of Horiz: W
-                       of DiagR: SW
-                       of DiagL: NW
+                       of DiagR: S
+                       of DiagL: N
                        of Inter:
                          case turn cart
                          of Left: S
                          of Straight: W
                          of Right: N
                        else: raise newException(AssertionError, "bad turn")
-                     of NW:
-                       case track[endCoord]
-                       of Horiz: W
-                       of Verti: N
-                       of DiagR: NE
-                       of DiagL: NW
-                       else: raise newException(AssertionError, "bad turn")
   cart.loc = endCoord
   cart.dir = newDirection
 # day-13-simulation-funcs ends here
 
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-solution-1][day-13-solution-1]]
-var solution1Sim: TrackSimulation = (track, @[])
-for cart in startingCarts:
-  solution1Sim.carts.add (cart[0], cart[1], Right)
-while true:
-  sort solution1Sim.carts
-  echo solution1Sim.carts
-  for i in 0 ..< solution1Sim.carts.len:
-    solution1Sim.track.move solution1Sim.carts[i]
-    let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
-      c.loc == solution1Sim.carts[i].loc
-    if len(crash) > 1:
-      echo crash[0].loc
-      break
+proc solution1() =
+  var solution1Sim: TrackSimulation = (track, @[])
+  for cart in startingCarts:
+    solution1Sim.carts.add (cart[0], cart[1], Right)
+  while true:
+    sort solution1Sim.carts
+    for i in 0 ..< solution1Sim.carts.len:
+      solution1Sim.track.move solution1Sim.carts[i]
+      let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
+        c.loc == solution1Sim.carts[i].loc
+      if len(crash) > 1:
+        echo crash[0].loc
+        return
+
+solution1()
 # day-13-solution-1 ends here
 # Day 13: Mine Cart Madness:6 ends here
