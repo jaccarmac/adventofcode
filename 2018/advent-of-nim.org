@@ -1054,3 +1054,13 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   Test data is on the page. The one in the test file should give ~32~.
+
+* Day 13: Mine Cart Madness
+
+  #+begin_src sh
+    nim c -r src/mine_cart_madness data/13.txt
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/mine_cart_madness.nim
+
+  #+end_src
