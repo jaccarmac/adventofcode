@@ -973,3 +973,84 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   Test data should result in ~138~.
+
+* Day 9: Marble Mania
+
+  #+begin_src sh
+    nim c -r src/marble_mania data/9.txt
+  #+end_src
+
+  We just need to pull out two values from the input, nothing fancy.
+
+  #+name: day-9-problem-line
+  #+begin_src nim
+    type ProblemLine = tuple[players, highMarble: int]
+  #+end_src
+
+  #+name: day-9-parse-line
+  #+begin_src nim
+    let tokens = line.split ' '
+    (parseInt tokens[0], parseInt tokens[6])
+  #+end_src
+
+  #+name: day-9-solution-1
+  #+begin_src nim
+    let players = problem[0].players
+    let highMarble = problem[0].highMarble
+
+    type Marble = ref object
+      value: int
+      clockwise: Marble
+      counterClockwise: Marble
+
+    func playGame(players, highMarble: int): seq[int] =
+      for _ in 1.countup players:
+        result.add 0
+      var currentPlayer = 0
+      var currentMarble = new Marble
+      currentMarble.value = 0
+      currentMarble.clockwise = currentMarble
+      currentMarble.counterClockwise = currentMarble
+      for marble in 1.countup highMarble:
+        if marble mod 23 == 0:
+          result[currentPlayer] += marble
+          for _ in 1.countup 7:
+            currentMarble = currentMarble.counterClockwise
+          result[currentPlayer] += currentMarble.value
+          currentMarble.counterClockwise.clockwise = currentMarble.clockwise
+          currentMarble.clockwise.counterClockwise = currentMarble.counterClockwise
+          currentMarble = currentMarble.clockwise
+        else:
+          var newMarble = new Marble
+          newMarble.value = marble
+          currentMarble = currentMarble.clockwise
+          currentMarble.clockwise.counterClockwise = newMarble
+          newMarble.clockwise = currentMarble.clockwise
+          currentMarble.clockwise = newMarble
+          newMarble.counterClockwise = currentMarble
+          currentMarble = currentMarble.clockwise
+        inc currentPlayer
+        if currentPlayer == len result: currentPlayer = 0
+
+    echo max playGame(players, highMarble)
+  #+end_src
+
+  I was spoiled into using a doubly linked list of course.
+
+  #+name: day-9-solution-2
+  #+begin_src nim
+    echo max playGame(players, highMarble * 100)
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/marble_mania.nim
+    <<day-9-problem-line>>
+
+    <<read-problem-lines>>
+      <<day-9-parse-line>>
+
+    <<day-9-solution-1>>
+
+    <<day-9-solution-2>>
+  #+end_src
+
+  Test data is on the page. The one in the test file should give ~32~.
