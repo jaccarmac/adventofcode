@@ -54,10 +54,25 @@ var root = buildTree treeSource
 # day-8-build-tree ends here
 
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-solution-1][day-8-solution-1]]
+import math
+import sequtils
 
+func metadataSum(tree: Node): int =
+  sum(tree.metadata) + sum(tree.children.map metadataSum)
+
+echo metadataSum root
 # day-8-solution-1 ends here
 
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-solution-2][day-8-solution-2]]
+func nodeValue(tree: Node): int =
+  if len(tree.children) == 0:
+    result = sum tree.metadata
+  else:
+    for nodeRef in tree.metadata:
+      let nodeIdx = nodeRef - 1
+      if nodeIdx < len(tree.children):
+        result += nodeValue tree.children[nodeIdx]
 
+echo nodeValue root
 # day-8-solution-2 ends here
 # Day 8: Memory Maneuver:6 ends here

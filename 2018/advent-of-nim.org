@@ -937,12 +937,27 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   #+name: day-8-solution-1
   #+begin_src nim
+    import math
+    import sequtils
 
+    func metadataSum(tree: Node): int =
+      sum(tree.metadata) + sum(tree.children.map metadataSum)
+
+    echo metadataSum root
   #+end_src
 
   #+name: day-8-solution-2
   #+begin_src nim
+    func nodeValue(tree: Node): int =
+      if len(tree.children) == 0:
+        result = sum tree.metadata
+      else:
+        for nodeRef in tree.metadata:
+          let nodeIdx = nodeRef - 1
+          if nodeIdx < len(tree.children):
+            result += nodeValue tree.children[nodeIdx]
 
+    echo nodeValue root
   #+end_src
 
   #+begin_src nim :comments noweb :noweb yes :tangle src/memory_maneuver.nim
