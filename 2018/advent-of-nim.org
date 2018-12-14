@@ -1299,3 +1299,83 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   Test data should result in ~7,3~.
+
+* Day 14: Chocolate Charts
+
+  #+begin_src sh
+    nim c -r src/chocolate_charts 077201
+  #+end_src
+
+  This is a weird one. Pretty sure we don't need to worry about a linked list
+  as the list of scores is append-only. Reading in the problem is slightly
+  different as it's just a number. I've cheated by reading about the second
+  problem a little, so I know the leading 0 in my problem is meaningful the
+  second time around.
+
+  #+name: day-14-problem
+  #+begin_src nim
+    import os
+
+    let problem = paramStr 1
+  #+end_src
+
+  #+name: day-14-solution-1
+  #+begin_src nim
+    import sequtils
+    import strutils
+
+    proc combine(recipes: var seq[int], elf1Current, elf2Current: int) =
+      let newRecipes = recipes[elf1Current] + recipes[elf2Current]
+      let digits = ($newRecipes).map(func (c: char): string = $c).map parseInt
+      for digit in digits:
+        recipes.add digit
+
+
+    func solution1(recipesToTry: int): string =
+      var recipes = @[3, 7]
+      var elf1Current = 0
+      var elf2Current = 1
+      while recipesToTry + 10 >= len recipes:
+        recipes.combine elf1Current, elf2Current
+        elf1Current += recipes[elf1Current] + 1
+        elf2Current += recipes[elf2Current] + 1
+        elf1Current = elf1Current mod len recipes
+        elf2Current = elf2Current mod len recipes
+      recipes[recipesToTry..recipesToTry+9].map(func (s: int): string = $s).join ""
+
+    echo solution1 parseInt problem
+  #+end_src
+
+  The maximum added score is ~9 + 9~ or ~18~, so we only need to check back one
+  step in the score list. Ugly math but it works!
+
+  #+name: day-14-solution-2
+  #+begin_src nim
+    func solution2(scoresToSearch: seq[int]): int =
+      var recipes = @[3, 7]
+      var elf1Current = 0
+      var elf2Current = 1
+      while true:
+        recipes.combine elf1Current, elf2Current
+        elf1Current += recipes[elf1Current] + 1
+        elf2Current += recipes[elf2Current] + 1
+        elf1Current = elf1Current mod len recipes
+        elf2Current = elf2Current mod len recipes
+        if len(scoresToSearch) <= len(recipes):
+          if len(scoresToSearch) < len(recipes) and scoresToSearch == recipes[^(len(scoresToSearch)+1)..^2]:
+            return len(recipes) - len(scoresToSearch) - 1
+          if scoresToSearch == recipes[^len(scoresToSearch)..^1]:
+            return len(recipes) - len(scoresToSearch)
+
+    echo solution2 problem.map(func (c: char): int = parseInt $c)
+  #+end_src
+
+  #+begin_src nim :comments noweb :noweb yes :tangle src/chocolate_charts.nim
+    <<day-14-problem>>
+
+    <<day-14-solution-1>>
+
+    <<day-14-solution-2>>
+  #+end_src
+
+  See test data on the page, no file to download.
