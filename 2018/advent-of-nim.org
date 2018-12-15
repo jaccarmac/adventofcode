@@ -1379,3 +1379,16 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+end_src
 
   See test data on the page, no file to download.
+
+* Day 15: Beverage Bandits
+
+  Got some extra test data from Reddit. The answers for =test-15-0.txt= and
+  =test-15-1.txt= respectively should be:
+
+  #+begin_example
+    67
+  #+end_example
+
+  #+begin_example
+    71
+  #+end_example
