@@ -35,16 +35,18 @@ echo foldl(problem, changeFrequency(a, b), 0)
 import sets
 
 proc firstRevisited(
-  changes: seq[(char, int)], changeIndex, frequency: int, visited: HashSet[int]
+  changes: seq[(char, int)]
 ): int =
-    let newChangeIndex = if changeIndex >= len(changes) - 1: 0
-                         else: changeIndex + 1
-    let newFrequency = changeFrequency(frequency, changes[changeIndex])
-    var newVisited = initSet[int]()
-    incl newVisited, frequency
-    if contains(visited, newFrequency): newFrequency
-    else: changes.firstRevisited(newChangeIndex, newFrequency, visited + newVisited)
+    var changeIndex = 0
+    var frequency = 0
+    var visited = initSet[int]()
+    while not visited.contains frequency:
+      visited.incl frequency
+      frequency = frequency.changeFrequency changes[changeIndex]
+      changeIndex = if changeIndex >= len(changes) - 1: 0
+                    else: changeIndex + 1
+    frequency
 
-echo problem.firstRevisited(0, 0, initSet[int]())
+echo firstRevisited problem
 # day-1-solution-2 ends here
 # Day 1: Chronal Calibration:12 ends here
