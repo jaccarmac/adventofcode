@@ -34,7 +34,7 @@ echo foldl(problem, changeFrequency(a, b), 0)
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-1-solution-2][day-1-solution-2]]
 import sets
 
-proc firstRevisited(
+func firstRevisited(
   changes: seq[(char, int)]
 ): int =
     var changeIndex = 0

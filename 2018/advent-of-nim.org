@@ -130,7 +130,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+begin_src nim
     import sets
 
-    proc firstRevisited(
+    func firstRevisited(
       changes: seq[(char, int)]
     ): int =
         var changeIndex = 0
