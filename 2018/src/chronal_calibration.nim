@@ -34,29 +34,17 @@ echo foldl(problem, changeFrequency(a, b), 0)
 # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-1-solution-2][day-1-solution-2]]
 import sets
 
-func firstRevisited(
+proc firstRevisited(
   changes: seq[(char, int)], changeIndex, frequency: int, visited: HashSet[int]
-): (int, int, HashSet[int]) =
+): int =
     let newChangeIndex = if changeIndex >= len(changes) - 1: 0
                          else: changeIndex + 1
     let newFrequency = changeFrequency(frequency, changes[changeIndex])
     var newVisited = initSet[int]()
     incl newVisited, frequency
-    if contains(visited, newFrequency): (changeIndex, newFrequency, visited)
-    else: (newChangeIndex, newFrequency, visited + newVisited)
+    if contains(visited, newFrequency): newFrequency
+    else: changes.firstRevisited(newChangeIndex, newFrequency, visited + newVisited)
 
-func firstRevisited(changes: seq[(char, int)]): int =
-  var changeIndex = 0
-  var frequency = 0
-  var visited = initSet[int]()
-  while true:
-    let nextArgs = firstRevisited(changes, changeIndex, frequency, visited)
-    if nextArgs[0] == changeIndex: return nextArgs[1]
-    else:
-      changeIndex = nextArgs[0]
-      frequency = nextArgs[1]
-      visited = nextArgs[2]
-
-echo firstRevisited(problem)
+echo problem.firstRevisited(0, 0, initSet[int]())
 # day-1-solution-2 ends here
 # Day 1: Chronal Calibration:12 ends here
