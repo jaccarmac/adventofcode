@@ -1382,3 +1382,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
   #+begin_example
     71
   #+end_example
+
+* TODO ECS for gamey day.
+
+  https://gist.github.com/mvanga/4b01cc085d9d16c3da68d289496e773f
