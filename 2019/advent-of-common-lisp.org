@@ -18,8 +18,20 @@ Connect to it:
 (The two returns are accepting the default host and port, which are =localhost=
 and =4005= typically.)
 
-TODO Eventually I'll need a way to effectively load the already-written
-days/code. But for now all REPL all the time.
+* TODO Load project.
+
+  Eventually I'll need a way to effectively load the already-written
+  days/code. But for now all REPL all the time.
+
+* TODO Anaphoric macro?
+
+  Look at converting the common loop parts into an anaphoric macro. Consider
+  whether my solution is Lispy or just ~LOOP~ abuse. Macros are probably
+  idiomatic but perhaps not iterating ones. See if streams solve the problem,
+  consider libraries for sequences but stick to raw stdlib if possible.
+
+  https://stackoverflow.com/a/555236 contains discussion around a similar
+  issue.
 
 * Day 1: The Tyranny of the Rocket Equation
 
