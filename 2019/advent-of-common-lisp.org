@@ -1,0 +1,110 @@
+Being an experiment to really use Common Lisp for a series of tasks, even if
+they are simple ones. Also an attempt to follow up last year's halfway Nim
+attempt with something which depends less on brittle Org templates. Thus, we
+primarily work within a REPL context this time around.
+
+Launch a REPL:
+
+#+begin_src sh
+  guix environment --ad-hoc sbcl cl-slime-swank -- sbcl --eval "(require 'asdf)" --eval "(require 'swank)" --eval "(swank:create-server)"
+#+end_src
+
+Connect to it:
+
+#+begin_example
+  M-x slime-connect RET RET
+#+end_example
+
+(The two returns are accepting the default host and port, which are =localhost=
+and =4005= typically.)
+
+TODO Eventually I'll need a way to effectively load the already-written
+days/code. But for now all REPL all the time.
+
+* Day 1: The Tyranny of the Rocket Equation
+
+  Real simple equation for the first part, the tests as given on the page.
+
+  #+begin_src lisp
+    (assert (= (fuel-to-launch-module 12)     2))
+    (assert (= (fuel-to-launch-module 14)     2))
+    (assert (= (fuel-to-launch-module 1969)   654))
+    (assert (= (fuel-to-launch-module 100756) 33583))
+  #+end_src
+
+  That 1969 is cheeky.
+
+  For good measure an example in the actual problem format. To construct it
+  I've simply used all the given numbers.
+
+  #+begin_src lisp
+    (assert (= (fuel-to-launch-all-modules "12
+    14
+    1969
+    100756") (+ 2 2 654 33583)))
+  #+end_src
+
+  As stated, simple equation for the single-module case.
+
+  #+begin_src lisp
+    (defun fuel-to-launch-module (mass)
+      (- (floor (/ mass 3)) 2))
+  #+end_src
+
+  The all-module case simply involves splitting the input, mapping over each
+  string and parsing to an integer, then folding over the integers to sum.
+
+  #+begin_src lisp
+    (defun fuel-to-launch-all-modules (problem)
+      (flet ((newlinep (c) (char/= c #\newline)))
+        (loop for beg = (position-if #'newlinep problem)
+           then (position-if #'newlinep problem :start (1+ end))
+           for end = (and beg (position-if-not #'newlinep problem :start beg))
+           when beg sum (fuel-to-launch-module
+                         (parse-integer (subseq problem beg end)))
+           while end)))
+  #+end_src
+
+  The second part just forces us to calculate the fuel requirement for the fuel
+  itself until we hit 0 or a negative number.
+
+  Given examples for the second part.
+
+  #+begin_src lisp
+    (assert (= (fuel-to-launch-module-with-fuel 12)     2))
+    (assert (= (fuel-to-launch-module-with-fuel 14)     2))
+    (assert (= (fuel-to-launch-module-with-fuel 1969)   966))
+    (assert (= (fuel-to-launch-module-with-fuel 100756) 50346))
+  #+end_src
+
+  The big sum of our own devising.
+
+  #+begin_src lisp
+    (assert (= (fuel-to-launch-all-modules-with-fuel "12
+    14
+    1969
+    100756") (+ 2 2 966 50346)))
+  #+end_src
+
+  The way to recursively calculate with-fuel weights for each module.
+
+  #+begin_src lisp
+    (defun fuel-to-launch-module-with-fuel (mass)
+      (loop for fuel = (fuel-to-launch-module mass)
+         while (< 0 fuel)
+         sum fuel
+         do (setf mass fuel)))
+  #+end_src
+
+  Finally, a slight variant on the loop above.
+
+  #+begin_src lisp
+    (defun fuel-to-launch-all-modules-with-fuel (problem)
+          (flet ((newlinep (c) (char/= c #\newline)))
+            (loop for beg = (position-if #'newlinep problem)
+               then (position-if #'newlinep problem :start (1+ end))
+               for end = (and beg (position-if-not #'newlinep problem :start beg))
+               when beg sum (fuel-to-launch-module-with-fuel
+                             (parse-integer (subseq problem beg end)))
+               while end)))
+  #+end_src
