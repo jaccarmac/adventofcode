@@ -33,6 +33,10 @@ and =4005= typically.)
   https://stackoverflow.com/a/555236 contains discussion around a similar
   issue.
 
+  https://letoverlambda.com/index.cl/guest/chap6.html is the canonical
+  reference point for anaphoric macros. Examples on Wikipedia:
+  https://en.wikipedia.org/wiki/Anaphoric_macro
+
 * Day 1: The Tyranny of the Rocket Equation
 
   Real simple equation for the first part, the tests as given on the page.
