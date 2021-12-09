@@ -20,13 +20,11 @@ So far I've just fiddled with solutions in the REPL, but for the first two
 stars I got the solution with:
 
 #+begin_src gnu-apl
-  +/2</p
+  (+/2</⊢)
 #+end_src
 
 and
 
 #+begin_src gnu-apl
-  +/2</3+/p
+  (+/2</3+/⊢)
 #+end_src
-
-where ~p~ is the puzzle input.
