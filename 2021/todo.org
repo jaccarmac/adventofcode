@@ -1,0 +1,32 @@
+I'm using April this year. It should filter into Guix soon enough, but the
+Quicklisp version works fine as well. In fact, for now it's more up to date
+than the version in the patch I submitted to Guix. I'll be using SBCL for the
+most part, where everything is great; In ABCL, loading Guix April can be
+tricky. I found out that one cannot override the packaged version of ASDF, and
+Guix does not patch it like it does for other CL implementations. I also had to
+learn the new ASDF configuration format (well, I didn't have to as the global
+registry still works, but I did anyway). Pushing
+=$GUIX_ENVIRONMENT/share/common-lisp/systems= into ASDF manually seems to do
+the trick.
+
+Since it's at the top of my mind, I may as well note that it might be worth it
+to make two further Guix patches:
+1. Include the Guix-patched version of ASDF with ABCL.
+2. Make ~copy-files-to-output~ in ~(guix build asdf-build-system)~ respect
+   ~#:asd-files~ and ~#:asd-systems~. Right now it appears not to, forcing me
+   to write a rather nasty file deletion hack in each April package.
+
+So far I've just fiddled with solutions in the REPL, but for the first two
+stars I got the solution with:
+
+#+begin_src gnu-apl
+  +/2</p
+#+end_src
+
+and
+
+#+begin_src gnu-apl
+  +/2</3+/p
+#+end_src
+
+where ~p~ is the puzzle input.
