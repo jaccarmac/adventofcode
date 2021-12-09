@@ -28,3 +28,11 @@ and
 #+begin_src gnu-apl
   (+/2</3+/⊢)
 #+end_src
+
+After reading that the summing of the windows is superfluous, I came up with:
+
+#+begin_src gnu-apl
+  +/((⊃<⊃∘⌽)¨4,/⊢)
+#+end_src
+
+which I find incredibly unsatisfying.
