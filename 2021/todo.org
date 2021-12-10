@@ -36,3 +36,24 @@ After reading that the summing of the windows is superfluous, I came up with:
 #+end_src
 
 which I find incredibly unsatisfying.
+
+I even managed to reverse golf myself into a solution which at least is general
+enough for both days. I feel strongly that there should be a way to combine the
+windowing with the Each, but I cannot figure it out.
+
+#+begin_src gnu-apl
+  +/((>/2↑¯1∘⌽)¨(⊣,/⊢))
+#+end_src
+
+And finally I came up with a dfn solution using stencil.
+
+#+begin_src gnu-apl
+  {
+      d ← ⌊(⍺-1)÷2             ⍝ amount of stencil overlap to drop
+      (+/d↓(-d)↓(>/2↑¯1⌽⊢)⌺⍺)⍵
+  }
+#+end_src
+
+I do think I can revisit the first summing-free solution. Using Mix should
+allow me to work on a two-dimensional array instead of fooling around with
+Each.
