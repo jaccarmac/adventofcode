@@ -1,23 +1,23 @@
-I'm using April this year. It should filter into Guix soon enough, but the
-Quicklisp version works fine as well. In fact, for now it's more up to date
-than the version in the patch I submitted to Guix. I'll be using SBCL for the
-most part, where everything is great; In ABCL, loading Guix April can be
-tricky. I found out that one cannot override the packaged version of ASDF, and
-Guix does not patch it like it does for other CL implementations. I also had to
-learn the new ASDF configuration format (well, I didn't have to as the global
-registry still works, but I did anyway). Pushing
-=$GUIX_ENVIRONMENT/share/common-lisp/systems= into ASDF manually seems to do
-the trick.
+I'm using April this year. It should filter into Guix soon, but the Quicklisp
+version works just fine. (I did want to use ~april-ref~, but even on the latest
+April that has to be called with double colon; Macros are fine for now.)
+
+I use SBCL, but have played with some other implementations during the
+packaging process. In ABCL, loading Guix April can be tricky. I found out that
+one cannot override the packaged version of ASDF, and Guix does not patch it
+like it does for other CL implementations. I also had to learn the new ASDF
+configuration format (well, I didn't have to as the global registry still
+works, but I did anyway). Pushing =$GUIX_ENVIRONMENT/share/common-lisp/systems=
+into ASDF manually seems to do the trick.
 
 Since it's at the top of my mind, I may as well note that it might be worth it
 to make two further Guix patches:
 1. Include the Guix-patched version of ASDF with ABCL.
-2. Make ~copy-files-to-output~ in ~(guix build asdf-build-system)~ respect
-   ~#:asd-files~ and ~#:asd-systems~. Right now it appears not to, forcing me
-   to write a rather nasty file deletion hack in each April package.
 
-So far I've just fiddled with solutions in the REPL, but for the first two
-stars I got the solution with:
+Most "work" so far has been REPL fiddling, but I have the very beginnings of a
+file-loading solution, which I'll tangle here.
+* Day 1.
+I earned the first two stars with the straightforward:
 
 #+begin_src gnu-apl
   (+/2</⊢)
@@ -29,23 +29,23 @@ and
   (+/2</3+/⊢)
 #+end_src
 
-After reading that the summing of the windows is superfluous, I came up with:
+Then I read that summing the windows is superfluous, and came up with:
 
 #+begin_src gnu-apl
   +/((⊃<⊃∘⌽)¨4,/⊢)
 #+end_src
 
-which I find incredibly unsatisfying.
+which I found incredibly unsatisfying.
 
-I even managed to reverse golf myself into a solution which at least is general
-enough for both days. I feel strongly that there should be a way to combine the
-windowing with the Each, but I cannot figure it out.
+After some reverse code golf, I wrote a nasty solution which is at least
+general enough for both days. The Each feels unnecessary, but I can't factor it
+out.
 
 #+begin_src gnu-apl
   +/((>/2↑¯1∘⌽)¨(⊣,/⊢))
 #+end_src
 
-And finally I came up with a dfn solution using stencil.
+Finally I came up with a dfn solution using stencil.
 
 #+begin_src gnu-apl
   {
@@ -54,6 +54,44 @@ And finally I came up with a dfn solution using stencil.
   }
 #+end_src
 
-I do think I can revisit the first summing-free solution. Using Mix should
-allow me to work on a two-dimensional array instead of fooling around with
-Each.
+After reading about Mix and some of APL's parsing rules, I figured that using
+Mix and then working on a two-dimensional array might be better than using
+Each. I'm not happy with the number of parentheses in such a tacit solution,
+but I did get it to work. It even takes the size of window to compare on the
+left instead of relying on magic numbers passed.
+
+#+begin_src gnu-apl
+  +/((⊣/<⊢/)(↑((1+⊣),/⊢)))
+#+end_src
+
+In the end, the solution file contains a general version of the rotating
+solution, with the tacks helpfully removed after a night of sleep and a
+day. I'm at a loss what to call the utility function, so the name here will
+likely change.
+
+#+name: primitive1
+#+begin_src gnu-apl
+  primitive1 ← (+/((>/2↑¯1∘⌽)¨,/))
+#+end_src
+
+The first star requires comparing pairs.
+
+#+name: s1a
+#+begin_src gnu-apl
+  s1a ← 2∘primitive1
+#+end_src
+
+The second requires comparing elements four apart.
+
+#+name: s1b
+#+begin_src gnu-apl
+  s1b ← 4∘primitive1
+#+end_src
+* Tangled source.
+** =advent-of-april.apl=
+#+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
+  <<primitive1>>
+
+  <<s1a>>
+  <<s1b>>
+#+end_src
