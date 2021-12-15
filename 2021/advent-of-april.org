@@ -1,18 +1,18 @@
-I'm using April this year. It should filter into Guix soon, but the Quicklisp
-version works just fine. (I did want to use ~april-ref~, but even on the latest
-April that has to be called with double colon; Macros are fine for now.)
+I'm using April this year. The library should be in Guix soon, but the
+Quicklisp version works just fine. (I did want to use ~april-ref~, but even on
+the latest April that has to be called with double colon; Macros are fine for
+now.)
 
-I use SBCL, but have played with some other implementations during the
-packaging process. In ABCL, loading Guix April can be tricky. I found out that
-one cannot override the packaged version of ASDF, and Guix does not patch it
-like it does for other CL implementations. I also had to learn the new ASDF
+I use SBCL but played with some other implementations during the packaging
+process. In ABCL, loading Guix libraries can be tricky. I found out that one
+cannot override the packaged version of ASDF, and Guix does not patch it like
+it does for other CL implementations. I also had to learn the new ASDF
 configuration format (well, I didn't have to as the global registry still
 works, but I did anyway). Pushing =$GUIX_ENVIRONMENT/share/common-lisp/systems=
 into ASDF manually seems to do the trick.
 
 Since it's at the top of my mind, I may as well note that it might be worth it
-to make two further Guix patches:
-1. Include the Guix-patched version of ASDF with ABCL.
+to make a Guix patch which includes the Guix-patched version of ASDF with ABCL.
 
 Most "work" so far has been REPL fiddling, but I have the very beginnings of a
 file-loading solution, which I'll tangle here.
@@ -38,14 +38,14 @@ Then I read that summing the windows is superfluous, and came up with:
 which I found incredibly unsatisfying.
 
 After some reverse code golf, I wrote a nasty solution which is at least
-general enough for both days. The Each feels unnecessary, but I can't factor it
-out.
+general enough for both days. The Each felt unnecessary, but I couldn't factor
+it out at first.
 
 #+begin_src gnu-apl
   +/((>/2↑¯1∘⌽)¨(⊣,/⊢))
 #+end_src
 
-Finally I came up with a dfn solution using stencil.
+Next, I came up with a dfn solution using stencil.
 
 #+begin_src gnu-apl
   {
@@ -64,28 +64,41 @@ left instead of relying on magic numbers passed.
   +/((⊣/<⊢/)(↑((1+⊣),/⊢)))
 #+end_src
 
-In the end, the solution file contains a general version of the rotating
-solution, with the tacks helpfully removed after a night of sleep and a
-day. I'm at a loss what to call the utility function, so the name here will
-likely change.
+By the time I started to tangle code, I decided I would use the first
+general-feeling version. After a night of sleep and a day, the tacks were easy
+enough to remove. I was at a loss with regard to naming, so a bad one stuck.
 
-#+name: primitive1
 #+begin_src gnu-apl
   primitive1 ← (+/((>/2↑¯1∘⌽)¨,/))
 #+end_src
 
-The first star requires comparing pairs.
+That solution was rather short and general enough, but the way it took the
+magic window size instead of the interval-to-compare as given in the problem
+bothered me. It took me long enough, but I studied my trains more, cheated to
+figure out that an Inner Product was effective, and came up with a new
+primitive.
+
+#+name: primitive1
+#+begin_src gnu-apl
+  primitive1 ← (↓+.>⊢↓⍨-⍤⊣)
+#+end_src
+
+It can be lengthened with another Commute to preserve the Less Than. But in
+either case, this version takes the window size from the Advent site instead of
+requiring the proper left argument for Windowed Reduce.
+
+The first star requires the comparison of pairs.
 
 #+name: s1a
 #+begin_src gnu-apl
-  s1a ← 2∘primitive1
+  s1a ← 1∘primitive1
 #+end_src
 
-The second requires comparing elements four apart.
+The second requires the comparison of windows of three.
 
 #+name: s1b
 #+begin_src gnu-apl
-  s1b ← 4∘primitive1
+  s1b ← 3∘primitive1
 #+end_src
 * Tangled source.
 ** =advent-of-april.apl=
