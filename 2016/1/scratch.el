@@ -1,3 +1,6 @@
+(require 'cl-seq)
+(require 'subr-x)
+
 (defun segmentspec->segment (segmentspec)
   (let ((direction (substring segmentspec 0 1))
         (distance (substring segmentspec 1)))
@@ -84,7 +87,7 @@
                                       old-direction)))))))
 
 (defun howfarawayis (pathspec)
-  (let ((destination (reduce #'walk-step
+  (let ((destination (cl-reduce #'walk-step
                              (pathspec->path pathspec)
                              :initial-value '(0 0 :north))))
     (+ (abs (car destination)) (abs (cadr destination)))))
@@ -99,7 +102,7 @@
      (insert-file-contents "problem.txt")
      (string-trim (buffer-string)))))
 
-(solve-problem-1)
+(print (solve-problem-1))
 
 (defun walk-step-until-cross (positions step)
   (let ((position (car positions))
@@ -110,7 +113,7 @@
             (append old-positions (list (butlast position)))))))
 
 (defun howfarawayiscross (pathspec)
-  (let ((destination (car (reduce #'walk-step-until-cross
+  (let ((destination (car (cl-reduce #'walk-step-until-cross
                                   (pathspec->path pathspec)
                                   :initial-value '((0 0 :north) . nil)))))
     (+ (abs (car destination)) (abs (cadr destination)))))
@@ -121,4 +124,4 @@
      (insert-file-contents "problem.txt")
      (string-trim (buffer-string)))))
 
-(solve-problem-2)
+(print (solve-problem-2))
