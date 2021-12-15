@@ -1,1 +1,2 @@
-(specifications->manifest '("nim"))
+(specifications->manifest
+ '("nim"))

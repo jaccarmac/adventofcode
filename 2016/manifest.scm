@@ -1,1 +1,2 @@
-(specifications->manifest '("emacs"))
+(specifications->manifest
+ '("emacs"))

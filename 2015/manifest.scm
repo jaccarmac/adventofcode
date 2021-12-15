@@ -1,1 +1,2 @@
-(specifications->manifest '("elm-compiler"))
+(specifications->manifest
+ '("elm-compiler"))
