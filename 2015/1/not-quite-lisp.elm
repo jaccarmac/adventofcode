@@ -1,11 +1,11 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, input, text)
-import Html.Attributes exposing (placeholder, type_)
-import Html.Events exposing (onInput)
-import List exposing (foldl, map)
-import String exposing (toList)
+import Html
+import Html.Attributes
+import Html.Events
+import List
+import String
 
 
 main =
@@ -48,10 +48,10 @@ view : Model -> Browser.Document Message
 view model =
     { title = "Day 1: Not Quite Lisp"
     , body =
-        [ div []
-            [ input [ type_ "text", placeholder "Puzzle", onInput DeliverPresents ]
+        [ Html.div []
+            [ Html.input [ Html.Attributes.type_ "text", Html.Attributes.placeholder "Puzzle", Html.Events.onInput DeliverPresents ]
                 []
-            , text (String.fromInt model.floor)
+            , Html.text (String.fromInt model.floor)
             ]
         ]
     }
@@ -59,9 +59,9 @@ view model =
 
 floorOf : String -> Int
 floorOf puzzle =
-    foldl (+)
+    List.foldl (+)
         0
-        (map
+        (List.map
             (\p ->
                 case p of
                     '(' ->
@@ -73,5 +73,5 @@ floorOf puzzle =
                     _ ->
                         0
             )
-            (toList puzzle)
+            (String.toList puzzle)
         )
