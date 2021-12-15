@@ -1,6 +1,7 @@
 module Main exposing (main)
 
-import Html exposing (div, Html, input, program, text)
+import Browser
+import Html exposing (Html, div, input, text)
 import Html.Attributes exposing (placeholder, type_)
 import Html.Events exposing (onInput)
 import List exposing (foldl, map)
@@ -8,7 +9,7 @@ import String exposing (toList)
 
 
 main =
-    program
+    Browser.document
         { init = init
         , subscriptions = subscriptions
         , update = update
@@ -24,8 +25,8 @@ type Message
     = DeliverPresents String
 
 
-init : ( Model, Cmd Message )
-init =
+init : () -> ( Model, Cmd Message )
+init () =
     ( { floor = 0 }, Cmd.none )
 
 
@@ -43,13 +44,17 @@ update message model =
     )
 
 
-view : Model -> Html Message
+view : Model -> Browser.Document Message
 view model =
-    div []
-        [ input [ type_ "text", placeholder "Puzzle", onInput DeliverPresents ]
-            []
-        , text (toString model.floor)
+    { title = "Day 1: Not Quite Lisp"
+    , body =
+        [ div []
+            [ input [ type_ "text", placeholder "Puzzle", onInput DeliverPresents ]
+                []
+            , text (String.fromInt model.floor)
+            ]
         ]
+    }
 
 
 floorOf : String -> Int
