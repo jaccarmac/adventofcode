@@ -1,4 +1,2 @@
 (specifications->manifest
- '("sbcl"
-   ;; "sbcl-april"
-   ))
+ '("sbcl" "sbcl-april"))
