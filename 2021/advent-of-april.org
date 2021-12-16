@@ -1,7 +1,7 @@
-I'm using April this year. The library should be in Guix soon, but the
-Quicklisp version works just fine. (I did want to use ~april-ref~, but even on
-the latest April that has to be called with double colon; Macros are fine for
-now.)
+I'm using April this year. The library is in Guix and more current than the
+Quicklisp version, but the latter seems functionally equivalent. (I did want to
+use ~april-ref~, but even on the latest April that has to be called with double
+colon; Macros are fine for now.)
 
 I use SBCL but played with some other implementations during the packaging
 process. In ABCL, loading Guix libraries can be tricky. I found out that one
