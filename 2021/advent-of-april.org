@@ -16,21 +16,21 @@ to make a Guix patch which includes the Guix-patched version of ASDF with ABCL.
 
 Most "work" so far has been REPL fiddling, but I have the very beginnings of a
 file-loading solution, which I'll tangle here.
-* Solver.
-This is a horribly slow selector for solutions. It will hopefully not last
-long, but it does work.
+* Input processing.
+April has trouble with newlines in certain positions, so we need a constant to
+be able to write short string-processing code.
 
-#+name: solve
+#+name: nl
 #+begin_src gnu-apl
-  solve ← {
-      nls ← '
-  '≠⍵                             ⍝ newline locations
-      l ← nls⊆⍵                   ⍝ lines
-      n ← ⍎¨l                     ⍝ as numbers
-      f ← ⍕n                      ⍝ formatted
-      ⎕ ← ⍎'s',⍺,'a ',f           ⍝ first star solver
-      ⎕ ← ⍎'s',⍺,'b ',f           ⍝ second star
-  }
+  nl ← '
+  '
+#+end_src
+
+In some cases, the input is a simple list of numbers, one per line.
+
+#+name: nums
+#+begin_src gnu-apl
+  nums ← {⍎¨(nl∘≠⊆⊢)⍵}
 #+end_src
 * Day 1.
 I earned the first two stars with the straightforward:
@@ -94,9 +94,9 @@ bothered me. It took me long enough, but I studied my trains more, cheated to
 figure out that an Inner Product was effective, and came up with a new
 primitive.
 
-#+name: primitive1
+#+name: base1
 #+begin_src gnu-apl
-  primitive1 ← (↓+.>⊢↓⍨-⍤⊣)
+  base1 ← (↓+.>⊢↓⍨-⍤⊣)
 #+end_src
 
 It can be lengthened with another Commute to preserve the Less Than. But in
@@ -107,14 +107,14 @@ The first star requires the comparison of pairs.
 
 #+name: s1a
 #+begin_src gnu-apl
-  s1a ← 1∘primitive1
+  s1a ← 1∘base1∘nums
 #+end_src
 
 The second requires the comparison of windows of three.
 
 #+name: s1b
 #+begin_src gnu-apl
-  s1b ← 3∘primitive1
+  s1b ← 3∘base1∘nums
 #+end_src
 
 I also created a more sensical version of the Mix-using solution. It may be
@@ -127,10 +127,10 @@ seems less elegant, in the end, than the inner product.
 * Tangled source.
 ** =advent-of-april.apl=
 #+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
-  <<primitive1>>
+  <<nl>>
+  <<nums>>
 
+  <<base1>>
   <<s1a>>
   <<s1b>>
-
-  <<solve>>
 #+end_src
