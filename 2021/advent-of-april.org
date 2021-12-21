@@ -134,3 +134,31 @@ seems less elegant, in the end, than the inner product.
   <<s1a>>
   <<s1b>>
 #+end_src
+** =manifest.scm=
+#+begin_src scheme :tangle manifest.scm
+  (specifications->manifest
+   '("sbcl" "sbcl-april"))
+#+end_src
+** =run-day.lisp=
+#+begin_src lisp :tangle run-day.lisp
+  (require 'asdf)
+  (require 'april)
+
+  (april:april-load (pathname "advent-of-april.apl"))
+
+  (defun print-solutions (day)
+    (with-open-file (input (format nil "data/~a" day))
+      (let ((puzzle (make-string (file-length input))))
+        (read-sequence puzzle input)
+        (april:april (with (:store-val (p puzzle) (d day)))
+                     "⍎'⎕←s',(⍕d),'a p◊⎕←s',(⍕d),'b p'"))))
+#+end_src
+** =run-day.sh=
+#+begin_src sh :tangle run-day.sh :tangle-mode (identity #o755)
+  DAY=$1
+
+  sbcl --noinform --noprint --disable-debugger \
+       --load run-day.lisp \
+       --eval "(print-solutions $DAY)" \
+       --quit
+#+end_src
