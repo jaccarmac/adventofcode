@@ -16,6 +16,22 @@ to make a Guix patch which includes the Guix-patched version of ASDF with ABCL.
 
 Most "work" so far has been REPL fiddling, but I have the very beginnings of a
 file-loading solution, which I'll tangle here.
+* Solver.
+This is a horribly slow selector for solutions. It will hopefully not last
+long, but it does work.
+
+#+name: solve
+#+begin_src gnu-apl
+  solve ← {
+      nls ← '
+  '≠⍵                             ⍝ newline locations
+      l ← nls⊆⍵                   ⍝ lines
+      n ← ⍎¨l                     ⍝ as numbers
+      f ← ⍕n                      ⍝ formatted
+      ⎕ ← ⍎'s',⍺,'a ',f           ⍝ first star solver
+      ⎕ ← ⍎'s',⍺,'b ',f           ⍝ second star
+  }
+#+end_src
 * Day 1.
 I earned the first two stars with the straightforward:
 
@@ -115,4 +131,6 @@ seems less elegant, in the end, than the inner product.
 
   <<s1a>>
   <<s1b>>
+
+  <<solve>>
 #+end_src

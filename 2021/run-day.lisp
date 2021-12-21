@@ -3,8 +3,8 @@
 
 (april:april-load (pathname "advent-of-april.apl"))
 
-(defmacro print-solutions (day)
-  `(let ((problem (vector 199 200 208 210 200 207 240 269 260 263)))
-    (format t "~a~%~a~%"
-            (april:april-c ,(format nil "s~aa" day) problem)
-            (april:april-c ,(format nil "s~ab" day) problem))))
+(defun print-solutions (day)
+  (with-open-file (input (format nil "data/~a" day))
+    (let ((puzzle (make-string (file-length input))))
+      (read-sequence puzzle input)
+      (april:april-c "solve" puzzle (write-to-string day)))))
