@@ -26,11 +26,25 @@ be able to write short string-processing code.
   '
 #+end_src
 
+Breaking input into lines has an obvious tacit solution.
+
+#+name: lines
+#+begin_src gnu-apl
+  lines←(nl∘≠⊆⊢)
+#+end_src
+
 In some cases, the input is a simple list of numbers, one per line.
 
 #+name: nums
 #+begin_src gnu-apl
-  nums←{⍎¨(nl∘≠⊆⊢)⍵}
+  nums←{⍎¨lines⍵}
+#+end_src
+
+In other cases, we want space-separated words.
+
+#+name: words
+#+begin_src gnu-apl
+  words←{' '(≠⊆⊢)¨lines⍵}
 #+end_src
 * Day 1: Sonar Sweep
 I earned the first two stars with the straightforward:
@@ -126,15 +140,11 @@ seems less elegant, in the end, than the inner product.
 #+end_src
 * Day 2: Dive!
 The input here contains more than numbers, so we can't use ~nums~
-straightaway. However, splitting the input into something like tokens is
-simple.
-
-#+begin_src gnu-apl
-  (' '∘≠⊆⊢)¨(nl∘≠⊆⊢)
-#+end_src
+straightaway. ~words~ will give us something like tokens.
 
 The idea (one that I failed to come up with on my own) is to apply a mask to
-the numbers. So those will be valuable later, and can be pulled out thus:
+the numbers. Those can be pulled out thus, but we can also do that inside the
+eventual Outer Product:
 
 #+begin_src gnu-apl
   ⍎¨⊢/↑
@@ -151,11 +161,11 @@ If we use Split on that, we can pull out each direction as a mask, and multiply
 by the numbers to get a list of instructions. Then the calculation for the
 first star is straightforward. The horizontal distance is the sum of all
 forward movements, and the depth is the sum of downs minus the sum of ups
-(simplified as the sum of ups and negative downs in a single vector).
+(simplified as the sum of ups and negative downs in a single vector). That was
+the initial solution, and looked something like this.
 
-#+name: s2a
 #+begin_src gnu-apl
-  s2a←{
+  {
     t←(' '∘≠⊆⊢)¨(nl∘≠⊆⊢)⍵
     n←⍎¨⊢/↑t
     f d u←↓'f' 'd' 'u'∘.{⍺=⊃⊃⍵}t
@@ -163,22 +173,47 @@ forward movements, and the depth is the sum of downs minus the sum of ups
   }
 #+end_src
 
-I do want to clean that up before going on to the second part.
+After consideration of that code and the second star requirements, I made a few
+refactors. The strand of letters can become a string, since we are comparing
+characters. The multiplication can occur inside the Outer Product function by
+Evaluating the single string in question. Those operations provide the
+Splittable result, and become the shared foundation of both solutions.
+
+#+name: base2
+#+begin_src gnu-apl
+  base2←{'fdu'∘.{(⍎⊃⌽⍵)×⍺=⊃⊃⍵}⍵}
+#+end_src
+
+The A solution preprocesses the input with ~words~, Splits the base result into
+components, and does the calculation from above with the multiplication against
+the number column already done in ~base2~.
+
+#+name: s2a
+#+begin_src gnu-apl
+  s2a←{f d u←↓base2∘words⍵ ◊ +/f×+/d-u}
+#+end_src
+
+Aim is integrated into the solution by Scanning ~d-u~. That results in a vector
+of the sub's aim at each step. From there, it seems that the ~+/f×~ might be
+factorable, but the solution is reasonably readable without that change.
 
 #+name: s2b
 #+begin_src gnu-apl
-  s2b←{0}
+  s2b←{f d u←↓base2∘words⍵ ◊ +/f×+/f×+\d-u}
 #+end_src
 * Tangled source.
 ** =advent-of-april.apl=
 #+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
   <<nl>>
+  <<lines>>
   <<nums>>
+  <<words>>
 
   <<base1>>
   <<s1a>>
   <<s1b>>
 
+  <<base2>>
   <<s2a>>
   <<s2b>>
 #+end_src
