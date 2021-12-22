@@ -32,7 +32,7 @@ In some cases, the input is a simple list of numbers, one per line.
 #+begin_src gnu-apl
   nums←{⍎¨(nl∘≠⊆⊢)⍵}
 #+end_src
-* Day 1.
+* Day 1: Sonar Sweep.
 I earned the first two stars with the straightforward:
 
 #+begin_src gnu-apl
