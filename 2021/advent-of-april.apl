@@ -1,8 +1,8 @@
 nl←'
 '
 lines←(nl∘≠⊆⊢)
-nums←{⍎¨lines⍵}
-words←{' '(≠⊆⊢)¨lines⍵}
+nums←⍎¨⍤lines
+words←(' '∘≠⊆⊢)¨⍤lines
 
 base1←(↓+.>⊢↓⍨-⍤⊣)
 s1a←1∘base1∘nums

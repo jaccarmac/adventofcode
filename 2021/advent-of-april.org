@@ -37,14 +37,14 @@ In some cases, the input is a simple list of numbers, one per line.
 
 #+name: nums
 #+begin_src gnu-apl
-  nums←{⍎¨lines⍵}
+  nums←⍎¨⍤lines
 #+end_src
 
 In other cases, we want space-separated words.
 
 #+name: words
 #+begin_src gnu-apl
-  words←{' '(≠⊆⊢)¨lines⍵}
+  words←(' '∘≠⊆⊢)¨⍤lines
 #+end_src
 * Day 1: Sonar Sweep
 I earned the first two stars with the straightforward:
