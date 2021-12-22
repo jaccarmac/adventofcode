@@ -158,7 +158,7 @@ and the depth is the sum of downs minus the sum of ups.
     t←(' '∘≠⊆⊢)¨(nl∘≠⊆⊢)⍵
     n←⍎¨⊢/↑t
     f d u←↓'f' 'd' 'u'∘.{⍺=⊃⊃⍵}t
-    +/f/n×(+/d/n)-+/u/n
+    +/f×n×+/(d×n)-u×n
   }
 #+end_src
 
