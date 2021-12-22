@@ -125,6 +125,13 @@ seems less elegant, in the end, than the inner product.
   (+/∘(⊣/<⊢/)∘↑(⊢,/⍨1+⊣))
 #+end_src
 * Day 2: Dive!
+The input here contains more than numbers, so we can't use ~nums~
+straightaway. However, splitting the input into something like tokens is
+simple.
+
+#+begin_src gnu-apl
+  (' '∘≠⊆⊢)¨(nl∘≠⊆⊢)
+#+end_src
 * Tangled source.
 ** =advent-of-april.apl=
 #+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
