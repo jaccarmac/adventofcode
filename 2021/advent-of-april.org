@@ -176,12 +176,13 @@ the initial solution, and looked something like this.
 After consideration of that code and the second star requirements, I made a few
 refactors. The strand of letters can become a string, since we are comparing
 characters. The multiplication can occur inside the Outer Product function by
-Evaluating the single string in question. Those operations provide the
-Splittable result, and become the shared foundation of both solutions.
+Evaluating the single string in question. The whole thing can be made tacit by
+Commuting the derived function and Binding ~'fdu'~ to it. ~base2~ thus provides
+the Splittable result, and is the shared foundation of both solutions.
 
 #+name: base2
 #+begin_src gnu-apl
-  base2←{'fdu'∘.{(⍎⊃⌽⍵)×⍺=⊃⊃⍵}⍵}
+  base2←∘.{(⍎⊃⌽⍵)×⍺=⊃⊃⍵}⍨∘'fdu'
 #+end_src
 
 The A solution preprocesses the input with ~words~, Splits the base result into
