@@ -22,7 +22,7 @@ be able to write short string-processing code.
 
 #+name: nl
 #+begin_src gnu-apl
-  nl ← '
+  nl←'
   '
 #+end_src
 
@@ -30,7 +30,7 @@ In some cases, the input is a simple list of numbers, one per line.
 
 #+name: nums
 #+begin_src gnu-apl
-  nums ← {⍎¨(nl∘≠⊆⊢)⍵}
+  nums←{⍎¨(nl∘≠⊆⊢)⍵}
 #+end_src
 * Day 1.
 I earned the first two stars with the straightforward:
@@ -65,7 +65,7 @@ Next, I came up with a dfn solution using stencil.
 
 #+begin_src gnu-apl
   {
-      d ← ⌊(⍺-1)÷2             ⍝ amount of stencil overlap to drop
+      d←⌊(⍺-1)÷2                  ⍝ amount of stencil overlap to drop
       (+/d↓(-d)↓(>/2↑¯1⌽⊢)⌺⍺)⍵
   }
 #+end_src
@@ -85,7 +85,7 @@ general-feeling version. After a night of sleep and a day, the tacks were easy
 enough to remove. I was at a loss with regard to naming, so a bad one stuck.
 
 #+begin_src gnu-apl
-  primitive1 ← (+/((>/2↑¯1∘⌽)¨,/))
+  primitive1←(+/((>/2↑¯1∘⌽)¨,/))
 #+end_src
 
 That solution was rather short and general enough, but the way it took the
@@ -96,7 +96,7 @@ primitive.
 
 #+name: base1
 #+begin_src gnu-apl
-  base1 ← (↓+.>⊢↓⍨-⍤⊣)
+  base1←(↓+.>⊢↓⍨-⍤⊣)
 #+end_src
 
 It can be lengthened with another Commute to preserve the Less Than. But in
@@ -107,14 +107,14 @@ The first star requires the comparison of pairs.
 
 #+name: s1a
 #+begin_src gnu-apl
-  s1a ← 1∘base1∘nums
+  s1a←1∘base1∘nums
 #+end_src
 
 The second requires the comparison of windows of three.
 
 #+name: s1b
 #+begin_src gnu-apl
-  s1b ← 3∘base1∘nums
+  s1b←3∘base1∘nums
 #+end_src
 
 I also created a more sensical version of the Mix-using solution. It may be
