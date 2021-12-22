@@ -1,5 +1,3 @@
-# [[file:../advent-of-nim.org::*Day 5: Alchemical Reduction][Day 5: Alchemical Reduction:5]]
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]][read-problem-stream]]
 import os
 import streams
 
@@ -12,9 +10,7 @@ else:
   let stdinString = readAll stdin
   problem = proc (): Stream =
     newStringStream stdinString
-# read-problem-stream ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-5-solution-1][day-5-solution-1]]][day-5-solution-1]]
 import deques
 import strutils
 
@@ -39,9 +35,7 @@ iterator solution1Polymer(): char {.closure.} =
     nextReagent = readChar inStream
 
 echo polymerLength(solution1Polymer)
-# day-5-solution-1 ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-5-solution-2][day-5-solution-2]]][day-5-solution-2]]
 func solution2Polymer(exclude: char): iterator(): char {.closure.} =
   (iterator(): char {.closure.} =
      let inStream = problem()
@@ -57,5 +51,3 @@ for reagent in countup('a', 'z'):
   minLength = minLength.min polymerLength solution2Polymer reagent
 
 echo minLength
-# day-5-solution-2 ends here
-# Day 5: Alchemical Reduction:5 ends here

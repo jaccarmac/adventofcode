@@ -1,9 +1,5 @@
-# [[file:../advent-of-nim.org::*Day 2: Inventory Management System][Day 2: Inventory Management System:5]]
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-2-problem-line][day-2-problem-line]]][day-2-problem-line]]
 type ProblemLine = string
-# day-2-problem-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]][read-problem-lines]]
 import os
 import sequtils
 import strutils
@@ -11,12 +7,8 @@ import strutils
 let problem = (
   if paramCount() > 0: readFile paramStr 1 else: readAll stdin
 )[0..^2].splitLines.map do (line: string) -> ProblemLine:
-# read-problem-lines ends here
-  # [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-2-parse-line][day-2-parse-line]]][day-2-parse-line]]
   line
-  # day-2-parse-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-2-solution-1][day-2-solution-1]]][day-2-solution-1]]
 import tables
 
 var withDoubles = 0
@@ -36,9 +28,7 @@ for id in problem:
     withTriples = if triples: withTriples + 1 else: withTriples
 
 echo withDoubles * withTriples
-# day-2-solution-1 ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-2-solution-2][day-2-solution-2]]][day-2-solution-2]]
 func hamming(first, second: string): int =
     result = 0
     for i in countup(0, (len first) - 1):
@@ -49,5 +39,3 @@ for i, firstId in pairs problem:
         if hamming(firstId, secondId) == 1:
             echo firstId
             echo secondId
-# day-2-solution-2 ends here
-# Day 2: Inventory Management System:5 ends here

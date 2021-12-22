@@ -1,6 +1,6 @@
 :PROPERTIES:
 :header-args: :noweb yes
-:header-args:nim: :comments noweb
+:header-args:nim: :comments no
 :END:
 
 This is my attempt to do a little daily coding practice, finish a full Advent

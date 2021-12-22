@@ -1,5 +1,3 @@
-# [[file:../advent-of-nim.org::*Day 13: Mine Cart Madness][Day 13: Mine Cart Madness:7]]
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-problem-line][day-13-problem-line]]][day-13-problem-line]]
 import tables
 
 type
@@ -34,9 +32,7 @@ var startingCarts: seq[(Coord, CartDirection)]
 var track = initTable[Coord, TrackSegment]()
 
 var row = 0
-# day-13-problem-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]][read-problem-lines]]
 import os
 import sequtils
 import strutils
@@ -44,8 +40,6 @@ import strutils
 let problem = (
   if paramCount() > 0: readFile paramStr 1 else: readAll stdin
 )[0..^2].splitLines.map do (line: string) -> ProblemLine:
-# read-problem-lines ends here
-  # [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-parse-line][day-13-parse-line]]][day-13-parse-line]]
   var col = 0
   
   for c in line:
@@ -76,9 +70,7 @@ let problem = (
     inc col
   
   inc row
-  # day-13-parse-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-simulation-funcs][day-13-simulation-funcs]]][day-13-simulation-funcs]]
 import algorithm
 
 proc sort(carts: var seq[CartSimulation]) =
@@ -153,9 +145,7 @@ proc move(track: Track, cart: var CartSimulation) =
                        else: raise newException(AssertionError, "bad turn")
   cart.loc = endCoord
   cart.dir = newDirection
-# day-13-simulation-funcs ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-solution-1][day-13-solution-1]]][day-13-solution-1]]
 proc solution1() =
   var solution1Sim: TrackSimulation = (track, @[])
   for cart in startingCarts:
@@ -171,9 +161,7 @@ proc solution1() =
         return
 
 solution1()
-# day-13-solution-1 ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-solution-2][day-13-solution-2]]][day-13-solution-2]]
 import sets
 
 proc solution2() =
@@ -200,5 +188,3 @@ proc solution2() =
       return
 
 solution2()
-# day-13-solution-2 ends here
-# Day 13: Mine Cart Madness:7 ends here

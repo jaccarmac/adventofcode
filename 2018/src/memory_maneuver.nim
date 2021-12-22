@@ -1,5 +1,3 @@
-# [[file:../advent-of-nim.org::*Day 8: Memory Maneuver][Day 8: Memory Maneuver:6]]
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]][read-problem-stream]]
 import os
 import streams
 
@@ -12,9 +10,7 @@ else:
   let stdinString = readAll stdin
   problem = proc (): Stream =
     newStringStream stdinString
-# read-problem-stream ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::problem-ints][problem-ints]]][problem-ints]]
 import strutils
 
 iterator problemInts(): int {.closure.} =
@@ -29,9 +25,7 @@ iterator problemInts(): int {.closure.} =
       num &= next
     next = readChar inStream
   yield parseInt num
-# problem-ints ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-8-build-tree][day-8-build-tree]]][day-8-build-tree]]
 type
   Header = tuple[children, metadata: int]
   Node = ref object
@@ -51,9 +45,7 @@ proc buildTree(source: iterator(): int): Node =
     result.metadata.add treeSource()
 
 var root = buildTree treeSource
-# day-8-build-tree ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-8-solution-1][day-8-solution-1]]][day-8-solution-1]]
 import math
 import sequtils
 
@@ -61,9 +53,7 @@ func metadataSum(tree: Node): int =
   sum(tree.metadata) + sum(tree.children.map metadataSum)
 
 echo metadataSum root
-# day-8-solution-1 ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-8-solution-2][day-8-solution-2]]][day-8-solution-2]]
 func nodeValue(tree: Node): int =
   if len(tree.children) == 0:
     result = sum tree.metadata
@@ -74,5 +64,3 @@ func nodeValue(tree: Node): int =
         result += nodeValue tree.children[nodeIdx]
 
 echo nodeValue root
-# day-8-solution-2 ends here
-# Day 8: Memory Maneuver:6 ends here

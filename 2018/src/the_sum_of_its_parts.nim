@@ -1,9 +1,5 @@
-# [[file:../advent-of-nim.org::*Day 7: The Sum of Its Parts][Day 7: The Sum of Its Parts:6]]
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-7-problem-line][day-7-problem-line]]][day-7-problem-line]]
 type ProblemLine = tuple[step, dependsOn: char]
-# day-7-problem-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]][read-problem-lines]]
 import os
 import sequtils
 import strutils
@@ -11,13 +7,9 @@ import strutils
 let problem = (
   if paramCount() > 0: readFile paramStr 1 else: readAll stdin
 )[0..^2].splitLines.map do (line: string) -> ProblemLine:
-# read-problem-lines ends here
-  # [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-7-parse-line][day-7-parse-line]]][day-7-parse-line]]
   let words = line.split ' '
   (words[7][0], words[1][0])
-  # day-7-parse-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-7-solution-1][day-7-solution-1]]][day-7-solution-1]]
 import algorithm
 import options
 import tables
@@ -50,9 +42,7 @@ while len(dependencies) > 0:
     dependencies[k].excl step
 
 echo instructions
-# day-7-solution-1 ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-7-solution-2][day-7-solution-2]]][day-7-solution-2]]
 let elfCount = if paramCount() > 1:
                  parseInt paramStr 2
                else:
@@ -94,5 +84,3 @@ while len(dependencies) + len(elves) > 0:
   inc time
 
 echo time - 1
-# day-7-solution-2 ends here
-# Day 7: The Sum of Its Parts:6 ends here

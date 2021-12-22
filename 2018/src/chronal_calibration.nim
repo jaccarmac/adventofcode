@@ -1,9 +1,5 @@
-# [[file:../advent-of-nim.org::*Day 1: Chronal Calibration][Day 1: Chronal Calibration:12]]
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-1-problem-line][day-1-problem-line]]][day-1-problem-line]]
 type ProblemLine = (char, int)
-# day-1-problem-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]][read-problem-lines]]
 import os
 import sequtils
 import strutils
@@ -11,12 +7,8 @@ import strutils
 let problem = (
   if paramCount() > 0: readFile paramStr 1 else: readAll stdin
 )[0..^2].splitLines.map do (line: string) -> ProblemLine:
-# read-problem-lines ends here
-  # [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-1-parse-line][day-1-parse-line]]][day-1-parse-line]]
   (line[0], parseInt line[1..^1])
-  # day-1-parse-line ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::change-frequency][change-frequency]]][change-frequency]]
 func changeFrequency(start: int, change: (char, int)): int =
   case change[0]
   of '+':
@@ -25,13 +17,9 @@ func changeFrequency(start: int, change: (char, int)): int =
     start - change[1]
   else:
     raise newException(AssertionError, "invalid leading character")
-# change-frequency ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-1-solution-1][day-1-solution-1]]][day-1-solution-1]]
 echo foldl(problem, changeFrequency(a, b), 0)
-# day-1-solution-1 ends here
 
-# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-1-solution-2][day-1-solution-2]]][day-1-solution-2]]
 import sets
 
 func firstRevisited(
@@ -48,5 +36,3 @@ func firstRevisited(
     frequency
 
 echo firstRevisited problem
-# day-1-solution-2 ends here
-# Day 1: Chronal Calibration:12 ends here
