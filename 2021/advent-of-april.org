@@ -147,10 +147,11 @@ out the first letter in an outer product.
   'f' 'd' 'u'∘.{⍺=⊃⊃⍵}
 #+end_src
 
-If we use Split on that, we can pull out each direction as a mask, and select
-over the numbers. Then the calculation for the first star is
-straightforward. The horizontal distance is the sum of all forward movements,
-and the depth is the sum of downs minus the sum of ups.
+If we use Split on that, we can pull out each direction as a mask, and multiply
+by the numbers to get a list of instructions. Then the calculation for the
+first star is straightforward. The horizontal distance is the sum of all
+forward movements, and the depth is the sum of downs minus the sum of ups
+(simplified as the sum of ups and negative downs in a single vector).
 
 #+name: s2a
 #+begin_src gnu-apl
