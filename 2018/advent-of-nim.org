@@ -2,1392 +2,1365 @@
 :header-args: :noweb yes
 :header-args:nim: :comments no
 :END:
-
 This is my attempt to do a little daily coding practice, finish a full Advent
 of Code, learn Nim better, and stretch my literate programming efforts.
-
 * Day 1: Chronal Calibration
-
-  While I've never finished a full AoC I have done all of the Day 1 problems up
-  to this point. They all seem relatively similar, having to do with
-  counting. I imagine that's so that people can make sure their tools and
-  project skeletons are properly set up before attempting the rest of the
-  month. In any case, the problem itself is rather simple: Read a sign and
-  number from each line, sum up said numbers, output the answer. I imagine the
-  second star will be something like finding the max or min reached, when zero
-  is crossed, etc. etc. For now no need to worry about that though.
-
-  Some test data as given on the site:
-
-  #+begin_src text :tangle data/test-1-0.txt
-    +1
-    -2
-    +3
-    +1
-  #+end_src
-
-  That should result in ~3~.
-
-  #+begin_src text :tangle data/test-1-1.txt
-    +1
-    +1
-    +1
-  #+end_src
-
-  That should result in ~3~.
-
-  #+begin_src text :tangle data/test-1-2.txt
-    +1
-    +1
-    -2
-  #+end_src
-
-  That should result in ~0~.
-
-  #+begin_src text :tangle data/test-1-3.txt
-    -1
-    -2
-    -3
-  #+end_src
-
-  That should result in ~-6~.
-
-  My real data is in the same directory (=data/1.txt=).
-
-  The file reading code is shamelessly stolen from [[http://howistart.org/posts/nim/1/index.html][the Nim How I Start]]. It
-  reads in a file or stdin line by line, discards the last character (so we
-  don't have to deal with the last newline creating an empty record), and opens
-  a ~do~ block to map each line to an object. The ~ProblemLine~ type should be
-  aliased in each day's solution to the proper type of each parsed line.
-
-  #+name: read-problem-lines
-  #+begin_src nim
-    import os
-    import sequtils
-    import strutils
-
-    let problem = (
-      if paramCount() > 0: readFile paramStr 1 else: readAll stdin
-    )[0..^2].splitLines.map do (line: string) -> ProblemLine:
-  #+end_src
-
-  Run like:
-
-  #+begin_src sh
-    nim c -r src/chronal_calibration data/1.txt
-  #+end_src
-
-  At this point Emacs stopped wanting to play nice with Nim (or vice versa). I
-  hacked together the code in VSCode, came back and fixed Emacs, then dumped
-  the code here. I rewrote the second bit to be functional, and it is very slow
-  now.
-
-  In this case each problem line is a tuple of ~char~ (~'+'~ or ~'-'~) and
-  ~int~, the value to add or subtract. To parse this value, we can simply slice
-  the line up and parse part of it using the standard lib.
-
-  #+name: day-1-problem-line
-  #+begin_src nim
-    type ProblemLine = (char, int)
-  #+end_src
-
-  #+name: day-1-parse-line
-  #+begin_src nim
-    (line[0], parseInt line[1..^1])
-  #+end_src
-
-  The first half of the problem is extremely simple, a fold over each operation
-  in the input. Since we parsed the problem input into a sequence of tuples
-  there is a small helper function to dispatch addition or subtraction from a
-  tuple and apply it to the input of each fold step. There may be a more
-  elegant way to deal with the exceptional case, but it's basically unreachable
-  code if we give the program good data.
-
-  #+name: change-frequency
-  #+begin_src nim
-    func changeFrequency(start: int, change: (char, int)): int =
-      case change[0]
-      of '+':
-        start + change[1]
-      of '-':
-        start - change[1]
-      else:
-        raise newException(AssertionError, "invalid leading character")
-  #+end_src
-
-  As said above, the fold itself is trivial. We output it right away as it's
-  the answer.
-
-  #+name: day-1-solution-1
-  #+begin_src nim
-    echo foldl(problem, changeFrequency(a, b), 0)
-  #+end_src
-
-  I hacked together a loop for the second problem, then came back and tried a
-  recursive solution, blew the stack, then wrote a little trampoline to avoid
-  blowing the stack. It was a fun exercise but the code is extremely
-  slow. Dumping it all here to be fixed later; The goal is something both more
-  functional and more Nim-my. I'll quite possibly have to write something
-  similar to the existing code in ~sequtils~, but for infinite sequences a la
-  Clojure.
-
-  #+name: day-1-solution-2
-  #+begin_src nim
-    import sets
-
-    func firstRevisited(
-      changes: seq[(char, int)]
-    ): int =
-        var changeIndex = 0
-        var frequency = 0
-        var visited = initSet[int]()
-        while not visited.contains frequency:
-          visited.incl frequency
-          frequency = frequency.changeFrequency changes[changeIndex]
-          changeIndex = if changeIndex >= len(changes) - 1: 0
-                        else: changeIndex + 1
-        frequency
-
-    echo firstRevisited problem
-  #+end_src
-
-  Finally, putting it all together.
-
-  #+begin_src nim :tangle src/chronal_calibration.nim
-    <<day-1-problem-line>>
-
-    <<read-problem-lines>>
-      <<day-1-parse-line>>
-
-    <<change-frequency>>
-
-    <<day-1-solution-1>>
-
-    <<day-1-solution-2>>
-  #+end_src
-
-* Day 2: Inventory Management System
-
-  Today's problem doesn't even need a fancy type. It's just strings!
-
-  #+name: day-2-problem-line
-  #+begin_src nim
-    type ProblemLine = string
-  #+end_src
-
-  No parsing necessary.
-
-  #+name: day-2-parse-line
-  #+begin_src nim
-    line
-  #+end_src
-
-  Another couple dumps. This has not been rewritten for either style or speed
-  yet.
-
-  #+name: day-2-solution-1
-  #+begin_src nim
-    import tables
-
-    var withDoubles = 0
-    var withTriples = 0
-
-    for id in problem:
-        var letters = initTable[char, int]()
-        for letter in id:
-            letters[letter] = if contains(letters, letter): letters[letter] + 1
-                else: 1
-        var doubles = false
-        var triples = false
-        for letter in keys letters:
-            if letters[letter] == 2: doubles = true
-            if letters[letter] == 3: triples = true
-        withDoubles = if doubles: withDoubles + 1 else: withDoubles
-        withTriples = if triples: withTriples + 1 else: withTriples
-
-    echo withDoubles * withTriples
-  #+end_src
-
-  This doesn't even fully solve the second problem: You have to read the
-  results and figure out the letters yourself.
-
-  #+name: day-2-solution-2
-  #+begin_src nim
-    func hamming(first, second: string): int =
-        result = 0
-        for i in countup(0, (len first) - 1):
-            result = if first[i] == second[i]: result else: result + 1
-
-    for i, firstId in pairs problem:
-        for secondId in problem[i..^1]:
-            if hamming(firstId, secondId) == 1:
-                echo firstId
-                echo secondId
-  #+end_src
-
-  Everything together.
-
-  #+begin_src nim :tangle src/inventory_management_system.nim
-    <<day-2-problem-line>>
-
-    <<read-problem-lines>>
-      <<day-2-parse-line>>
-
-    <<day-2-solution-1>>
-
-    <<day-2-solution-2>>
-  #+end_src
-
-  Run it similarly.
-
-  #+begin_src sh
-    nim c -r src/inventory_management_system data/2.txt
-  #+end_src
-
-* Day 3: No Matter How You Slice It
-
-  I imagine this will follow the same pattern...
-
-  #+begin_src sh
-    nim c -r src/no_matter_how_you_slice_it data/3.txt
-  #+end_src
-
-  It's an overlap problem. I feel like this is something easily solvable with
-  math, but brute forcing at least the first part should work for now. This
-  time the file reading is with real types! A tuple with named fields to be
-  precise.
-
-  #+name: day-3-problem-line
-  #+begin_src nim
-    type
-      Claim = tuple[id, x, y, width, height: int]
-      ProblemLine = Claim
-  #+end_src
-
-  #+name: day-3-parse-line
-  #+begin_src nim
-    let segments = splitWhitespace line
-    result.id = parseInt segments[0][1..^1]
-    let coords = split(segments[2], ",")
-    result.x = parseInt coords[0]
-    result.y = parseInt coords[1][0..^2]
-    let dims = split(segments[3], "x")
-    result.width = parseInt dims[0]
-    result.height = parseInt dims[1]
-  #+end_src
-
-  First part is super messy and I'm not happy with the syntactic choices I
-  made.
-
-  #+name: day-3-solution-1
-  #+begin_src nim
-    import sets
-    import tables
-
-    var fabric = initTable[(int, int), HashSet[int]]()
-
-    iterator coordsFor(claim: Claim): (int, int) =
-      for x in countup(claim.x, claim.x + claim.width - 1):
-        for y in countup(claim.y, claim.y + claim.height - 1):
-          yield (x, y)
-
-    for claim in problem:
-      for coord in coordsFor claim:
-        let x = coord[0]
-        let y = coord[1]
-        if not hasKey(fabric, (x, y)): fabric[(x, y)] = toSet @[claim.id]
-        else:
-          incl fabric[(x, y)], claim.id
-
-    let contestedClaims =
-      filter(toSeq values fabric) do (cs: HashSet[int]) -> bool: len(cs) > 1
-
-    echo len contestedClaims
-  #+end_src
-
-  Glad I decided to store claim info though. I've got a really nice data
-  structure that I can just pull exactly what I need out of.
-
-  #+name: day-3-solution-2
-  #+begin_src nim
-    var goodClaims = toSet map(problem) do (c: Claim) -> int: c.id
-
-    for contestedClaim in contestedClaims:
-      excl goodClaims, contestedClaim
-
-    echo goodClaims
-  #+end_src
-
-  #+begin_src nim :tangle src/no_matter_how_you_slice_it.nim
-    <<day-3-problem-line>>
-
-    <<read-problem-lines>>
-      <<day-3-parse-line>>
-
-    <<day-3-solution-1>>
-
-    <<day-3-solution-2>>
-  #+end_src
-
-  #+begin_src text :tangle data/test-3-0.txt
-    #1 @ 1,3: 4x4
-    #2 @ 3,1: 4x4
-    #3 @ 5,5: 2x2
-  #+end_src
-
-* Day 4: Repose Record
-
-  #+begin_src sh
-    nim c -r src/repose_record data/4.txt
-  #+end_src
-
-  #+name: day-4-problem-line
-  #+begin_src nim
-    type
-      ReposeRecordKind = enum
-        rrDuty
-        rrWake
-        rrSleep
-      ReposeRecord = ref ReposeRecordObj
-      ReposeRecordObj = object
-        year: int
-        month: int
-        day: int
-        hour: int
-        minute: int
-        case kind: ReposeRecordKind
-        of rrDuty: id: int
-        of rrWake, rrSleep: nil
-      ProblemLine = ReposeRecord
-  #+end_src
-
-  #+name: day-4-parse-line
-  #+begin_src nim
-    result = ReposeRecordObj.new
-    let dateSplit = line.split ']'
-    let dateTimeSplit = dateSplit[0][1..^1].split ' '
-    let dateParts = dateTimeSplit[0].split '-'
-    result.year = parseInt dateParts[0]
-    result.month = parseInt dateParts[1]
-    result.day = parseInt dateParts[2]
-    let timeParts = dateTimeSplit[1].split ':'
-    result.hour = parseInt timeParts[0]
-    result.minute = parseInt timeParts[1]
-    let recordParts = dateSplit[1][1..^1].split ' '
-    case recordParts[0][0]
-    of 'G':
-      result.kind = rrDuty
-      result.id = parseInt recordParts[1][1..^1]
-    of 'f':
-      result.kind = rrSleep
-    of 'w':
-      result.kind = rrWake
+While I've never finished a full AoC I have done all of the Day 1 problems up
+to this point. They all seem relatively similar, having to do with
+counting. I imagine that's so that people can make sure their tools and
+project skeletons are properly set up before attempting the rest of the
+month. In any case, the problem itself is rather simple: Read a sign and
+number from each line, sum up said numbers, output the answer. I imagine the
+second star will be something like finding the max or min reached, when zero
+is crossed, etc. etc. For now no need to worry about that though.
+
+Some test data as given on the site:
+
+#+begin_src text :tangle data/test-1-0.txt
+  +1
+  -2
+  +3
+  +1
+#+end_src
+
+That should result in ~3~.
+
+#+begin_src text :tangle data/test-1-1.txt
+  +1
+  +1
+  +1
+#+end_src
+
+That should result in ~3~.
+
+#+begin_src text :tangle data/test-1-2.txt
+  +1
+  +1
+  -2
+#+end_src
+
+That should result in ~0~.
+
+#+begin_src text :tangle data/test-1-3.txt
+  -1
+  -2
+  -3
+#+end_src
+
+That should result in ~-6~.
+
+My real data is in the same directory (=data/1.txt=).
+
+The file reading code is shamelessly stolen from [[http://howistart.org/posts/nim/1/index.html][the Nim How I Start]]. It
+reads in a file or stdin line by line, discards the last character (so we
+don't have to deal with the last newline creating an empty record), and opens
+a ~do~ block to map each line to an object. The ~ProblemLine~ type should be
+aliased in each day's solution to the proper type of each parsed line.
+
+#+name: read-problem-lines
+#+begin_src nim
+  import os
+  import sequtils
+  import strutils
+
+  let problem = (
+    if paramCount() > 0: readFile paramStr 1 else: readAll stdin
+  )[0..^2].splitLines.map do (line: string) -> ProblemLine:
+#+end_src
+
+Run like:
+
+#+begin_src sh
+  nim c -r src/chronal_calibration data/1.txt
+#+end_src
+
+At this point Emacs stopped wanting to play nice with Nim (or vice versa). I
+hacked together the code in VSCode, came back and fixed Emacs, then dumped
+the code here. I rewrote the second bit to be functional, and it is very slow
+now.
+
+In this case each problem line is a tuple of ~char~ (~'+'~ or ~'-'~) and
+~int~, the value to add or subtract. To parse this value, we can simply slice
+the line up and parse part of it using the standard lib.
+
+#+name: day-1-problem-line
+#+begin_src nim
+  type ProblemLine = (char, int)
+#+end_src
+
+#+name: day-1-parse-line
+#+begin_src nim
+  (line[0], parseInt line[1..^1])
+#+end_src
+
+The first half of the problem is extremely simple, a fold over each operation
+in the input. Since we parsed the problem input into a sequence of tuples
+there is a small helper function to dispatch addition or subtraction from a
+tuple and apply it to the input of each fold step. There may be a more
+elegant way to deal with the exceptional case, but it's basically unreachable
+code if we give the program good data.
+
+#+name: change-frequency
+#+begin_src nim
+  func changeFrequency(start: int, change: (char, int)): int =
+    case change[0]
+    of '+':
+      start + change[1]
+    of '-':
+      start - change[1]
     else:
       raise newException(AssertionError, "invalid leading character")
-  #+end_src
+#+end_src
 
-  #+name: day-4-solution-1
-  #+begin_src nim
-    import algorithm
-    import math
-    import tables
+As said above, the fold itself is trivial. We output it right away as it's
+the answer.
 
-    let records = problem.sorted do (x, y: ReposeRecord) -> int:
-      result = x.year.cmp y.year
-      if result == 0:
-        result = x.month.cmp y.month
-      if result == 0:
-        result = x.day.cmp y.day
-      if result == 0:
-        result = x.hour.cmp y.hour
-      if result == 0:
-        result = x.minute.cmp y.minute
+#+name: day-1-solution-1
+#+begin_src nim
+  echo foldl(problem, changeFrequency(a, b), 0)
+#+end_src
 
-    var guards = initTable[int, CountTable[int]]()
-    var currentGuard: int
-    var lastAsleep: int
+I hacked together a loop for the second problem, then came back and tried a
+recursive solution, blew the stack, then wrote a little trampoline to avoid
+blowing the stack. It was a fun exercise but the code is extremely
+slow. Dumping it all here to be fixed later; The goal is something both more
+functional and more Nim-my. I'll quite possibly have to write something
+similar to the existing code in ~sequtils~, but for infinite sequences a la
+Clojure.
 
-    for record in records:
-      case record.kind
-      of rrDuty:
-        currentGuard = record.id
-        if not guards.contains currentGuard:
-          guards[currentGuard] = initCountTable[int]()
-      of rrSleep:
-        lastAsleep = record.minute
-      of rrWake:
-        for minute in lastAsleep.countup(record.minute - 1):
-          guards[currentGuard].inc minute
+#+name: day-1-solution-2
+#+begin_src nim
+  import sets
 
-    let sleepyGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
-      toSeq(x[1].values).sum.cmp toSeq(y[1].values).sum
+  func firstRevisited(
+    changes: seq[(char, int)]
+  ): int =
+      var changeIndex = 0
+      var frequency = 0
+      var visited = initSet[int]()
+      while not visited.contains frequency:
+        visited.incl frequency
+        frequency = frequency.changeFrequency changes[changeIndex]
+        changeIndex = if changeIndex >= len(changes) - 1: 0
+                      else: changeIndex + 1
+      frequency
 
-    let sleepiestGuard = sleepyGuards[^1]
+  echo firstRevisited problem
+#+end_src
 
-    echo sleepiestGuard[0] * sleepiestGuard[1].largest[0]
-  #+end_src
+Finally, putting it all together.
 
-  #+name: day-4-solution-2
-  #+begin_src nim
-    let consistentGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
-      let xLargest = if x[1].len == 0: 0 else: x[1].largest[1]
-      let yLargest = if y[1].len == 0: 0 else: y[1].largest[1]
-      result = xLargest.cmp yLargest
+#+begin_src nim :tangle src/chronal_calibration.nim
+  <<day-1-problem-line>>
 
-    let mostConsistentGuard = consistentGuards[^1]
+  <<read-problem-lines>>
+    <<day-1-parse-line>>
 
-    echo mostConsistentGuard[0] * mostConsistentGuard[1].largest[0]
-  #+end_src
+  <<change-frequency>>
 
-  #+begin_src nim :tangle src/repose_record.nim
-    <<day-4-problem-line>>
+  <<day-1-solution-1>>
 
-    <<read-problem-lines>>
-      <<day-4-parse-line>>
+  <<day-1-solution-2>>
+#+end_src
+* Day 2: Inventory Management System
+Today's problem doesn't even need a fancy type. It's just strings!
 
-    <<day-4-solution-1>>
+#+name: day-2-problem-line
+#+begin_src nim
+  type ProblemLine = string
+#+end_src
 
-    <<day-4-solution-2>>
-  #+end_src
+No parsing necessary.
 
-  The test data from the problem page.
+#+name: day-2-parse-line
+#+begin_src nim
+  line
+#+end_src
 
-  #+begin_src text :tangle data/test-4-0.txt
-    [1518-11-01 00:00] Guard #10 begins shift
-    [1518-11-01 00:05] falls asleep
-    [1518-11-01 00:25] wakes up
-    [1518-11-01 00:30] falls asleep
-    [1518-11-01 00:55] wakes up
-    [1518-11-01 23:58] Guard #99 begins shift
-    [1518-11-02 00:40] falls asleep
-    [1518-11-02 00:50] wakes up
-    [1518-11-03 00:05] Guard #10 begins shift
-    [1518-11-03 00:24] falls asleep
-    [1518-11-03 00:29] wakes up
-    [1518-11-04 00:02] Guard #99 begins shift
-    [1518-11-04 00:36] falls asleep
-    [1518-11-04 00:46] wakes up
-    [1518-11-05 00:03] Guard #99 begins shift
-    [1518-11-05 00:45] falls asleep
-    [1518-11-05 00:55] wakes up
-  #+end_src
+Another couple dumps. This has not been rewritten for either style or speed
+yet.
 
-  Knock one record out of order to make sure the sorting implementation works.
+#+name: day-2-solution-1
+#+begin_src nim
+  import tables
 
-  #+begin_src text :tangle data/test-4-1.txt
-    [1518-11-05 00:55] wakes up
-    [1518-11-01 00:00] Guard #10 begins shift
-    [1518-11-01 00:05] falls asleep
-    [1518-11-01 00:25] wakes up
-    [1518-11-01 00:30] falls asleep
-    [1518-11-01 00:55] wakes up
-    [1518-11-01 23:58] Guard #99 begins shift
-    [1518-11-02 00:40] falls asleep
-    [1518-11-02 00:50] wakes up
-    [1518-11-03 00:05] Guard #10 begins shift
-    [1518-11-03 00:24] falls asleep
-    [1518-11-03 00:29] wakes up
-    [1518-11-04 00:02] Guard #99 begins shift
-    [1518-11-04 00:36] falls asleep
-    [1518-11-04 00:46] wakes up
-    [1518-11-05 00:03] Guard #99 begins shift
-    [1518-11-05 00:45] falls asleep
-  #+end_src
+  var withDoubles = 0
+  var withTriples = 0
 
+  for id in problem:
+      var letters = initTable[char, int]()
+      for letter in id:
+          letters[letter] = if contains(letters, letter): letters[letter] + 1
+              else: 1
+      var doubles = false
+      var triples = false
+      for letter in keys letters:
+          if letters[letter] == 2: doubles = true
+          if letters[letter] == 3: triples = true
+      withDoubles = if doubles: withDoubles + 1 else: withDoubles
+      withTriples = if triples: withTriples + 1 else: withTriples
+
+  echo withDoubles * withTriples
+#+end_src
+
+This doesn't even fully solve the second problem: You have to read the
+results and figure out the letters yourself.
+
+#+name: day-2-solution-2
+#+begin_src nim
+  func hamming(first, second: string): int =
+      result = 0
+      for i in countup(0, (len first) - 1):
+          result = if first[i] == second[i]: result else: result + 1
+
+  for i, firstId in pairs problem:
+      for secondId in problem[i..^1]:
+          if hamming(firstId, secondId) == 1:
+              echo firstId
+              echo secondId
+#+end_src
+
+Everything together.
+
+#+begin_src nim :tangle src/inventory_management_system.nim
+  <<day-2-problem-line>>
+
+  <<read-problem-lines>>
+    <<day-2-parse-line>>
+
+  <<day-2-solution-1>>
+
+  <<day-2-solution-2>>
+#+end_src
+
+Run it similarly.
+
+#+begin_src sh
+  nim c -r src/inventory_management_system data/2.txt
+#+end_src
+* Day 3: No Matter How You Slice It
+I imagine this will follow the same pattern...
+
+#+begin_src sh
+  nim c -r src/no_matter_how_you_slice_it data/3.txt
+#+end_src
+
+It's an overlap problem. I feel like this is something easily solvable with
+math, but brute forcing at least the first part should work for now. This
+time the file reading is with real types! A tuple with named fields to be
+precise.
+
+#+name: day-3-problem-line
+#+begin_src nim
+  type
+    Claim = tuple[id, x, y, width, height: int]
+    ProblemLine = Claim
+#+end_src
+
+#+name: day-3-parse-line
+#+begin_src nim
+  let segments = splitWhitespace line
+  result.id = parseInt segments[0][1..^1]
+  let coords = split(segments[2], ",")
+  result.x = parseInt coords[0]
+  result.y = parseInt coords[1][0..^2]
+  let dims = split(segments[3], "x")
+  result.width = parseInt dims[0]
+  result.height = parseInt dims[1]
+#+end_src
+
+First part is super messy and I'm not happy with the syntactic choices I
+made.
+
+#+name: day-3-solution-1
+#+begin_src nim
+  import sets
+  import tables
+
+  var fabric = initTable[(int, int), HashSet[int]]()
+
+  iterator coordsFor(claim: Claim): (int, int) =
+    for x in countup(claim.x, claim.x + claim.width - 1):
+      for y in countup(claim.y, claim.y + claim.height - 1):
+        yield (x, y)
+
+  for claim in problem:
+    for coord in coordsFor claim:
+      let x = coord[0]
+      let y = coord[1]
+      if not hasKey(fabric, (x, y)): fabric[(x, y)] = toSet @[claim.id]
+      else:
+        incl fabric[(x, y)], claim.id
+
+  let contestedClaims =
+    filter(toSeq values fabric) do (cs: HashSet[int]) -> bool: len(cs) > 1
+
+  echo len contestedClaims
+#+end_src
+
+Glad I decided to store claim info though. I've got a really nice data
+structure that I can just pull exactly what I need out of.
+
+#+name: day-3-solution-2
+#+begin_src nim
+  var goodClaims = toSet map(problem) do (c: Claim) -> int: c.id
+
+  for contestedClaim in contestedClaims:
+    excl goodClaims, contestedClaim
+
+  echo goodClaims
+#+end_src
+
+#+begin_src nim :tangle src/no_matter_how_you_slice_it.nim
+  <<day-3-problem-line>>
+
+  <<read-problem-lines>>
+    <<day-3-parse-line>>
+
+  <<day-3-solution-1>>
+
+  <<day-3-solution-2>>
+#+end_src
+
+#+begin_src text :tangle data/test-3-0.txt
+  #1 @ 1,3: 4x4
+  #2 @ 3,1: 4x4
+  #3 @ 5,5: 2x2
+#+end_src
+* Day 4: Repose Record
+#+begin_src sh
+  nim c -r src/repose_record data/4.txt
+#+end_src
+
+#+name: day-4-problem-line
+#+begin_src nim
+  type
+    ReposeRecordKind = enum
+      rrDuty
+      rrWake
+      rrSleep
+    ReposeRecord = ref ReposeRecordObj
+    ReposeRecordObj = object
+      year: int
+      month: int
+      day: int
+      hour: int
+      minute: int
+      case kind: ReposeRecordKind
+      of rrDuty: id: int
+      of rrWake, rrSleep: nil
+    ProblemLine = ReposeRecord
+#+end_src
+
+#+name: day-4-parse-line
+#+begin_src nim
+  result = ReposeRecordObj.new
+  let dateSplit = line.split ']'
+  let dateTimeSplit = dateSplit[0][1..^1].split ' '
+  let dateParts = dateTimeSplit[0].split '-'
+  result.year = parseInt dateParts[0]
+  result.month = parseInt dateParts[1]
+  result.day = parseInt dateParts[2]
+  let timeParts = dateTimeSplit[1].split ':'
+  result.hour = parseInt timeParts[0]
+  result.minute = parseInt timeParts[1]
+  let recordParts = dateSplit[1][1..^1].split ' '
+  case recordParts[0][0]
+  of 'G':
+    result.kind = rrDuty
+    result.id = parseInt recordParts[1][1..^1]
+  of 'f':
+    result.kind = rrSleep
+  of 'w':
+    result.kind = rrWake
+  else:
+    raise newException(AssertionError, "invalid leading character")
+#+end_src
+
+#+name: day-4-solution-1
+#+begin_src nim
+  import algorithm
+  import math
+  import tables
+
+  let records = problem.sorted do (x, y: ReposeRecord) -> int:
+    result = x.year.cmp y.year
+    if result == 0:
+      result = x.month.cmp y.month
+    if result == 0:
+      result = x.day.cmp y.day
+    if result == 0:
+      result = x.hour.cmp y.hour
+    if result == 0:
+      result = x.minute.cmp y.minute
+
+  var guards = initTable[int, CountTable[int]]()
+  var currentGuard: int
+  var lastAsleep: int
+
+  for record in records:
+    case record.kind
+    of rrDuty:
+      currentGuard = record.id
+      if not guards.contains currentGuard:
+        guards[currentGuard] = initCountTable[int]()
+    of rrSleep:
+      lastAsleep = record.minute
+    of rrWake:
+      for minute in lastAsleep.countup(record.minute - 1):
+        guards[currentGuard].inc minute
+
+  let sleepyGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
+    toSeq(x[1].values).sum.cmp toSeq(y[1].values).sum
+
+  let sleepiestGuard = sleepyGuards[^1]
+
+  echo sleepiestGuard[0] * sleepiestGuard[1].largest[0]
+#+end_src
+
+#+name: day-4-solution-2
+#+begin_src nim
+  let consistentGuards = toSeq(guards.pairs).sorted do (x, y: (int, CountTable[int])) -> int:
+    let xLargest = if x[1].len == 0: 0 else: x[1].largest[1]
+    let yLargest = if y[1].len == 0: 0 else: y[1].largest[1]
+    result = xLargest.cmp yLargest
+
+  let mostConsistentGuard = consistentGuards[^1]
+
+  echo mostConsistentGuard[0] * mostConsistentGuard[1].largest[0]
+#+end_src
+
+#+begin_src nim :tangle src/repose_record.nim
+  <<day-4-problem-line>>
+
+  <<read-problem-lines>>
+    <<day-4-parse-line>>
+
+  <<day-4-solution-1>>
+
+  <<day-4-solution-2>>
+#+end_src
+
+The test data from the problem page.
+
+#+begin_src text :tangle data/test-4-0.txt
+  [1518-11-01 00:00] Guard #10 begins shift
+  [1518-11-01 00:05] falls asleep
+  [1518-11-01 00:25] wakes up
+  [1518-11-01 00:30] falls asleep
+  [1518-11-01 00:55] wakes up
+  [1518-11-01 23:58] Guard #99 begins shift
+  [1518-11-02 00:40] falls asleep
+  [1518-11-02 00:50] wakes up
+  [1518-11-03 00:05] Guard #10 begins shift
+  [1518-11-03 00:24] falls asleep
+  [1518-11-03 00:29] wakes up
+  [1518-11-04 00:02] Guard #99 begins shift
+  [1518-11-04 00:36] falls asleep
+  [1518-11-04 00:46] wakes up
+  [1518-11-05 00:03] Guard #99 begins shift
+  [1518-11-05 00:45] falls asleep
+  [1518-11-05 00:55] wakes up
+#+end_src
+
+Knock one record out of order to make sure the sorting implementation works.
+
+#+begin_src text :tangle data/test-4-1.txt
+  [1518-11-05 00:55] wakes up
+  [1518-11-01 00:00] Guard #10 begins shift
+  [1518-11-01 00:05] falls asleep
+  [1518-11-01 00:25] wakes up
+  [1518-11-01 00:30] falls asleep
+  [1518-11-01 00:55] wakes up
+  [1518-11-01 23:58] Guard #99 begins shift
+  [1518-11-02 00:40] falls asleep
+  [1518-11-02 00:50] wakes up
+  [1518-11-03 00:05] Guard #10 begins shift
+  [1518-11-03 00:24] falls asleep
+  [1518-11-03 00:29] wakes up
+  [1518-11-04 00:02] Guard #99 begins shift
+  [1518-11-04 00:36] falls asleep
+  [1518-11-04 00:46] wakes up
+  [1518-11-05 00:03] Guard #99 begins shift
+  [1518-11-05 00:45] falls asleep
+#+end_src
 * Day 5: Alchemical Reduction
+#+begin_src sh
+  nim c -r src/alchemical_reduction data/5.txt
+#+end_src
 
-  #+begin_src sh
-    nim c -r src/alchemical_reduction data/5.txt
-  #+end_src
+This problem's a bit different. The input is all one line: A *big* line. This
+means we don't deal with parsing the input line by line but rather as a
+stream we can read in character by character.
 
-  This problem's a bit different. The input is all one line: A *big* line. This
-  means we don't deal with parsing the input line by line but rather as a
-  stream we can read in character by character.
+#+name: read-problem-stream
+#+begin_src nim
+  import os
+  import streams
 
-  #+name: read-problem-stream
-  #+begin_src nim
-    import os
-    import streams
+  var problem: proc(): Stream
+  if paramCount() > 0:
+    problem = proc (): Stream =
+      let problemFile = open paramStr 1
+      newFileStream problemFile
+  else:
+    let stdinString = readAll stdin
+    problem = proc (): Stream =
+      newStringStream stdinString
+#+end_src
 
-    var problem: proc(): Stream
-    if paramCount() > 0:
-      problem = proc (): Stream =
-        let problemFile = open paramStr 1
-        newFileStream problemFile
-    else:
-      let stdinString = readAll stdin
-      problem = proc (): Stream =
-        newStringStream stdinString
-  #+end_src
+The basic operation is to iterate over the stream with ~readChar~.
 
-  The basic operation is to iterate over the stream with ~readChar~.
+We use a deque to solve the first problem. Don't like duplicating the loop
+code very much, maybe an iterator will be better here eventually. The loop
+logic is also super nasty.
 
-  We use a deque to solve the first problem. Don't like duplicating the loop
-  code very much, maybe an iterator will be better here eventually. The loop
-  logic is also super nasty.
+#+name: day-5-solution-1
+#+begin_src nim
+  import deques
+  import strutils
 
-  #+name: day-5-solution-1
-  #+begin_src nim
-    import deques
-    import strutils
-
-    func polymerLength(polymer: iterator(): char): int =
-      var reagents = initDeque[char]()
-      for nextReagent in polymer():
-        if reagents.len() > 0:
-          let previousReagent = peekLast reagents
-          if toLowerAscii(previousReagent) == toLowerAscii(nextReagent) and previousReagent != nextReagent:
-            popLast reagents
-          else:
-            reagents.addLast nextReagent
+  func polymerLength(polymer: iterator(): char): int =
+    var reagents = initDeque[char]()
+    for nextReagent in polymer():
+      if reagents.len() > 0:
+        let previousReagent = peekLast reagents
+        if toLowerAscii(previousReagent) == toLowerAscii(nextReagent) and previousReagent != nextReagent:
+          popLast reagents
         else:
           reagents.addLast nextReagent
-      len reagents
-
-    iterator solution1Polymer(): char {.closure.} =
-      let inStream = problem()
-      var nextReagent = readChar inStream
-      while nextReagent != '\n':
-        yield nextReagent
-        nextReagent = readChar inStream
-
-    echo polymerLength(solution1Polymer)
-  #+end_src
-
-  The second half is real interesting. Could possibly just loop 26 times, once
-  for each letter, and see what the best result is... First I go back and
-  change the stream code into a thunk so I can read a file or stdin multiple
-  times. Then I need to change the first solution into a proc that takes an
-  iterator. Finally I can write a loop that creates an iterator excluding a
-  certain reagent and passes it to said proc.
-
-  #+name: day-5-solution-2
-  #+begin_src nim
-    func solution2Polymer(exclude: char): iterator(): char {.closure.} =
-      (iterator(): char {.closure.} =
-         let inStream = problem()
-         var nextReagent = readChar inStream
-         while nextReagent != '\n':
-           if toLowerAscii(nextReagent) != toLowerAscii(exclude):
-             yield nextReagent
-           nextReagent = readChar inStream)
-
-    var minLength = high(int)
-
-    for reagent in countup('a', 'z'):
-      minLength = minLength.min polymerLength solution2Polymer reagent
-
-    echo minLength
-  #+end_src
-
-  #+begin_src nim :tangle src/alchemical_reduction.nim
-    <<read-problem-stream>>
-
-    <<day-5-solution-1>>
-
-    <<day-5-solution-2>>
-  #+end_src
-
-* Day 6: Chronal Coordinates
-
-  Find the largest area of points that are closest to a given point by
-  Manhattan distance but not infinite in number.
-
-  #+begin_src sh
-    nim c -r src/chronal_coordinates data/6.txt 10000
-  #+end_src
-
-  The input is a simple list of coords.
-
-  #+name: day-6-problem-line
-  #+begin_src nim
-    type ProblemLine = tuple[x, y: int]
-  #+end_src
-
-  #+name: day-6-parse-line
-  #+begin_src nim
-    let coords = (line.split ',').map do (n: string) -> int: parseInt n.strip()
-    (coords[0], coords[1])
-  #+end_src
-
-  The implementation of manhattan for coords is fairly simple.
-
-  #+name: manhattan
-  #+begin_src nim
-    func manhattan(x, y: (int, int)): int =
-      abs(x[0] - y[0]) + abs(x[1] - y[1])
-  #+end_src
-
-  Then we find the boundaries of our canvas by finding the min and max
-  coordinates given.
-
-  #+name: day-6-min-max-x-y
-  #+begin_src nim
-    var minX = problem[0][0]
-    var maxX = problem[0][0]
-    var minY = problem[0][1]
-    var maxY = problem[0][1]
-
-    for coord in problem[1..^1]:
-      minX = minX.min coord[0]
-      maxX = maxX.max coord[0]
-      minY = minY.min coord[1]
-      maxY = maxY.max coord[1]
-  #+end_src
-
-  Calculate the distances from a given coord to a given point.
-
-  #+name: day-6-distances
-  #+begin_src nim
-    proc coordDistances(coord: (int, int)): seq[((int, int), int)] =
-      problem.map do (c: (int, int)) -> ((int, int), int):
-        (c, c.manhattan coord)
-  #+end_src
-
-  Then we need a function to find the closest given coord to a given point.
-
-  #+name: day-6-closest-problem-coord
-  #+begin_src nim
-    import algorithm
-    import options
-
-    proc closestProblemCoord(coord: (int, int)): Option[(int, int)] =
-      let sortedDistances = coord.coordDistances().sorted do (x, y: ((int, int), int)) -> int:
-        x[1].cmp y[1]
-      if sortedDistances[0][1] != sortedDistances[1][1]:
-        result = some sortedDistances[0][0]
-  #+end_src
-
-  We walk the edges of the grid using the distance function to create a set of
-  excluded infinite point sets. Certainly there is a way to do this in one
-  loop? This is pretty compact though so I'm not unhappy. Thought about
-  short-circuiting in case you land directly on a given coord, but meh. (Could
-  also do that for the solution loop lower down.)
-
-  #+name: day-6-excluded
-  #+begin_src nim
-    import sets
-
-    var infiniteAreas = initSet[(int, int)]()
-
-    for x in countup(minX, maxX):
-      for coord in @[(x, minY), (x, maxY)]:
-        coord.closestProblemCoord().map do (input: (int, int)):
-          infiniteAreas.incl input
-
-    for y in countup(minY, maxY):
-      for coord in @[(minX, y), (maxX, y)]:
-        coord.closestProblemCoord().map do (input: (int, int)):
-          infiniteAreas.incl input
-  #+end_src
-
-  Then we can get to solving by checking all the other points. It can probably
-  be solved more efficiently, IDK.
-
-  #+name: day-6-solution-1
-  #+begin_src nim
-    import tables
-
-    var areas = initCountTable[(int, int)]()
-
-    for x in countup(minX + 1, maxX - 1):
-      for y in countup(minY + 1, maxY - 1):
-        let coord = (x, y)
-        coord.closestProblemCoord().map do (input: (int, int)):
-          if not infiniteAreas.contains input:
-            areas.inc input
-
-    areas.sort()
-
-    echo toSeq(areas.values)[0]
-  #+end_src
-
-  Hiccup. The second solution requires we use an out-of-input-file-band value
-  as part of our behavior. Pull in another arg or stdin!
-
-  #+name: day-6-solution-2
-  #+begin_src nim
-    let maxDistance = if paramCount() > 1:
-                        parseInt paramStr 2
-                      else:
-                        echo "max distance"
-                        parseInt strip readAll stdin
-    var closeArea = 0
-
-    for x in countup(minX, maxX):
-      for y in countup(minY, maxY):
-        let coord = (x, y)
-        let totalDistance = coord.coordDistances().foldl(a + b[1], 0)
-        if totalDistance < maxDistance:
-          inc closeArea
-
-    echo closeArea
-  #+end_src
-
-  #+begin_src nim :tangle src/chronal_coordinates.nim
-    <<day-6-problem-line>>
-
-    <<read-problem-lines>>
-      <<day-6-parse-line>>
-
-    <<manhattan>>
-
-    <<day-6-min-max-x-y>>
-
-    <<day-6-distances>>
-
-    <<day-6-closest-problem-coord>>
-
-    <<day-6-excluded>>
-
-    <<day-6-solution-1>>
-
-    <<day-6-solution-2>>
-  #+end_src
-
-  Test data should result in ~17~.
-
-* Day 7: The Sum of Its Parts
-
-  Resolve conflicts in graph by doing alphabetically primary steps first.
-
-  #+begin_src sh
-    nim c -r src/the_sum_of_its_parts data/7.txt 5 61
-  #+end_src
-
-  There's a lot of text in the file, but in essence each line describes one
-  dependency relationship.
-
-  #+name: day-7-problem-line
-  #+begin_src nim
-    type ProblemLine = tuple[step, dependsOn: char]
-  #+end_src
-
-  #+name: day-7-parse-line
-  #+begin_src nim
-    let words = line.split ' '
-    (words[7][0], words[1][0])
-  #+end_src
-
-  I slightly misunderstood the problem's alphabetizing constraint, but it opens
-  up what I think of as a relatively elegant solution. Seed a table of
-  relatioships then loop through it until it is empty.
-
-  #+name: day-7-solution-1
-  #+begin_src nim
-    import algorithm
-    import options
-    import tables
-    import sets
-
-    var dependencies = initTable[char, HashSet[char]]()
-
-    for dependency in problem:
-      if not dependencies.contains dependency.step:
-        dependencies[dependency.step] = initSet[char]()
-      if not dependencies.contains dependency.dependsOn:
-        dependencies[dependency.dependsOn] = initSet[char]()
-      dependencies[dependency.step].incl dependency.dependsOn
-
-    func nextStep(dependencies: Table): Option[char] =
-      let validSteps = toSeq(dependencies.pairs).filter do (pair: (char, HashSet[char])) -> bool:
-        len(pair[1]) == 0
-      let sortedSteps = validSteps.sorted do (x, y: (char, HashSet[char])) -> int:
-        x[0].cmp y[0]
-      if len(sortedSteps) > 0:
-        result = some(sortedSteps[0][0])
-
-    var instructions = ""
-
-    while len(dependencies) > 0:
-      let step = get nextStep dependencies
-      instructions &= step
-      dependencies.del step
-      for k in dependencies.keys:
-        dependencies[k].excl step
-
-    echo instructions
-  #+end_src
-
-  UGH MORE ARGUMENTS BUT NOW THERE ARE TWO.
-
-  Thankfully the way I wrote this makes it rather easy to solve the problem.
-  We just need to change the loop so the second part only happens when a worker
-  finishes a step.
-
-  This is a good opportunity to use a heap but I'm too lazy to do that for just
-  five elves.
-
-  #+name: day-7-solution-2
-  #+begin_src nim
-    let elfCount = if paramCount() > 1:
-                     parseInt paramStr 2
-                   else:
-                     echo "elf count"
-                     parseInt strip readAll stdin
-
-    let timeForA = if paramCount() > 2:
-                     parseInt paramStr 3
-                   else:
-                     echo "time to perform step A"
-                     parseInt strip readAll stdin
-
-    for dependency in problem:
-      if not dependencies.contains dependency.step:
-        dependencies[dependency.step] = initSet[char]()
-      if not dependencies.contains dependency.dependsOn:
-        dependencies[dependency.dependsOn] = initSet[char]()
-      dependencies[dependency.step].incl dependency.dependsOn
-
-    var time = 0
-    var elves: seq[(char, int)] = @[]
-
-    func timeFor(timeForA: int, step: char): int =
-      timeForA + (ord(step) - ord('A'))
-
-    while len(dependencies) + len(elves) > 0:
-      for i, elf in elves:
-        if elf[1] == time:
-          let step = elf[0]
-          for k in dependencies.keys:
-            dependencies[k].excl step
-          elves.del i
-      if len(elves) < elfCount:
-        let step = nextStep dependencies
-        if isSome step:
-          elves.add (get step, time + timeForA.timeFor get step)
-          dependencies.del get step
-          continue
-      inc time
-
-    echo time - 1
-  #+end_src
-
-  #+begin_src nim :tangle src/the_sum_of_its_parts.nim
-    <<day-7-problem-line>>
-
-    <<read-problem-lines>>
-      <<day-7-parse-line>>
-
-    <<day-7-solution-1>>
-
-    <<day-7-solution-2>>
-  #+end_src
-
-  Test data should result in ~CABDFE~.
-
-* Day 8: Memory Maneuver
-
-  #+begin_src sh
-    nim c -r src/memory_maneuver data/8.txt
-  #+end_src
-
-  We're reusing the problem stream from day 5, but creating an iterator to
-  consume the integers on top of it.
-
-  #+name: problem-ints
-  #+begin_src nim
-    import strutils
-
-    iterator problemInts(): int {.closure.} =
-      let inStream = problem()
-      var next = readChar inStream
-      var num = ""
-      while next != '\n':
-        if next == ' ':
-          yield parseInt num
-          num = ""
-        else:
-          num &= next
-        next = readChar inStream
-      yield parseInt num
-  #+end_src
-
-  Building the tree is pretty simple stuff. I remember a fully recursive way to
-  do it from school but based on Nim's iterators I think it's simpler just to
-  do it partially imperatively.
-
-  #+name: day-8-build-tree
-  #+begin_src nim
-    type
-      Header = tuple[children, metadata: int]
-      Node = ref object
-        header: Header
-        children: seq[Node]
-        metadata: seq[int]
-
-    var treeSource = problemInts
-
-    proc buildTree(source: iterator(): int): Node =
-      new result
-      result.header.children = treeSource()
-      result.header.metadata = treeSource()
-      for _ in 1.countup result.header.children:
-        result.children.add buildTree source
-      for _ in 1.countup result.header.metadata:
-        result.metadata.add treeSource()
-
-    var root = buildTree treeSource
-  #+end_src
-
-  #+name: day-8-solution-1
-  #+begin_src nim
-    import math
-    import sequtils
-
-    func metadataSum(tree: Node): int =
-      sum(tree.metadata) + sum(tree.children.map metadataSum)
-
-    echo metadataSum root
-  #+end_src
-
-  #+name: day-8-solution-2
-  #+begin_src nim
-    func nodeValue(tree: Node): int =
-      if len(tree.children) == 0:
-        result = sum tree.metadata
       else:
-        for nodeRef in tree.metadata:
-          let nodeIdx = nodeRef - 1
-          if nodeIdx < len(tree.children):
-            result += nodeValue tree.children[nodeIdx]
+        reagents.addLast nextReagent
+    len reagents
 
-    echo nodeValue root
-  #+end_src
+  iterator solution1Polymer(): char {.closure.} =
+    let inStream = problem()
+    var nextReagent = readChar inStream
+    while nextReagent != '\n':
+      yield nextReagent
+      nextReagent = readChar inStream
 
-  #+begin_src nim :tangle src/memory_maneuver.nim
-    <<read-problem-stream>>
+  echo polymerLength(solution1Polymer)
+#+end_src
 
-    <<problem-ints>>
+The second half is real interesting. Could possibly just loop 26 times, once
+for each letter, and see what the best result is... First I go back and
+change the stream code into a thunk so I can read a file or stdin multiple
+times. Then I need to change the first solution into a proc that takes an
+iterator. Finally I can write a loop that creates an iterator excluding a
+certain reagent and passes it to said proc.
 
-    <<day-8-build-tree>>
+#+name: day-5-solution-2
+#+begin_src nim
+  func solution2Polymer(exclude: char): iterator(): char {.closure.} =
+    (iterator(): char {.closure.} =
+       let inStream = problem()
+       var nextReagent = readChar inStream
+       while nextReagent != '\n':
+         if toLowerAscii(nextReagent) != toLowerAscii(exclude):
+           yield nextReagent
+         nextReagent = readChar inStream)
 
-    <<day-8-solution-1>>
+  var minLength = high(int)
 
-    <<day-8-solution-2>>
-  #+end_src
+  for reagent in countup('a', 'z'):
+    minLength = minLength.min polymerLength solution2Polymer reagent
 
-  Test data should result in ~138~.
+  echo minLength
+#+end_src
 
+#+begin_src nim :tangle src/alchemical_reduction.nim
+  <<read-problem-stream>>
+
+  <<day-5-solution-1>>
+
+  <<day-5-solution-2>>
+#+end_src
+* Day 6: Chronal Coordinates
+Find the largest area of points that are closest to a given point by
+Manhattan distance but not infinite in number.
+
+#+begin_src sh
+  nim c -r src/chronal_coordinates data/6.txt 10000
+#+end_src
+
+The input is a simple list of coords.
+
+#+name: day-6-problem-line
+#+begin_src nim
+  type ProblemLine = tuple[x, y: int]
+#+end_src
+
+#+name: day-6-parse-line
+#+begin_src nim
+  let coords = (line.split ',').map do (n: string) -> int: parseInt n.strip()
+  (coords[0], coords[1])
+#+end_src
+
+The implementation of manhattan for coords is fairly simple.
+
+#+name: manhattan
+#+begin_src nim
+  func manhattan(x, y: (int, int)): int =
+    abs(x[0] - y[0]) + abs(x[1] - y[1])
+#+end_src
+
+Then we find the boundaries of our canvas by finding the min and max
+coordinates given.
+
+#+name: day-6-min-max-x-y
+#+begin_src nim
+  var minX = problem[0][0]
+  var maxX = problem[0][0]
+  var minY = problem[0][1]
+  var maxY = problem[0][1]
+
+  for coord in problem[1..^1]:
+    minX = minX.min coord[0]
+    maxX = maxX.max coord[0]
+    minY = minY.min coord[1]
+    maxY = maxY.max coord[1]
+#+end_src
+
+Calculate the distances from a given coord to a given point.
+
+#+name: day-6-distances
+#+begin_src nim
+  proc coordDistances(coord: (int, int)): seq[((int, int), int)] =
+    problem.map do (c: (int, int)) -> ((int, int), int):
+      (c, c.manhattan coord)
+#+end_src
+
+Then we need a function to find the closest given coord to a given point.
+
+#+name: day-6-closest-problem-coord
+#+begin_src nim
+  import algorithm
+  import options
+
+  proc closestProblemCoord(coord: (int, int)): Option[(int, int)] =
+    let sortedDistances = coord.coordDistances().sorted do (x, y: ((int, int), int)) -> int:
+      x[1].cmp y[1]
+    if sortedDistances[0][1] != sortedDistances[1][1]:
+      result = some sortedDistances[0][0]
+#+end_src
+
+We walk the edges of the grid using the distance function to create a set of
+excluded infinite point sets. Certainly there is a way to do this in one
+loop? This is pretty compact though so I'm not unhappy. Thought about
+short-circuiting in case you land directly on a given coord, but meh. (Could
+also do that for the solution loop lower down.)
+
+#+name: day-6-excluded
+#+begin_src nim
+  import sets
+
+  var infiniteAreas = initSet[(int, int)]()
+
+  for x in countup(minX, maxX):
+    for coord in @[(x, minY), (x, maxY)]:
+      coord.closestProblemCoord().map do (input: (int, int)):
+        infiniteAreas.incl input
+
+  for y in countup(minY, maxY):
+    for coord in @[(minX, y), (maxX, y)]:
+      coord.closestProblemCoord().map do (input: (int, int)):
+        infiniteAreas.incl input
+#+end_src
+
+Then we can get to solving by checking all the other points. It can probably
+be solved more efficiently, IDK.
+
+#+name: day-6-solution-1
+#+begin_src nim
+  import tables
+
+  var areas = initCountTable[(int, int)]()
+
+  for x in countup(minX + 1, maxX - 1):
+    for y in countup(minY + 1, maxY - 1):
+      let coord = (x, y)
+      coord.closestProblemCoord().map do (input: (int, int)):
+        if not infiniteAreas.contains input:
+          areas.inc input
+
+  areas.sort()
+
+  echo toSeq(areas.values)[0]
+#+end_src
+
+Hiccup. The second solution requires we use an out-of-input-file-band value
+as part of our behavior. Pull in another arg or stdin!
+
+#+name: day-6-solution-2
+#+begin_src nim
+  let maxDistance = if paramCount() > 1:
+                      parseInt paramStr 2
+                    else:
+                      echo "max distance"
+                      parseInt strip readAll stdin
+  var closeArea = 0
+
+  for x in countup(minX, maxX):
+    for y in countup(minY, maxY):
+      let coord = (x, y)
+      let totalDistance = coord.coordDistances().foldl(a + b[1], 0)
+      if totalDistance < maxDistance:
+        inc closeArea
+
+  echo closeArea
+#+end_src
+
+#+begin_src nim :tangle src/chronal_coordinates.nim
+  <<day-6-problem-line>>
+
+  <<read-problem-lines>>
+    <<day-6-parse-line>>
+
+  <<manhattan>>
+
+  <<day-6-min-max-x-y>>
+
+  <<day-6-distances>>
+
+  <<day-6-closest-problem-coord>>
+
+  <<day-6-excluded>>
+
+  <<day-6-solution-1>>
+
+  <<day-6-solution-2>>
+#+end_src
+
+Test data should result in ~17~.
+* Day 7: The Sum of Its Parts
+Resolve conflicts in graph by doing alphabetically primary steps first.
+
+#+begin_src sh
+  nim c -r src/the_sum_of_its_parts data/7.txt 5 61
+#+end_src
+
+There's a lot of text in the file, but in essence each line describes one
+dependency relationship.
+
+#+name: day-7-problem-line
+#+begin_src nim
+  type ProblemLine = tuple[step, dependsOn: char]
+#+end_src
+
+#+name: day-7-parse-line
+#+begin_src nim
+  let words = line.split ' '
+  (words[7][0], words[1][0])
+#+end_src
+
+I slightly misunderstood the problem's alphabetizing constraint, but it opens
+up what I think of as a relatively elegant solution. Seed a table of
+relatioships then loop through it until it is empty.
+
+#+name: day-7-solution-1
+#+begin_src nim
+  import algorithm
+  import options
+  import tables
+  import sets
+
+  var dependencies = initTable[char, HashSet[char]]()
+
+  for dependency in problem:
+    if not dependencies.contains dependency.step:
+      dependencies[dependency.step] = initSet[char]()
+    if not dependencies.contains dependency.dependsOn:
+      dependencies[dependency.dependsOn] = initSet[char]()
+    dependencies[dependency.step].incl dependency.dependsOn
+
+  func nextStep(dependencies: Table): Option[char] =
+    let validSteps = toSeq(dependencies.pairs).filter do (pair: (char, HashSet[char])) -> bool:
+      len(pair[1]) == 0
+    let sortedSteps = validSteps.sorted do (x, y: (char, HashSet[char])) -> int:
+      x[0].cmp y[0]
+    if len(sortedSteps) > 0:
+      result = some(sortedSteps[0][0])
+
+  var instructions = ""
+
+  while len(dependencies) > 0:
+    let step = get nextStep dependencies
+    instructions &= step
+    dependencies.del step
+    for k in dependencies.keys:
+      dependencies[k].excl step
+
+  echo instructions
+#+end_src
+
+UGH MORE ARGUMENTS BUT NOW THERE ARE TWO.
+
+Thankfully the way I wrote this makes it rather easy to solve the problem.
+We just need to change the loop so the second part only happens when a worker
+finishes a step.
+
+This is a good opportunity to use a heap but I'm too lazy to do that for just
+five elves.
+
+#+name: day-7-solution-2
+#+begin_src nim
+  let elfCount = if paramCount() > 1:
+                   parseInt paramStr 2
+                 else:
+                   echo "elf count"
+                   parseInt strip readAll stdin
+
+  let timeForA = if paramCount() > 2:
+                   parseInt paramStr 3
+                 else:
+                   echo "time to perform step A"
+                   parseInt strip readAll stdin
+
+  for dependency in problem:
+    if not dependencies.contains dependency.step:
+      dependencies[dependency.step] = initSet[char]()
+    if not dependencies.contains dependency.dependsOn:
+      dependencies[dependency.dependsOn] = initSet[char]()
+    dependencies[dependency.step].incl dependency.dependsOn
+
+  var time = 0
+  var elves: seq[(char, int)] = @[]
+
+  func timeFor(timeForA: int, step: char): int =
+    timeForA + (ord(step) - ord('A'))
+
+  while len(dependencies) + len(elves) > 0:
+    for i, elf in elves:
+      if elf[1] == time:
+        let step = elf[0]
+        for k in dependencies.keys:
+          dependencies[k].excl step
+        elves.del i
+    if len(elves) < elfCount:
+      let step = nextStep dependencies
+      if isSome step:
+        elves.add (get step, time + timeForA.timeFor get step)
+        dependencies.del get step
+        continue
+    inc time
+
+  echo time - 1
+#+end_src
+
+#+begin_src nim :tangle src/the_sum_of_its_parts.nim
+  <<day-7-problem-line>>
+
+  <<read-problem-lines>>
+    <<day-7-parse-line>>
+
+  <<day-7-solution-1>>
+
+  <<day-7-solution-2>>
+#+end_src
+
+Test data should result in ~CABDFE~.
+* Day 8: Memory Maneuver
+#+begin_src sh
+  nim c -r src/memory_maneuver data/8.txt
+#+end_src
+
+We're reusing the problem stream from day 5, but creating an iterator to
+consume the integers on top of it.
+
+#+name: problem-ints
+#+begin_src nim
+  import strutils
+
+  iterator problemInts(): int {.closure.} =
+    let inStream = problem()
+    var next = readChar inStream
+    var num = ""
+    while next != '\n':
+      if next == ' ':
+        yield parseInt num
+        num = ""
+      else:
+        num &= next
+      next = readChar inStream
+    yield parseInt num
+#+end_src
+
+Building the tree is pretty simple stuff. I remember a fully recursive way to
+do it from school but based on Nim's iterators I think it's simpler just to
+do it partially imperatively.
+
+#+name: day-8-build-tree
+#+begin_src nim
+  type
+    Header = tuple[children, metadata: int]
+    Node = ref object
+      header: Header
+      children: seq[Node]
+      metadata: seq[int]
+
+  var treeSource = problemInts
+
+  proc buildTree(source: iterator(): int): Node =
+    new result
+    result.header.children = treeSource()
+    result.header.metadata = treeSource()
+    for _ in 1.countup result.header.children:
+      result.children.add buildTree source
+    for _ in 1.countup result.header.metadata:
+      result.metadata.add treeSource()
+
+  var root = buildTree treeSource
+#+end_src
+
+#+name: day-8-solution-1
+#+begin_src nim
+  import math
+  import sequtils
+
+  func metadataSum(tree: Node): int =
+    sum(tree.metadata) + sum(tree.children.map metadataSum)
+
+  echo metadataSum root
+#+end_src
+
+#+name: day-8-solution-2
+#+begin_src nim
+  func nodeValue(tree: Node): int =
+    if len(tree.children) == 0:
+      result = sum tree.metadata
+    else:
+      for nodeRef in tree.metadata:
+        let nodeIdx = nodeRef - 1
+        if nodeIdx < len(tree.children):
+          result += nodeValue tree.children[nodeIdx]
+
+  echo nodeValue root
+#+end_src
+
+#+begin_src nim :tangle src/memory_maneuver.nim
+  <<read-problem-stream>>
+
+  <<problem-ints>>
+
+  <<day-8-build-tree>>
+
+  <<day-8-solution-1>>
+
+  <<day-8-solution-2>>
+#+end_src
+
+Test data should result in ~138~.
 * Day 9: Marble Mania
+#+begin_src sh
+  nim c -r src/marble_mania data/9.txt
+#+end_src
 
-  #+begin_src sh
-    nim c -r src/marble_mania data/9.txt
-  #+end_src
+We just need to pull out two values from the input, nothing fancy.
 
-  We just need to pull out two values from the input, nothing fancy.
+#+name: day-9-problem-line
+#+begin_src nim
+  type ProblemLine = tuple[players, highMarble: int]
+#+end_src
 
-  #+name: day-9-problem-line
-  #+begin_src nim
-    type ProblemLine = tuple[players, highMarble: int]
-  #+end_src
+#+name: day-9-parse-line
+#+begin_src nim
+  let tokens = line.split ' '
+  (parseInt tokens[0], parseInt tokens[6])
+#+end_src
 
-  #+name: day-9-parse-line
-  #+begin_src nim
-    let tokens = line.split ' '
-    (parseInt tokens[0], parseInt tokens[6])
-  #+end_src
+#+name: day-9-solution-1
+#+begin_src nim
+  let players = problem[0].players
+  let highMarble = problem[0].highMarble
 
-  #+name: day-9-solution-1
-  #+begin_src nim
-    let players = problem[0].players
-    let highMarble = problem[0].highMarble
+  type Marble = ref object
+    value: int
+    clockwise: Marble
+    counterClockwise: Marble
 
-    type Marble = ref object
-      value: int
-      clockwise: Marble
-      counterClockwise: Marble
+  func playGame(players, highMarble: int): seq[int] =
+    for _ in 1.countup players:
+      result.add 0
+    var currentPlayer = 0
+    var currentMarble = new Marble
+    currentMarble.value = 0
+    currentMarble.clockwise = currentMarble
+    currentMarble.counterClockwise = currentMarble
+    for marble in 1.countup highMarble:
+      if marble mod 23 == 0:
+        result[currentPlayer] += marble
+        for _ in 1.countup 7:
+          currentMarble = currentMarble.counterClockwise
+        result[currentPlayer] += currentMarble.value
+        currentMarble.counterClockwise.clockwise = currentMarble.clockwise
+        currentMarble.clockwise.counterClockwise = currentMarble.counterClockwise
+        currentMarble = currentMarble.clockwise
+      else:
+        var newMarble = new Marble
+        newMarble.value = marble
+        currentMarble = currentMarble.clockwise
+        currentMarble.clockwise.counterClockwise = newMarble
+        newMarble.clockwise = currentMarble.clockwise
+        currentMarble.clockwise = newMarble
+        newMarble.counterClockwise = currentMarble
+        currentMarble = currentMarble.clockwise
+      inc currentPlayer
+      if currentPlayer == len result: currentPlayer = 0
 
-    func playGame(players, highMarble: int): seq[int] =
-      for _ in 1.countup players:
-        result.add 0
-      var currentPlayer = 0
-      var currentMarble = new Marble
-      currentMarble.value = 0
-      currentMarble.clockwise = currentMarble
-      currentMarble.counterClockwise = currentMarble
-      for marble in 1.countup highMarble:
-        if marble mod 23 == 0:
-          result[currentPlayer] += marble
-          for _ in 1.countup 7:
-            currentMarble = currentMarble.counterClockwise
-          result[currentPlayer] += currentMarble.value
-          currentMarble.counterClockwise.clockwise = currentMarble.clockwise
-          currentMarble.clockwise.counterClockwise = currentMarble.counterClockwise
-          currentMarble = currentMarble.clockwise
-        else:
-          var newMarble = new Marble
-          newMarble.value = marble
-          currentMarble = currentMarble.clockwise
-          currentMarble.clockwise.counterClockwise = newMarble
-          newMarble.clockwise = currentMarble.clockwise
-          currentMarble.clockwise = newMarble
-          newMarble.counterClockwise = currentMarble
-          currentMarble = currentMarble.clockwise
-        inc currentPlayer
-        if currentPlayer == len result: currentPlayer = 0
+  echo max playGame(players, highMarble)
+#+end_src
 
-    echo max playGame(players, highMarble)
-  #+end_src
+I was spoiled into using a doubly linked list of course.
 
-  I was spoiled into using a doubly linked list of course.
+#+name: day-9-solution-2
+#+begin_src nim
+  echo max playGame(players, highMarble * 100)
+#+end_src
 
-  #+name: day-9-solution-2
-  #+begin_src nim
-    echo max playGame(players, highMarble * 100)
-  #+end_src
+#+begin_src nim :tangle src/marble_mania.nim
+  <<day-9-problem-line>>
 
-  #+begin_src nim :tangle src/marble_mania.nim
-    <<day-9-problem-line>>
+  <<read-problem-lines>>
+    <<day-9-parse-line>>
 
-    <<read-problem-lines>>
-      <<day-9-parse-line>>
+  <<day-9-solution-1>>
 
-    <<day-9-solution-1>>
+  <<day-9-solution-2>>
+#+end_src
 
-    <<day-9-solution-2>>
-  #+end_src
-
-  Test data is on the page. The one in the test file should give ~32~.
-
+Test data is on the page. The one in the test file should give ~32~.
 * Day 13: Mine Cart Madness
+#+begin_src sh
+  nim c -r src/mine_cart_madness data/13.txt
+#+end_src
 
-  #+begin_src sh
-    nim c -r src/mine_cart_madness data/13.txt
-  #+end_src
+Another simulation problem. I'm skipping from day 9 to here, and think this
+problem seems simple. Maybe I'm getting a grasp on the type of the problem,
+maybe it's coincidental, maybe the second part will knock my socks off. In
+any case we can neatly separate the track and cart parts of the problem. I'll
+parse each line as a row just because it's easier to deal with. Could also
+stream in each character. Track segments go in a sparse matrix, carts go in a
+sequence that we'll sort.
 
-  Another simulation problem. I'm skipping from day 9 to here, and think this
-  problem seems simple. Maybe I'm getting a grasp on the type of the problem,
-  maybe it's coincidental, maybe the second part will knock my socks off. In
-  any case we can neatly separate the track and cart parts of the problem. I'll
-  parse each line as a row just because it's easier to deal with. Could also
-  stream in each character. Track segments go in a sparse matrix, carts go in a
-  sequence that we'll sort.
+We need a special place to store starting cart locations, so the line parsing
+will be effectful anyway. This means the ~ProblemLine~ type itself is empty.
 
-  We need a special place to store starting cart locations, so the line parsing
-  will be effectful anyway. This means the ~ProblemLine~ type itself is empty.
+#+name: day-13-problem-line
+#+begin_src nim
+  import tables
 
-  #+name: day-13-problem-line
-  #+begin_src nim
-    import tables
+  type
+    TrackSegment = enum
+      Verti
+      Horiz
+      DiagR
+      DiagL
+      Inter
+    CartDirection = enum
+      N
+      E
+      S
+      W
+    Coord = tuple[col, row: int]
+    Track = Table[Coord, TrackSegment]
+    TurnDirection = enum
+      Left
+      Right
+      Straight
+    CartSimulation = tuple
+      loc: Coord
+      dir: CartDirection
+      lastTurn: TurnDirection
+      alive: bool
+    TrackSimulation = tuple
+      track: Track
+      carts: seq[CartSimulation]
+    ProblemLine = bool
 
-    type
-      TrackSegment = enum
-        Verti
-        Horiz
-        DiagR
-        DiagL
-        Inter
-      CartDirection = enum
-        N
-        E
-        S
-        W
-      Coord = tuple[col, row: int]
-      Track = Table[Coord, TrackSegment]
-      TurnDirection = enum
-        Left
-        Right
-        Straight
-      CartSimulation = tuple
-        loc: Coord
-        dir: CartDirection
-        lastTurn: TurnDirection
-        alive: bool
-      TrackSimulation = tuple
-        track: Track
-        carts: seq[CartSimulation]
-      ProblemLine = bool
+  var startingCarts: seq[(Coord, CartDirection)]
+  var track = initTable[Coord, TrackSegment]()
 
-    var startingCarts: seq[(Coord, CartDirection)]
-    var track = initTable[Coord, TrackSegment]()
+  var row = 0
+#+end_src
 
-    var row = 0
-  #+end_src
+#+name: day-13-parse-line
+#+begin_src nim
+  var col = 0
 
-  #+name: day-13-parse-line
-  #+begin_src nim
-    var col = 0
+  for c in line:
+    case c
+    of '|':
+      track[(col, row)] = Verti
+    of '-':
+      track[(col, row)] = Horiz
+    of '/':
+      track[(col, row)] = DiagR
+    of '\\':
+      track[(col, row)] = DiagL
+    of '+':
+      track[(col, row)] = Inter
+    of '^':
+      track[(col, row)] = Verti
+      startingCarts.add ((col, row), N)
+    of 'v':
+      track[(col, row)] = Verti
+      startingCarts.add ((col, row), S)
+    of '>':
+      track[(col, row)] = Horiz
+      startingCarts.add ((col, row), E)
+    of '<':
+      track[(col, row)] = Horiz
+      startingCarts.add ((col, row), W)
+    else: discard
+    inc col
 
-    for c in line:
-      case c
-      of '|':
-        track[(col, row)] = Verti
-      of '-':
-        track[(col, row)] = Horiz
-      of '/':
-        track[(col, row)] = DiagR
-      of '\\':
-        track[(col, row)] = DiagL
-      of '+':
-        track[(col, row)] = Inter
-      of '^':
-        track[(col, row)] = Verti
-        startingCarts.add ((col, row), N)
-      of 'v':
-        track[(col, row)] = Verti
-        startingCarts.add ((col, row), S)
-      of '>':
-        track[(col, row)] = Horiz
-        startingCarts.add ((col, row), E)
-      of '<':
-        track[(col, row)] = Horiz
-        startingCarts.add ((col, row), W)
-      else: discard
-      inc col
+  inc row
+#+end_src
 
-    inc row
-  #+end_src
+OK, that's the data structure we want. Now the functions necessary to run the
+simulation. According to the problem specification that means another format
+for storing carts with information about their last turn. Also a way to sort
+that list of carts by row then column. Also a way to choose which direction a
+cart goes. Also a way to determine if that resulted in a crash. All right,
+let's write them. The types have been added above so we can use them in
+parsing the track.
 
-  OK, that's the data structure we want. Now the functions necessary to run the
-  simulation. According to the problem specification that means another format
-  for storing carts with information about their last turn. Also a way to sort
-  that list of carts by row then column. Also a way to choose which direction a
-  cart goes. Also a way to determine if that resulted in a crash. All right,
-  let's write them. The types have been added above so we can use them in
-  parsing the track.
+#+name: day-13-simulation-funcs
+#+begin_src nim
+  import algorithm
 
-  #+name: day-13-simulation-funcs
-  #+begin_src nim
-    import algorithm
+  proc sort(carts: var seq[CartSimulation]) =
+    carts.sort do (x, y: CartSimulation) -> int:
+      result = x.loc.row.cmp y.loc.row
+      if result == 0:
+        result = x.loc.col.cmp y.loc.col
 
-    proc sort(carts: var seq[CartSimulation]) =
-      carts.sort do (x, y: CartSimulation) -> int:
-        result = x.loc.row.cmp y.loc.row
-        if result == 0:
-          result = x.loc.col.cmp y.loc.col
+  func nextLocation(cart: CartSimulation): Coord =
+    case cart.dir
+    of N: (cart.loc.col, cart.loc.row - 1)
+    of E: (cart.loc.col + 1, cart.loc.row)
+    of S: (cart.loc.col, cart.loc.row + 1)
+    of W: (cart.loc.col - 1, cart.loc.row)
 
-    func nextLocation(cart: CartSimulation): Coord =
-      case cart.dir
-      of N: (cart.loc.col, cart.loc.row - 1)
-      of E: (cart.loc.col + 1, cart.loc.row)
-      of S: (cart.loc.col, cart.loc.row + 1)
-      of W: (cart.loc.col - 1, cart.loc.row)
+  proc turn(cart: var CartSimulation): TurnDirection =
+    case cart.lastTurn
+    of Left:
+      result = Straight
+    of Straight:
+      result = Right
+    of Right:
+      result = Left
+    cart.lastTurn = result
 
-    proc turn(cart: var CartSimulation): TurnDirection =
-      case cart.lastTurn
-      of Left:
-        result = Straight
-      of Straight:
-        result = Right
-      of Right:
-        result = Left
-      cart.lastTurn = result
+  proc move(track: Track, cart: var CartSimulation) =
+    let endCoord = nextLocation cart
+    let newDirection = case cart.dir
+                       of N:
+                         case track[endCoord]
+                         of Verti: N
+                         of DiagR: E
+                         of DiagL: W
+                         of Inter:
+                           case turn cart
+                           of Left: W
+                           of Straight: N
+                           of Right: E
+                         else: raise newException(AssertionError, "bad turn")
+                       of E:
+                         case track[endCoord]
+                         of Horiz: E
+                         of DiagR: N
+                         of DiagL: S
+                         of Inter:
+                           case turn cart
+                           of Left: N
+                           of Straight: E
+                           of Right: S
+                         else: raise newException(AssertionError, "bad turn")
+                       of S:
+                         case track[endCoord]
+                         of Verti: S
+                         of DiagR: W
+                         of DiagL: E
+                         of Inter:
+                           case turn cart
+                           of Left: E
+                           of Straight: S
+                           of Right: W
+                         else: raise newException(AssertionError, "unreachable")
+                       of W:
+                         case track[endCoord]
+                         of Horiz: W
+                         of DiagR: S
+                         of DiagL: N
+                         of Inter:
+                           case turn cart
+                           of Left: S
+                           of Straight: W
+                           of Right: N
+                         else: raise newException(AssertionError, "bad turn")
+    cart.loc = endCoord
+    cart.dir = newDirection
+#+end_src
 
-    proc move(track: Track, cart: var CartSimulation) =
-      let endCoord = nextLocation cart
-      let newDirection = case cart.dir
-                         of N:
-                           case track[endCoord]
-                           of Verti: N
-                           of DiagR: E
-                           of DiagL: W
-                           of Inter:
-                             case turn cart
-                             of Left: W
-                             of Straight: N
-                             of Right: E
-                           else: raise newException(AssertionError, "bad turn")
-                         of E:
-                           case track[endCoord]
-                           of Horiz: E
-                           of DiagR: N
-                           of DiagL: S
-                           of Inter:
-                             case turn cart
-                             of Left: N
-                             of Straight: E
-                             of Right: S
-                           else: raise newException(AssertionError, "bad turn")
-                         of S:
-                           case track[endCoord]
-                           of Verti: S
-                           of DiagR: W
-                           of DiagL: E
-                           of Inter:
-                             case turn cart
-                             of Left: E
-                             of Straight: S
-                             of Right: W
-                           else: raise newException(AssertionError, "unreachable")
-                         of W:
-                           case track[endCoord]
-                           of Horiz: W
-                           of DiagR: S
-                           of DiagL: N
-                           of Inter:
-                             case turn cart
-                             of Left: S
-                             of Straight: W
-                             of Right: N
-                           else: raise newException(AssertionError, "bad turn")
-      cart.loc = endCoord
-      cart.dir = newDirection
-  #+end_src
-
-  #+name: day-13-solution-1
-  #+begin_src nim
-    proc solution1() =
-      var solution1Sim: TrackSimulation = (track, @[])
-      for cart in startingCarts:
-        solution1Sim.carts.add (cart[0], cart[1], Right, true)
-      while true:
-        sort solution1Sim.carts
-        for i in 0 ..< solution1Sim.carts.len:
-          solution1Sim.track.move solution1Sim.carts[i]
-          let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
-            c.loc == solution1Sim.carts[i].loc
-          if len(crash) > 1:
-            echo crash[0].loc
-            return
-
-    solution1()
-  #+end_src
-
-  What a merciful problem. We just have to treat crashes differently. Woo.
-
-  That paragraph aged HORRIBLY.
-
-  #+name: day-13-solution-2
-  #+begin_src nim
-    import sets
-
-    proc solution2() =
-      var sim: TrackSimulation = (track, @[])
-      for cart in startingCarts:
-        sim.carts.add (cart[0], cart[1], Right, true)
-      while true:
-        sort sim.carts
-        for i in 0 ..< sim.carts.len:
-          if sim.carts[i].alive:
-            sim.track.move sim.carts[i]
-            let crash = sim.carts.filter do (c: CartSimulation) -> bool:
-              c.alive and c.loc == sim.carts[i].loc
-            if len(crash) > 1:
-              var removed = 0
-              for j in 0 ..< sim.carts.len:
-                if sim.carts[j].loc == crash[0].loc and sim.carts[j].alive and removed < 2:
-                  inc removed
-                  sim.carts[j].alive = false
-        var alive = sim.carts.filter do (c: CartSimulation) -> bool:
-          c.alive
-        if len(alive) == 1:
-          echo alive[0].loc
+#+name: day-13-solution-1
+#+begin_src nim
+  proc solution1() =
+    var solution1Sim: TrackSimulation = (track, @[])
+    for cart in startingCarts:
+      solution1Sim.carts.add (cart[0], cart[1], Right, true)
+    while true:
+      sort solution1Sim.carts
+      for i in 0 ..< solution1Sim.carts.len:
+        solution1Sim.track.move solution1Sim.carts[i]
+        let crash = solution1Sim.carts.filter do (c: CartSimulation) -> bool:
+          c.loc == solution1Sim.carts[i].loc
+        if len(crash) > 1:
+          echo crash[0].loc
           return
 
-    solution2()
-  #+end_src
+  solution1()
+#+end_src
 
-  New test file, it should result in ~6,4~.
+What a merciful problem. We just have to treat crashes differently. Woo.
 
-  #+begin_src nim :tangle src/mine_cart_madness.nim
-    <<day-13-problem-line>>
+That paragraph aged HORRIBLY.
 
-    <<read-problem-lines>>
-      <<day-13-parse-line>>
+#+name: day-13-solution-2
+#+begin_src nim
+  import sets
 
-    <<day-13-simulation-funcs>>
+  proc solution2() =
+    var sim: TrackSimulation = (track, @[])
+    for cart in startingCarts:
+      sim.carts.add (cart[0], cart[1], Right, true)
+    while true:
+      sort sim.carts
+      for i in 0 ..< sim.carts.len:
+        if sim.carts[i].alive:
+          sim.track.move sim.carts[i]
+          let crash = sim.carts.filter do (c: CartSimulation) -> bool:
+            c.alive and c.loc == sim.carts[i].loc
+          if len(crash) > 1:
+            var removed = 0
+            for j in 0 ..< sim.carts.len:
+              if sim.carts[j].loc == crash[0].loc and sim.carts[j].alive and removed < 2:
+                inc removed
+                sim.carts[j].alive = false
+      var alive = sim.carts.filter do (c: CartSimulation) -> bool:
+        c.alive
+      if len(alive) == 1:
+        echo alive[0].loc
+        return
 
-    <<day-13-solution-1>>
+  solution2()
+#+end_src
 
-    <<day-13-solution-2>>
-  #+end_src
+New test file, it should result in ~6,4~.
 
-  Test data should result in ~7,3~.
+#+begin_src nim :tangle src/mine_cart_madness.nim
+  <<day-13-problem-line>>
 
+  <<read-problem-lines>>
+    <<day-13-parse-line>>
+
+  <<day-13-simulation-funcs>>
+
+  <<day-13-solution-1>>
+
+  <<day-13-solution-2>>
+#+end_src
+
+Test data should result in ~7,3~.
 * Day 14: Chocolate Charts
+#+begin_src sh
+  nim c -r src/chocolate_charts 077201
+#+end_src
 
-  #+begin_src sh
-    nim c -r src/chocolate_charts 077201
-  #+end_src
+This is a weird one. Pretty sure we don't need to worry about a linked list
+as the list of scores is append-only. Reading in the problem is slightly
+different as it's just a number. I've cheated by reading about the second
+problem a little, so I know the leading 0 in my problem is meaningful the
+second time around.
 
-  This is a weird one. Pretty sure we don't need to worry about a linked list
-  as the list of scores is append-only. Reading in the problem is slightly
-  different as it's just a number. I've cheated by reading about the second
-  problem a little, so I know the leading 0 in my problem is meaningful the
-  second time around.
+#+name: day-14-problem
+#+begin_src nim
+  import os
 
-  #+name: day-14-problem
-  #+begin_src nim
-    import os
+  let problem = paramStr 1
+#+end_src
 
-    let problem = paramStr 1
-  #+end_src
+#+name: day-14-solution-1
+#+begin_src nim
+  import sequtils
+  import strutils
 
-  #+name: day-14-solution-1
-  #+begin_src nim
-    import sequtils
-    import strutils
-
-    proc combine(recipes: var seq[int], elf1Current, elf2Current: int) =
-      let newRecipes = recipes[elf1Current] + recipes[elf2Current]
-      let digits = ($newRecipes).map(func (c: char): string = $c).map parseInt
-      for digit in digits:
-        recipes.add digit
+  proc combine(recipes: var seq[int], elf1Current, elf2Current: int) =
+    let newRecipes = recipes[elf1Current] + recipes[elf2Current]
+    let digits = ($newRecipes).map(func (c: char): string = $c).map parseInt
+    for digit in digits:
+      recipes.add digit
 
 
-    func solution1(recipesToTry: int): string =
-      var recipes = @[3, 7]
-      var elf1Current = 0
-      var elf2Current = 1
-      while recipesToTry + 10 >= len recipes:
-        recipes.combine elf1Current, elf2Current
-        elf1Current += recipes[elf1Current] + 1
-        elf2Current += recipes[elf2Current] + 1
-        elf1Current = elf1Current mod len recipes
-        elf2Current = elf2Current mod len recipes
-      recipes[recipesToTry..recipesToTry+9].map(func (s: int): string = $s).join ""
+  func solution1(recipesToTry: int): string =
+    var recipes = @[3, 7]
+    var elf1Current = 0
+    var elf2Current = 1
+    while recipesToTry + 10 >= len recipes:
+      recipes.combine elf1Current, elf2Current
+      elf1Current += recipes[elf1Current] + 1
+      elf2Current += recipes[elf2Current] + 1
+      elf1Current = elf1Current mod len recipes
+      elf2Current = elf2Current mod len recipes
+    recipes[recipesToTry..recipesToTry+9].map(func (s: int): string = $s).join ""
 
-    echo solution1 parseInt problem
-  #+end_src
+  echo solution1 parseInt problem
+#+end_src
 
-  The maximum added score is ~9 + 9~ or ~18~, so we only need to check back one
-  step in the score list. Ugly math but it works!
+The maximum added score is ~9 + 9~ or ~18~, so we only need to check back one
+step in the score list. Ugly math but it works!
 
-  #+name: day-14-solution-2
-  #+begin_src nim
-    func solution2(scoresToSearch: seq[int]): int =
-      var recipes = @[3, 7]
-      var elf1Current = 0
-      var elf2Current = 1
-      while true:
-        recipes.combine elf1Current, elf2Current
-        elf1Current += recipes[elf1Current] + 1
-        elf2Current += recipes[elf2Current] + 1
-        elf1Current = elf1Current mod len recipes
-        elf2Current = elf2Current mod len recipes
-        if len(scoresToSearch) <= len(recipes):
-          if len(scoresToSearch) < len(recipes) and scoresToSearch == recipes[^(len(scoresToSearch)+1)..^2]:
-            return len(recipes) - len(scoresToSearch) - 1
-          if scoresToSearch == recipes[^len(scoresToSearch)..^1]:
-            return len(recipes) - len(scoresToSearch)
+#+name: day-14-solution-2
+#+begin_src nim
+  func solution2(scoresToSearch: seq[int]): int =
+    var recipes = @[3, 7]
+    var elf1Current = 0
+    var elf2Current = 1
+    while true:
+      recipes.combine elf1Current, elf2Current
+      elf1Current += recipes[elf1Current] + 1
+      elf2Current += recipes[elf2Current] + 1
+      elf1Current = elf1Current mod len recipes
+      elf2Current = elf2Current mod len recipes
+      if len(scoresToSearch) <= len(recipes):
+        if len(scoresToSearch) < len(recipes) and scoresToSearch == recipes[^(len(scoresToSearch)+1)..^2]:
+          return len(recipes) - len(scoresToSearch) - 1
+        if scoresToSearch == recipes[^len(scoresToSearch)..^1]:
+          return len(recipes) - len(scoresToSearch)
 
-    echo solution2 problem.map(func (c: char): int = parseInt $c)
-  #+end_src
+  echo solution2 problem.map(func (c: char): int = parseInt $c)
+#+end_src
 
-  #+begin_src nim :tangle src/chocolate_charts.nim
-    <<day-14-problem>>
+#+begin_src nim :tangle src/chocolate_charts.nim
+  <<day-14-problem>>
 
-    <<day-14-solution-1>>
+  <<day-14-solution-1>>
 
-    <<day-14-solution-2>>
-  #+end_src
+  <<day-14-solution-2>>
+#+end_src
 
-  See test data on the page, no file to download.
-
+See test data on the page, no file to download.
 * Day 15: Beverage Bandits
+Got some extra test data from Reddit. The answers for =test-15-0.txt= and
+=test-15-1.txt= respectively should be:
 
-  Got some extra test data from Reddit. The answers for =test-15-0.txt= and
-  =test-15-1.txt= respectively should be:
+#+begin_example
+  67
+#+end_example
 
-  #+begin_example
-    67
-  #+end_example
-
-  #+begin_example
-    71
-  #+end_example
-
+#+begin_example
+  71
+#+end_example
 * TODO ECS for gamey day.
-
-  https://gist.github.com/mvanga/4b01cc085d9d16c3da68d289496e773f
+https://gist.github.com/mvanga/4b01cc085d9d16c3da68d289496e773f
