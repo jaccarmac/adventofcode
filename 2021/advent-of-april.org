@@ -124,6 +124,7 @@ seems less elegant, in the end, than the inner product.
 #+begin_src gnu-apl
   (+/∘(⊣/<⊢/)∘↑(⊢,/⍨1+⊣))
 #+end_src
+* Day 2: Dive!
 * Tangled source.
 ** =advent-of-april.apl=
 #+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
