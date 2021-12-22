@@ -1,3 +1,8 @@
+:PROPERTIES:
+:header-args: :noweb yes
+:header-args:nim: :comments noweb
+:END:
+
 This is my attempt to do a little daily coding practice, finish a full Advent
 of Code, learn Nim better, and stretch my literate programming efforts.
 
@@ -148,7 +153,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Finally, putting it all together.
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/chronal_calibration.nim
+  #+begin_src nim :tangle src/chronal_calibration.nim
     <<day-1-problem-line>>
 
     <<read-problem-lines>>
@@ -222,7 +227,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   Everything together.
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/inventory_management_system.nim
+  #+begin_src nim :tangle src/inventory_management_system.nim
     <<day-2-problem-line>>
 
     <<read-problem-lines>>
@@ -313,7 +318,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo goodClaims
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/no_matter_how_you_slice_it.nim
+  #+begin_src nim :tangle src/no_matter_how_you_slice_it.nim
     <<day-3-problem-line>>
 
     <<read-problem-lines>>
@@ -434,7 +439,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo mostConsistentGuard[0] * mostConsistentGuard[1].largest[0]
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/repose_record.nim
+  #+begin_src nim :tangle src/repose_record.nim
     <<day-4-problem-line>>
 
     <<read-problem-lines>>
@@ -575,7 +580,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo minLength
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/alchemical_reduction.nim
+  #+begin_src nim :tangle src/alchemical_reduction.nim
     <<read-problem-stream>>
 
     <<day-5-solution-1>>
@@ -719,7 +724,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo closeArea
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/chronal_coordinates.nim
+  #+begin_src nim :tangle src/chronal_coordinates.nim
     <<day-6-problem-line>>
 
     <<read-problem-lines>>
@@ -858,7 +863,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo time - 1
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/the_sum_of_its_parts.nim
+  #+begin_src nim :tangle src/the_sum_of_its_parts.nim
     <<day-7-problem-line>>
 
     <<read-problem-lines>>
@@ -950,7 +955,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo nodeValue root
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/memory_maneuver.nim
+  #+begin_src nim :tangle src/memory_maneuver.nim
     <<read-problem-stream>>
 
     <<problem-ints>>
@@ -1032,7 +1037,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo max playGame(players, highMarble * 100)
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/marble_mania.nim
+  #+begin_src nim :tangle src/marble_mania.nim
     <<day-9-problem-line>>
 
     <<read-problem-lines>>
@@ -1275,7 +1280,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
 
   New test file, it should result in ~6,4~.
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/mine_cart_madness.nim
+  #+begin_src nim :tangle src/mine_cart_madness.nim
     <<day-13-problem-line>>
 
     <<read-problem-lines>>
@@ -1360,7 +1365,7 @@ of Code, learn Nim better, and stretch my literate programming efforts.
     echo solution2 problem.map(func (c: char): int = parseInt $c)
   #+end_src
 
-  #+begin_src nim :comments noweb :noweb yes :tangle src/chocolate_charts.nim
+  #+begin_src nim :tangle src/chocolate_charts.nim
     <<day-14-problem>>
 
     <<day-14-solution-1>>
