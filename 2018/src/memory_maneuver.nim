@@ -1,5 +1,5 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%208:%20Memory%20Maneuver][Day 8: Memory Maneuver:6]]
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]
+# [[file:../advent-of-nim.org::*Day 8: Memory Maneuver][Day 8: Memory Maneuver:6]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]][read-problem-stream]]
 import os
 import streams
 
@@ -14,7 +14,7 @@ else:
     newStringStream stdinString
 # read-problem-stream ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::problem-ints][problem-ints]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::problem-ints][problem-ints]]][problem-ints]]
 import strutils
 
 iterator problemInts(): int {.closure.} =
@@ -31,7 +31,7 @@ iterator problemInts(): int {.closure.} =
   yield parseInt num
 # problem-ints ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-build-tree][day-8-build-tree]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-8-build-tree][day-8-build-tree]]][day-8-build-tree]]
 type
   Header = tuple[children, metadata: int]
   Node = ref object
@@ -53,7 +53,7 @@ proc buildTree(source: iterator(): int): Node =
 var root = buildTree treeSource
 # day-8-build-tree ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-solution-1][day-8-solution-1]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-8-solution-1][day-8-solution-1]]][day-8-solution-1]]
 import math
 import sequtils
 
@@ -63,7 +63,7 @@ func metadataSum(tree: Node): int =
 echo metadataSum root
 # day-8-solution-1 ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-8-solution-2][day-8-solution-2]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-8-solution-2][day-8-solution-2]]][day-8-solution-2]]
 func nodeValue(tree: Node): int =
   if len(tree.children) == 0:
     result = sum tree.metadata

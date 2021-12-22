@@ -1,11 +1,11 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%2014:%20Chocolate%20Charts][Day 14: Chocolate Charts:5]]
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-14-problem][day-14-problem]]
+# [[file:../advent-of-nim.org::*Day 14: Chocolate Charts][Day 14: Chocolate Charts:5]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-14-problem][day-14-problem]]][day-14-problem]]
 import os
 
 let problem = paramStr 1
 # day-14-problem ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-14-solution-1][day-14-solution-1]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-14-solution-1][day-14-solution-1]]][day-14-solution-1]]
 import sequtils
 import strutils
 
@@ -31,7 +31,7 @@ func solution1(recipesToTry: int): string =
 echo solution1 parseInt problem
 # day-14-solution-1 ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-14-solution-2][day-14-solution-2]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-14-solution-2][day-14-solution-2]]][day-14-solution-2]]
 func solution2(scoresToSearch: seq[int]): int =
   var recipes = @[3, 7]
   var elf1Current = 0

@@ -1,5 +1,5 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%2013:%20Mine%20Cart%20Madness][Day 13: Mine Cart Madness:7]]
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-problem-line][day-13-problem-line]]
+# [[file:../advent-of-nim.org::*Day 13: Mine Cart Madness][Day 13: Mine Cart Madness:7]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-problem-line][day-13-problem-line]]][day-13-problem-line]]
 import tables
 
 type
@@ -36,7 +36,7 @@ var track = initTable[Coord, TrackSegment]()
 var row = 0
 # day-13-problem-line ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]][read-problem-lines]]
 import os
 import sequtils
 import strutils
@@ -45,7 +45,7 @@ let problem = (
   if paramCount() > 0: readFile paramStr 1 else: readAll stdin
 )[0..^2].splitLines.map do (line: string) -> ProblemLine:
 # read-problem-lines ends here
-  # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-parse-line][day-13-parse-line]]
+  # [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-parse-line][day-13-parse-line]]][day-13-parse-line]]
   var col = 0
   
   for c in line:
@@ -78,7 +78,7 @@ let problem = (
   inc row
   # day-13-parse-line ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-simulation-funcs][day-13-simulation-funcs]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-simulation-funcs][day-13-simulation-funcs]]][day-13-simulation-funcs]]
 import algorithm
 
 proc sort(carts: var seq[CartSimulation]) =
@@ -155,7 +155,7 @@ proc move(track: Track, cart: var CartSimulation) =
   cart.dir = newDirection
 # day-13-simulation-funcs ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-solution-1][day-13-solution-1]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-solution-1][day-13-solution-1]]][day-13-solution-1]]
 proc solution1() =
   var solution1Sim: TrackSimulation = (track, @[])
   for cart in startingCarts:
@@ -173,7 +173,7 @@ proc solution1() =
 solution1()
 # day-13-solution-1 ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-13-solution-2][day-13-solution-2]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-13-solution-2][day-13-solution-2]]][day-13-solution-2]]
 import sets
 
 proc solution2() =

@@ -1,11 +1,11 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%203:%20No%20Matter%20How%20You%20Slice%20It][Day 3: No Matter How You Slice It:6]]
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-3-problem-line][day-3-problem-line]]
+# [[file:../advent-of-nim.org::*Day 3: No Matter How You Slice It][Day 3: No Matter How You Slice It:6]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-3-problem-line][day-3-problem-line]]][day-3-problem-line]]
 type
   Claim = tuple[id, x, y, width, height: int]
   ProblemLine = Claim
 # day-3-problem-line ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-lines][read-problem-lines]]][read-problem-lines]]
 import os
 import sequtils
 import strutils
@@ -14,7 +14,7 @@ let problem = (
   if paramCount() > 0: readFile paramStr 1 else: readAll stdin
 )[0..^2].splitLines.map do (line: string) -> ProblemLine:
 # read-problem-lines ends here
-  # [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-3-parse-line][day-3-parse-line]]
+  # [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-3-parse-line][day-3-parse-line]]][day-3-parse-line]]
   let segments = splitWhitespace line
   result.id = parseInt segments[0][1..^1]
   let coords = split(segments[2], ",")
@@ -25,7 +25,7 @@ let problem = (
   result.height = parseInt dims[1]
   # day-3-parse-line ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-3-solution-1][day-3-solution-1]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-3-solution-1][day-3-solution-1]]][day-3-solution-1]]
 import sets
 import tables
 
@@ -50,7 +50,7 @@ let contestedClaims =
 echo len contestedClaims
 # day-3-solution-1 ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-3-solution-2][day-3-solution-2]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-3-solution-2][day-3-solution-2]]][day-3-solution-2]]
 var goodClaims = toSet map(problem) do (c: Claim) -> int: c.id
 
 for contestedClaim in contestedClaims:

@@ -1,5 +1,5 @@
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::*Day%205:%20Alchemical%20Reduction][Day 5: Alchemical Reduction:5]]
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]
+# [[file:../advent-of-nim.org::*Day 5: Alchemical Reduction][Day 5: Alchemical Reduction:5]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::read-problem-stream][read-problem-stream]]][read-problem-stream]]
 import os
 import streams
 
@@ -14,7 +14,7 @@ else:
     newStringStream stdinString
 # read-problem-stream ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-5-solution-1][day-5-solution-1]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-5-solution-1][day-5-solution-1]]][day-5-solution-1]]
 import deques
 import strutils
 
@@ -41,7 +41,7 @@ iterator solution1Polymer(): char {.closure.} =
 echo polymerLength(solution1Polymer)
 # day-5-solution-1 ends here
 
-# [[file:~/src/src/jaccarmac.com/adventofcode/2018/advent-of-nim.org::day-5-solution-2][day-5-solution-2]]
+# [[[[file:~/src/adventofcode/2018/advent-of-nim.org::day-5-solution-2][day-5-solution-2]]][day-5-solution-2]]
 func solution2Polymer(exclude: char): iterator(): char {.closure.} =
   (iterator(): char {.closure.} =
      let inStream = problem()
