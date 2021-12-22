@@ -132,6 +132,30 @@ simple.
 #+begin_src gnu-apl
   (' '∘≠⊆⊢)¨(nl∘≠⊆⊢)
 #+end_src
+
+The idea (one that I failed to come up with on my own) is to apply a mask to
+the numbers. So those will be valuable later, and can be pulled out thus:
+
+#+begin_src gnu-apl
+  ⍎¨⊢/↑
+#+end_src
+
+The given directions can be compared to the available options based on pulling
+out the first letter in an outer product.
+
+#+begin_src gnu-apl
+  'f' 'd' 'u'∘.{⍺=⊃⊃⍵}
+#+end_src
+
+#+name: s2a
+#+begin_src gnu-apl
+  s2a←⊢
+#+end_src
+
+#+name: s2b
+#+begin_src gnu-apl
+  s2b←⊢
+#+end_src
 * Tangled source.
 ** =advent-of-april.apl=
 #+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
@@ -141,6 +165,9 @@ simple.
   <<base1>>
   <<s1a>>
   <<s1b>>
+
+  <<s2a>>
+  <<s2b>>
 #+end_src
 ** =manifest.scm=
 #+begin_src scheme :tangle manifest.scm
@@ -180,8 +207,8 @@ simple.
 
   (april:april-load (pathname "advent-of-april.apl"))
 
-  (defun print-solutions (day)
-    (with-open-file (input (format nil "data/~a" day))
+  (defun print-solutions (day data)
+    (with-open-file (input (format nil "data/~a" data))
       (let ((puzzle (make-string (file-length input))))
         (read-sequence puzzle input)
         (april:april (with (:store-val (p puzzle) (d day)))
@@ -190,9 +217,10 @@ simple.
 ** =run-day.sh=
 #+begin_src sh :tangle run-day.sh :tangle-mode (identity #o755)
   DAY=$1
+  DATA=$2
 
   sbcl --noinform --noprint --disable-debugger \
        --load run-day.lisp \
-       --eval "(print-solutions $DAY)" \
+       --eval "(print-solutions $DAY \"$DATA\")" \
        --quit
 #+end_src
