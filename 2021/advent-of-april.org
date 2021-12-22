@@ -147,14 +147,26 @@ out the first letter in an outer product.
   'f' 'd' 'u'∘.{⍺=⊃⊃⍵}
 #+end_src
 
+If we use Split on that, we can pull out each direction as a mask, and select
+over the numbers. Then the calculation for the first star is
+straightforward. The horizontal distance is the sum of all forward movements,
+and the depth is the sum of downs minus the sum of ups.
+
 #+name: s2a
 #+begin_src gnu-apl
-  s2a←⊢
+  s2a←{
+    t←(' '∘≠⊆⊢)¨(nl∘≠⊆⊢)⍵
+    n←⍎¨⊢/↑t
+    f d u←↓'f' 'd' 'u'∘.{⍺=⊃⊃⍵}t
+    +/f/n×(+/d/n)-+/u/n
+  }
 #+end_src
+
+I do want to clean that up before going on to the second part.
 
 #+name: s2b
 #+begin_src gnu-apl
-  s2b←⊢
+  s2b←{0}
 #+end_src
 * Tangled source.
 ** =advent-of-april.apl=
