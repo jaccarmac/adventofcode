@@ -121,14 +121,14 @@ The first star requires the comparison of pairs.
 
 #+name: s1a
 #+begin_src gnu-apl
-  s1a←1∘base1∘nums
+  s1a←1⍤base1⍤nums
 #+end_src
 
 The second requires the comparison of windows of three.
 
 #+name: s1b
 #+begin_src gnu-apl
-  s1b←3∘base1∘nums
+  s1b←3⍤base1⍤nums
 #+end_src
 
 I also created a more sensical version of the Mix-using solution. It may be
@@ -191,7 +191,7 @@ the number column already done in ~base2~.
 
 #+name: s2a
 #+begin_src gnu-apl
-  s2a←{f d u←↓base2∘words⍵ ◊ +/f×+/d-u}
+  s2a←{f d u←↓base2⍤words⍵ ◊ +/f×+/d-u}
 #+end_src
 
 Aim is integrated into the solution by Scanning ~d-u~. That results in a vector
@@ -200,7 +200,7 @@ factorable, but the solution is reasonably readable without that change.
 
 #+name: s2b
 #+begin_src gnu-apl
-  s2b←{f d u←↓base2∘words⍵ ◊ +/f×+/f×+\d-u}
+  s2b←{f d u←↓base2⍤words⍵ ◊ +/f×+/f×+\d-u}
 #+end_src
 * Tangled source.
 ** =advent-of-april.apl=
