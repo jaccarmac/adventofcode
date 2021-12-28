@@ -2,9 +2,7 @@
              (guix git-download)
              (gnu packages lisp-xyz))
 
-(packages->manifest
- (list
-  (specification->package "sbcl")
+(define sbcl-april-master
   (let ((commit "401fbfc8e77a1c3c78b8920a210c8b54e56e3fc7")
         (revision "1"))
     (package
@@ -25,4 +23,9 @@
                      (delete-file-recursively "maxpc-apache")
                      ;; Ensure references are to upstream MaxPC.
                      (substitute* "vex/vex.asd"
-                       (("maxpc-apache") "maxpc"))))))))))
+                       (("maxpc-apache") "maxpc")))))))))
+
+(packages->manifest
+ (list
+  (specification->package "sbcl")
+  sbcl-april-master))
