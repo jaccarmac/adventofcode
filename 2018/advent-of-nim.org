@@ -1364,3 +1364,5 @@ Got some extra test data from Reddit. The answers for =test-15-0.txt= and
 #+end_example
 * TODO ECS for gamey day.
 https://gist.github.com/mvanga/4b01cc085d9d16c3da68d289496e773f
+* TODO [[https://github.com/MichalMarsalek/Advent-of-code/tree/master/2021/Nim][Someone's nice and fast solutions for 2021]].
+
