@@ -202,6 +202,30 @@ factorable, but the solution is reasonably readable without that change.
 #+begin_src gnu-apl
   s2b←{f d u←↓base2⍤words⍵ ◊ +/f×+/f×+\d-u}
 #+end_src
+
+Those solutions seem clear, and turning things tacit didn't even reduce my
+character count. However, I wanted to record my efforts here anyway. I learned
+about the Over operator and wanted to see if it made the solution clearer. It
+was also an opportunity to experiment with rotating the matrix from ~base2~
+instead of decomposing it into vectors. I reached my limit when it comes to
+emulating math expressions with variables in tacit form. The braces around the
+Reduction are because April's parsing chokes on it. I'm not sure how to
+disambiguate beyond using dfns.
+
+#+begin_src gnu-apl
+  s2a←(⊢×⍥{+/1↑⍵}1∘⊖-2∘⊖)⍤base2⍤words
+#+end_src
+
+The subtraction of the entire down and up matrices seemed like a waste, so I
+tried adding another Over to pull out the first row at that point. That wastes
+characters by requiring the same operation on the forward matrix, and requires
+more brackets because, again, I don't get April's parsing rules. Turning those
+dfns into parenthesized expressions which the TryAPL parser can handle gives me
+errors, but no precise locations.
+
+#+begin_src gnu-apl
+  s2a←({1↑⍵}×⍥{+/⍵}1∘⊖-⍥{1↑⍵}2∘⊖)⍤base2⍤words
+#+end_src
 * Tangled source.
 ** =advent-of-april.apl=
 #+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
