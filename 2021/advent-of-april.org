@@ -223,6 +223,11 @@ more brackets because, again, I don't get April's parsing rules. Turning those
 dfns into parenthesized expressions which the TryAPL parser can handle gives me
 errors, but no precise locations.
 
+April seems not to provide the same level of parsing clarity of TryAPL, but
+with the combination of ~(with (:print-tokens))~ and the knowledge of APL's
+operator/function association rules, I should be able to figure out where the
+parsing is going wrong.
+
 #+begin_src gnu-apl
   s2a←({1↑⍵}×⍥{+/⍵}1∘⊖-⍥{1↑⍵}2∘⊖)⍤base2⍤words
 #+end_src
