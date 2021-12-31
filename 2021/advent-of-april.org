@@ -226,7 +226,9 @@ errors, but no precise locations.
 April seems not to provide the same level of parsing clarity of TryAPL, but
 with the combination of ~(with (:print-tokens))~ and the knowledge of APL's
 operator/function association rules, I should be able to figure out where the
-parsing is going wrong.
+parsing is going wrong. ~(with (:compile-only))~ is a longer shot as it
+generates quite a bit of code for this length of expression, but still
+interesting. After all, I should still go through the ~(demo)~ output.
 
 #+begin_src gnu-apl
   s2a←({1↑⍵}×⍥{+/⍵}1∘⊖-⍥{1↑⍵}2∘⊖)⍤base2⍤words
