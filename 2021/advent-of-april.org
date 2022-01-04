@@ -233,6 +233,8 @@ interesting. After all, I should still go through the ~(demo)~ output.
 #+begin_src gnu-apl
   s2a←({1↑⍵}×⍥{+/⍵}1∘⊖-⍥{1↑⍵}2∘⊖)⍤base2⍤words
 #+end_src
+* TODO [[https://www.reddit.com/r/adventofcode/comments/ru8bhl/2021_all_daysawk_postscript_aoc_in_100_lines_of/][Awk seems kinda close]].
+* TODO [[https://cuddly-octo-palm-tree.com/posts/2022-01-02-aoc-24/][Reading on a solution to the dreaded day 24]].
 * Tangled source.
 ** =advent-of-april.apl=
 #+begin_src gnu-apl :noweb yes :tangle advent-of-april.apl
