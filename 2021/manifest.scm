@@ -25,7 +25,7 @@
                      (substitute* "vex/vex.asd"
                        (("maxpc-apache") "maxpc")))))))))
 
-(packages->manifest
+(concatenate-manifests
  (list
-  (specification->package "sbcl")
-  sbcl-april-master))
+  (specifications->manifest '("sbcl"))
+  (packages->manifest (list sbcl-april-master))))
