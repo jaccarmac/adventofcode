@@ -258,7 +258,7 @@ interesting. After all, I should still go through the ~(demo)~ output.
                (gnu packages lisp-xyz))
 
   (define sbcl-april-master
-    (let ((commit "401fbfc8e77a1c3c78b8920a210c8b54e56e3fc7")
+    (let ((commit "c219c6b3b6d7b9cf0ef8dce1646d5ac53f215d34")
           (revision "1"))
       (package
         (inherit sbcl-april)
@@ -271,7 +271,7 @@ interesting. After all, I should still go through the ~(demo)~ output.
                  (commit commit)))
            (file-name (git-file-name "cl-april" version))
            (sha256
-            (base32 "1lq5x8062qrpgfdagalb787h162j2ivzm3hahj4cl083fbkkqp7b"))
+            (base32 "1cc76n99mj840r1qmc0w16da15rv7adb54f27bc7gv7prlghchim"))
            (modules '((guix build utils)))
            (snippet '(begin
                        ;; Remove bundled Apache-relicensed MaxPC.
