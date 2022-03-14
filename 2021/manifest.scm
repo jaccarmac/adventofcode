@@ -3,11 +3,11 @@
              (gnu packages lisp-xyz))
 
 (define sbcl-april-master
-  (let ((commit "c219c6b3b6d7b9cf0ef8dce1646d5ac53f215d34")
+  (let ((commit "fb60dd3db197f335303a3de26bf71a9daa3d2384")
         (revision "1"))
     (package
       (inherit sbcl-april)
-      (version (git-version "0.9.3" revision commit))
+      (version (git-version "1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16,14 +16,25 @@
                (commit commit)))
          (file-name (git-file-name "cl-april" version))
          (sha256
-          (base32 "1cc76n99mj840r1qmc0w16da15rv7adb54f27bc7gv7prlghchim"))
+          (base32 "0rhzl14ihl2ywglhnwa72nyyk0nas7ys4lp6iq61adkl1sym32bc"))
          (modules '((guix build utils)))
          (snippet '(begin
                      ;; Remove bundled Apache-relicensed MaxPC.
                      (delete-file-recursively "maxpc-apache")
                      ;; Ensure references are to upstream MaxPC.
                      (substitute* "vex/vex.asd"
-                       (("maxpc-apache") "maxpc")))))))))
+                       (("maxpc-apache") "maxpc"))
+                     ;; Remove dependency on Quicklisp.
+                     (substitute* "april.asd"
+                       (("\"quicklisp\"") ""))
+                     (substitute* "package.lisp"
+                       (("#:quicklisp") ""))
+                     ;; Remove the use of Quicklisp.
+                     (substitute* "utilities.lisp"
+                       (("\\(defun install-demos" all)
+                        (string-append "#+quicklisp " all)))))))
+      (inputs(cons (list "sbcl-cl-unicode" sbcl-cl-unicode)
+                   (package-inputs sbcl-april))))))
 
 (concatenate-manifests
  (list
