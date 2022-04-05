@@ -121,14 +121,14 @@ The first star requires the comparison of pairs.
 
 #+name: s1a
 #+begin_src gnu-apl
-  s1a←1⍤base1⍤nums
+  s1a←1∘base1⍤nums
 #+end_src
 
 The second requires the comparison of windows of three.
 
 #+name: s1b
 #+begin_src gnu-apl
-  s1b←3⍤base1⍤nums
+  s1b←3∘base1⍤nums
 #+end_src
 
 I also created a more sensical version of the Mix-using solution. It may be
