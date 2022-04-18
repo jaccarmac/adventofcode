@@ -3,7 +3,7 @@
              (gnu packages lisp-xyz))
 
 (define sbcl-april-master
-  (let ((commit "098358a4ccf1c6055ffc778330c10b76fc504679")
+  (let ((commit "75d78ff308c626710fac1633646d1d69a7c3014a")
         (revision "1"))
     (package
       (inherit sbcl-april)
@@ -16,7 +16,7 @@
                (commit commit)))
          (file-name (git-file-name "cl-april" version))
          (sha256
-          (base32 "0c913xmz3xkd2ra5hbzias47jm6amp4mcm5dslcchxfm915rfd5l"))
+          (base32 "0iqkz4gqvyajzdfvanrvcvazgbnnw50adafgn58bp1128ahyl5jk"))
          (modules '((guix build utils)))
          (snippet '(begin
                      ;; Remove bundled Apache-relicensed MaxPC.
