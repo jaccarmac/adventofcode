@@ -2,10 +2,13 @@ module Lib (part1, part2) where
 
 part1 :: Integer -> Integer
 part1 1    = 0
-part1 cell = 1 + part1 (minimum (cellNeighbors cell))
+part1 cell = 1 + part1 (minimumNeighbor cell)
 
 part2 :: Integer -> Integer
 part2 puzzle = 2
+
+minimumNeighbor :: Integer -> Integer
+minimumNeighbor cell = minimum (cellNeighbors cell)
 
 cellNeighbors :: Integer -> [Integer]
 cellNeighbors cell = []
