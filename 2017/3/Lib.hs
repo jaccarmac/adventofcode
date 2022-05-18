@@ -12,21 +12,29 @@ minimumNeighbor cell = minimum (cellNeighbors cell)
 
 cellNeighbors :: Integer -> [Integer]
 cellNeighbors cell = [cellForCoord (walkUp coord), cellForCoord (walkDown coord), cellForCoord (walkLeft coord), cellForCoord (walkRight coord)]
-  where coord = (0, 0)
+  where ring = ringForCell cell
+        maxInRing = cellForCoord (ring, -ring)
+        distance = maxInRing - cell
+        sideLength = ringsDimension ring - 1
+        coord
+          | distance < sideLength = (ring - distance, -ring)
+          | distance < sideLength * 2 = (-ring, -ring + distance `rem` sideLength)
+          | distance < sideLength * 3 = (-ring + distance `rem` sideLength, ring)
+          | otherwise = (ring, ring - distance `rem` sideLength)
 
-cellsInRing :: Int -> [Integer]
+cellsInRing :: Integer -> [Integer]
 cellsInRing 0 = [1]
-cellsInRing ring = take ((ringsDimension ring)^2 -
-                         (ringsDimension (ring - 1))^2)
-                   (drop ((ringsDimension (ring - 1))^2) [1..])
+cellsInRing ring = take (fromIntegral ((ringsDimension ring)^2 -
+                         (ringsDimension (ring - 1))^2))
+                   (drop (fromIntegral ((ringsDimension (ring - 1))^2)) [1..])
 
-ringsDimension :: Int -> Int
+ringsDimension :: Integer -> Integer
 ringsDimension rings = rings * 2 + 1
 
-ringForCell :: Integer -> Int
+ringForCell :: Integer -> Integer
 ringForCell cell = head (filter (\r -> elem cell (cellsInRing r)) [1..])
 
-cellForCoord :: (Int, Int) -> Integer
+cellForCoord :: (Integer, Integer) -> Integer
 cellForCoord (0, 0) = 1
 cellForCoord (x, y) = 1 + cellForCoord previousCoord
   where previousCoord
@@ -36,14 +44,14 @@ cellForCoord (x, y) = 1 + cellForCoord previousCoord
           | x < 0 && x <= y = (x, y + 1)
           | y < 0 && abs y >= x = (x - 1, y)
 
-walkUp :: (Int, Int) -> (Int, Int)
+walkUp :: (Integer, Integer) -> (Integer, Integer)
 walkUp (x, y) = (x, y + 1)
 
-walkDown :: (Int, Int) -> (Int, Int)
+walkDown :: (Integer, Integer) -> (Integer, Integer)
 walkDown (x, y) = (x, y - 1)
 
-walkLeft :: (Int, Int) -> (Int, Int)
+walkLeft :: (Integer, Integer) -> (Integer, Integer)
 walkLeft (x, y) = (x - 1, y)
 
-walkRight :: (Int, Int) -> (Int, Int)
+walkRight :: (Integer, Integer) -> (Integer, Integer)
 walkRight (x, y) = (x + 1, y)
