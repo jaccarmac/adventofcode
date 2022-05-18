@@ -24,15 +24,15 @@ cellNeighbors cell = [cellForCoord (walkUp coord), cellForCoord (walkDown coord)
 
 cellsInRing :: Integer -> [Integer]
 cellsInRing 0 = [1]
-cellsInRing ring = take (fromIntegral ((ringsDimension ring)^2 -
-                         (ringsDimension (ring - 1))^2))
-                   (drop (fromIntegral ((ringsDimension (ring - 1))^2)) [1..])
+cellsInRing ring = take (fromIntegral (ringsDimension ring ^ 2 -
+                         ringsDimension (ring - 1) ^ 2))
+                   (drop (fromIntegral (ringsDimension (ring - 1) ^ 2)) [1..])
 
 ringsDimension :: Integer -> Integer
 ringsDimension rings = rings * 2 + 1
 
 ringForCell :: Integer -> Integer
-ringForCell cell = head (filter (\r -> elem cell (cellsInRing r)) [1..])
+ringForCell cell = head (filter (cell `elem` cellsInRing r) [1..])
 
 cellForCoord :: (Integer, Integer) -> Integer
 cellForCoord (0, 0) = 1
