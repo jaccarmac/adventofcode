@@ -27,12 +27,13 @@ ringForCell cell = head (filter (\r -> elem cell (cellsInRing r)) [1..])
 
 cellForCoord :: (Int, Int) -> Integer
 cellForCoord (0, 0) = 1
-cellForCoord (x, y)
-  | y == - (x - 1) && y <= 0 = 1 + cellForCoord (x - 1, y)
-  | x > 0 && x >= y = 1 + cellForCoord (x, y - 1)
-  | y > 0 && y >= abs x = 1 + cellForCoord (x + 1, y)
-  | x < 0 && x <= y = 1 + cellForCoord (x, y + 1)
-  | y < 0 && abs y >= x = 1 + cellForCoord (x - 1, y)
+cellForCoord (x, y) = cellForCoord previousCoord + 1
+  where previousCoord
+          | y == - (x - 1) && y <= 0 = (x - 1, y)
+          | x > 0 && x >= y = (x, y - 1)
+          | y > 0 && y >= abs x = (x + 1, y)
+          | x < 0 && x <= y = (x, y + 1)
+          | y < 0 && abs y >= x = (x - 1, y)
 
 walkUp :: (Int, Int) -> (Int, Int)
 walkUp (x, y) = (x, y + 1)
