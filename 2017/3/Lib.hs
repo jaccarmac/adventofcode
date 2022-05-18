@@ -12,15 +12,7 @@ minimumNeighbor cell = minimum (cellNeighbors cell)
 
 cellNeighbors :: Integer -> [Integer]
 cellNeighbors cell = [cellForCoord (walkUp coord), cellForCoord (walkDown coord), cellForCoord (walkLeft coord), cellForCoord (walkRight coord)]
-  where ring = ringForCell cell
-        maxInRing = cellForCoord (ring, -ring)
-        distance = maxInRing - cell
-        sideLength = ringsDimension ring - 1
-        coord
-          | distance < sideLength = (ring - distance, -ring)
-          | distance < sideLength * 2 = (-ring, -ring + distance `rem` sideLength)
-          | distance < sideLength * 3 = (-ring + distance `rem` sideLength, ring)
-          | otherwise = (ring, ring - distance `rem` sideLength)
+  where coord = coordForCell cell
 
 cellsInRing :: Integer -> [Integer]
 cellsInRing 0 = [1]
@@ -32,7 +24,7 @@ ringsDimension :: Integer -> Integer
 ringsDimension rings = rings * 2 + 1
 
 ringForCell :: Integer -> Integer
-ringForCell cell = head (filter (cell `elem` cellsInRing r) [1..])
+ringForCell cell = head (filter (\r -> cell `elem` cellsInRing r) [1..])
 
 cellForCoord :: (Integer, Integer) -> Integer
 cellForCoord (0, 0) = 1
@@ -43,6 +35,17 @@ cellForCoord (x, y) = 1 + cellForCoord previousCoord
           | y > 0 && y >= abs x = (x + 1, y)
           | x < 0 && x <= y = (x, y + 1)
           | y < 0 && abs y >= x = (x - 1, y)
+
+coordForCell :: Integer -> (Integer, Integer)
+coordForCell cell
+  | distance < sideLength = (ring - distance, -ring)
+  | distance < sideLength * 2 = (-ring, -ring + distance `rem` sideLength)
+  | distance < sideLength * 3 = (-ring + distance `rem` sideLength, ring)
+  | otherwise = (ring, ring - distance `rem` sideLength)
+  where ring = ringForCell cell
+        maxInRing = cellForCoord (ring, -ring)
+        distance = maxInRing - cell
+        sideLength = ringsDimension ring - 1
 
 walkUp :: (Integer, Integer) -> (Integer, Integer)
 walkUp (x, y) = (x, y + 1)
