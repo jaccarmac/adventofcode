@@ -11,7 +11,8 @@ minimumNeighbor :: Integer -> Integer
 minimumNeighbor cell = minimum (cellNeighbors cell)
 
 cellNeighbors :: Integer -> [Integer]
-cellNeighbors cell = []
+cellNeighbors cell = [cellForCoord (walkUp coord), cellForCoord (walkDown coord), cellForCoord (walkLeft coord), cellForCoord (walkRight coord)]
+  where coord = (0, 0)
 
 cellsInRing :: Int -> [Integer]
 cellsInRing 0 = [1]
