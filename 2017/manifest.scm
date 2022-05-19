@@ -1,2 +1,2 @@
 (specifications->manifest
- '("ghc" "ghc-split"))
+ '("ghc" "gcc-toolchain" "ghc-split"))
