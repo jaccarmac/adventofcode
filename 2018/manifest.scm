@@ -1,2 +1,2 @@
 (specifications->manifest
- '("nim"))
+ '("nim" "gcc-toolchain"))
