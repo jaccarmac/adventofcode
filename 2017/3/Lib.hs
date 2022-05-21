@@ -40,15 +40,21 @@ cellForCoord (x, y) = 1 + cellForCoord previousCoord
           | y < 0 && abs y >= x = (x - 1, y)
 
 coordForCell :: Integer -> (Integer, Integer)
-coordForCell cell
-  | distance < sideLength = (ring - distance, -ring)
-  | distance < sideLength * 2 = (-ring, -ring + distance `rem` sideLength)
-  | distance < sideLength * 3 = (-ring + distance `rem` sideLength, ring)
-  | otherwise = (ring, ring - distance `rem` sideLength)
-  where ring = ringForCell cell
-        maxInRing = cellForCoord (ring, -ring)
-        distance = maxInRing - cell
-        sideLength = ringsDimension ring - 1
+coordForCell cell = spiralCoordinates !! fromIntegral (cell - 1)
+
+spiralCoordinates :: [(Integer, Integer)]
+spiralCoordinates = iterate nextCoordinate (0, 0)
+
+nextCoordinate :: (Integer, Integer) -> (Integer, Integer)
+nextCoordinate (x, y)
+  | x >= 0 && x == -y = (x + 1, y)
+  | x > 0 && x == y = (x - 1, y)
+  | x < 0 && -x == y = (x, y - 1)
+  | x < 0 && x == y = (x + 1, y)
+  | x > 0 && x > abs y = (x, y + 1)
+  | y > 0 && y >= abs x = (x - 1, y)
+  | x < 0 && x < y = (x, y - 1)
+  | y < 0 && y < x = (x + 1, y)
 
 walkUp :: (Integer, Integer) -> (Integer, Integer)
 walkUp (x, y) = (x, y + 1)
