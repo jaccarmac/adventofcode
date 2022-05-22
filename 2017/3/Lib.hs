@@ -47,14 +47,18 @@ spiralCoordinates = iterate nextCoordinate (0, 0)
 
 nextCoordinate :: (Integer, Integer) -> (Integer, Integer)
 nextCoordinate (x, y)
-  | x >= 0 && x == -y = (x + 1, y)
-  | x > 0 && x == y = (x - 1, y)
-  | x < 0 && -x == y = (x, y - 1)
-  | x < 0 && x == y = (x + 1, y)
-  | x > 0 && x > abs y = (x, y + 1)
-  | y > 0 && y > abs x = (x - 1, y)
-  | x < 0 && -x > abs y = (x, y - 1)
-  | y < 0 && -y > abs x = (x + 1, y)
+  | bottomRight || bottomLeft || bottom = (x + 1, y)
+  | right = (x, y + 1)
+  | topRight || top = (x - 1, y)
+  | topLeft || left = (x, y - 1)
+  where bottomRight = x >= 0 && x == -y
+        topRight = x > 0 && x == y
+        topLeft = x < 0 && -x == y
+        bottomLeft = x < 0 && x == y
+        right = x > 0 && x > abs y
+        top = y > 0 && y > abs x
+        left = x < 0 && -x > abs y
+        bottom = y < 0 && -y > abs x
 
 walkUp :: (Integer, Integer) -> (Integer, Integer)
 walkUp (x, y) = (x, y + 1)
