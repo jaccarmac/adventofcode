@@ -1,5 +1,7 @@
 module Lib (part1, part2) where
 
+type Coordinate = (Integer, Integer)
+
 part1 :: Integer -> Integer
 part1 1    = 0
 part1 cell = manhattan $ coordForCell cell
@@ -7,7 +9,7 @@ part1 cell = manhattan $ coordForCell cell
 part2 :: Integer -> Integer
 part2 puzzle = 2
 
-manhattan :: (Integer, Integer) -> Integer
+manhattan :: Coordinate -> Integer
 manhattan (x, y) = abs x + abs y
 
 minimumNeighbor :: Integer -> Integer
@@ -29,7 +31,7 @@ ringsDimension rings = rings * 2 + 1
 ringForCell :: Integer -> Integer
 ringForCell cell = head (filter (\r -> cell `elem` cellsInRing r) [1..])
 
-cellForCoord :: (Integer, Integer) -> Integer
+cellForCoord :: Coordinate -> Integer
 cellForCoord (0, 0) = 1
 cellForCoord (x, y) = 1 + cellForCoord previousCoord
   where previousCoord
@@ -39,13 +41,13 @@ cellForCoord (x, y) = 1 + cellForCoord previousCoord
           | x < 0 && x <= y = (x, y + 1)
           | y < 0 && abs y >= x = (x - 1, y)
 
-coordForCell :: Integer -> (Integer, Integer)
+coordForCell :: Integer -> Coordinate
 coordForCell cell = spiralCoordinates !! fromIntegral (cell - 1)
 
-spiralCoordinates :: [(Integer, Integer)]
+spiralCoordinates :: [Coordinate]
 spiralCoordinates = iterate nextCoordinate (0, 0)
 
-nextCoordinate :: (Integer, Integer) -> (Integer, Integer)
+nextCoordinate :: Coordinate -> Coordinate
 nextCoordinate (x, y)
   | bottomRight || bottomLeft || bottom = (x + 1, y)
   | right = (x, y + 1)
@@ -60,14 +62,14 @@ nextCoordinate (x, y)
         left = x < 0 && -x > abs y
         bottom = y < 0 && -y > abs x
 
-walkUp :: (Integer, Integer) -> (Integer, Integer)
+walkUp :: Coordinate -> Coordinate
 walkUp (x, y) = (x, y + 1)
 
-walkDown :: (Integer, Integer) -> (Integer, Integer)
+walkDown :: Coordinate -> Coordinate
 walkDown (x, y) = (x, y - 1)
 
-walkLeft :: (Integer, Integer) -> (Integer, Integer)
+walkLeft :: Coordinate -> Coordinate
 walkLeft (x, y) = (x - 1, y)
 
-walkRight :: (Integer, Integer) -> (Integer, Integer)
+walkRight :: Coordinate -> Coordinate
 walkRight (x, y) = (x + 1, y)
