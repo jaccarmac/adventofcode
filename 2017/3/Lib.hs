@@ -1,8 +1,8 @@
 module Lib (part1, part2) where
 
-import           Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import           Data.Maybe      (mapMaybe)
+import           Data.Map.Lazy (Map)
+import qualified Data.Map.Lazy as Map
+import           Data.Maybe    (mapMaybe)
 
 type Coordinate = (Integer, Integer)
 
@@ -11,7 +11,11 @@ part1 1    = 0
 part1 cell = manhattan $ coordForCell cell
 
 part2 :: Integer -> Integer
-part2 puzzle = 2
+part2 puzzle = head $ filter (> puzzle) bigList
+
+bigList = mapMaybe (`Map.lookup` bigMap) spiralCoordinates
+
+bigMap = foldl (\m c -> Map.insertWith (flip const) c (sum $ cellNeighbors c m) m) (Map.singleton (0, 0) 1) $ take 100 spiralCoordinates
 
 manhattan :: Coordinate -> Integer
 manhattan (x, y) = abs x + abs y
@@ -37,6 +41,9 @@ nextCoordinate (x, y)
         left = x < 0 && -x > abs y
         bottom = y < 0 && -y > abs x
 
+cellNeighbors :: Coordinate -> Map Coordinate Integer -> [Integer]
+cellNeighbors coord spiral = mapMaybe (\w -> Map.lookup (w coord) spiral) [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight]
+
 walkUp :: Coordinate -> Coordinate
 walkUp (x, y) = (x, y + 1)
 
@@ -49,5 +56,14 @@ walkLeft (x, y) = (x - 1, y)
 walkRight :: Coordinate -> Coordinate
 walkRight (x, y) = (x + 1, y)
 
-cellNeighbors :: Coordinate -> Map Coordinate Integer -> [Integer]
-cellNeighbors coord spiral = mapMaybe (\w -> Map.lookup (w coord) spiral) [walkUp, walkDown, walkLeft, walkRight]
+walkUpRight :: Coordinate -> Coordinate
+walkUpRight (x, y) = (x + 1, y + 1)
+
+walkUpLeft :: Coordinate -> Coordinate
+walkUpLeft (x, y) = (x - 1, y + 1)
+
+walkDownLeft :: Coordinate -> Coordinate
+walkDownLeft (x, y) = (x - 1, y - 1)
+
+walkDownRight :: Coordinate -> Coordinate
+walkDownRight (x, y) = (x + 1, y - 1)
