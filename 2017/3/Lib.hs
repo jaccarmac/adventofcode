@@ -11,7 +11,7 @@ part1 1    = 0
 part1 cell = manhattan $ coordForCell cell
 
 part2 :: Integer -> Integer
-part2 puzzle = head $ filter (> puzzle) bigList
+part2 puzzle = head $ dropWhile (<= puzzle) bigList
 
 bigList = mapMaybe (`Map.lookup` bigMap) spiralCoordinates
 
