@@ -2,7 +2,7 @@ module Lib (part1, part2) where
 
 import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
-import           Data.Maybe      (catMaybes)
+import           Data.Maybe      (mapMaybe)
 
 type Coordinate = (Integer, Integer)
 
@@ -50,4 +50,4 @@ walkRight :: Coordinate -> Coordinate
 walkRight (x, y) = (x + 1, y)
 
 cellNeighbors :: Coordinate -> Map Coordinate Integer -> [Integer]
-cellNeighbors coord spiral = catMaybes $ map (\w -> Map.lookup (w coord) spiral) [walkUp, walkDown, walkLeft, walkRight]
+cellNeighbors coord spiral = mapMaybe (\w -> Map.lookup (w coord) spiral) [walkUp, walkDown, walkLeft, walkRight]
