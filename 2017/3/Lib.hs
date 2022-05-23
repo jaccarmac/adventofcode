@@ -13,7 +13,7 @@ part1 cell = manhattan $ coordForCell cell
 part2 :: Integer -> Integer
 part2 puzzle = head $ dropWhile (<= puzzle) bigList
   where bigList = mapMaybe (`Map.lookup` bigMap) spiralCoordinates
-        bigMap = foldl (\m c -> Map.insertWith (flip const) c (sum $ cellNeighbors c m) m) (Map.singleton (0, 0) 1) $ take 100 spiralCoordinates
+        bigMap = foldl (\m c -> Map.insertWith (const id) c (sum $ cellNeighbors c m) m) (Map.singleton (0, 0) 1) $ take 100 spiralCoordinates
 
 manhattan :: Coordinate -> Integer
 manhattan (x, y) = abs x + abs y
