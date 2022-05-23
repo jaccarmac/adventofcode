@@ -49,10 +49,10 @@ spiralCoordinates = iterate nextCoordinate (0, 0)
 
 nextCoordinate :: Coordinate -> Coordinate
 nextCoordinate (x, y)
-  | bottomRight || bottomLeft || bottom = (x + 1, y)
-  | right = (x, y + 1)
-  | topRight || top = (x - 1, y)
-  | topLeft || left = (x, y - 1)
+  | bottomRight || bottomLeft || bottom = walkRight (x, y)
+  | right = walkUp (x, y)
+  | topRight || top = walkLeft (x, y)
+  | topLeft || left = walkDown (x, y)
   where bottomRight = x >= 0 && x == -y
         topRight = x > 0 && x == y
         topLeft = x < 0 && -x == y
