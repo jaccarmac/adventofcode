@@ -1,5 +1,6 @@
 module Lib (part1, part2) where
 
+import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import           Data.Maybe      (catMaybes)
 
@@ -48,5 +49,5 @@ walkLeft (x, y) = (x - 1, y)
 walkRight :: Coordinate -> Coordinate
 walkRight (x, y) = (x + 1, y)
 
-cellNeighbors :: Coordinate -> Map.Map Coordinate Integer -> [Integer]
+cellNeighbors :: Coordinate -> Map Coordinate Integer -> [Integer]
 cellNeighbors coord spiral = catMaybes [Map.lookup (walkUp coord) spiral, Map.lookup (walkDown coord) spiral, Map.lookup (walkLeft coord) spiral, Map.lookup (walkRight coord) spiral]
