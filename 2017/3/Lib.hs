@@ -13,7 +13,9 @@ part1 cell = manhattan $ coordForCell cell
 
 part2 :: Integer -> Integer
 part2 puzzle = head $ dropWhile (<= puzzle) bigList
-  where bigList = snd $ mapAccumL (\m c -> (Map.insertWith (const id) c (sum $ cellNeighbors c m) m, (sum $ cellNeighbors c m))) (Map.singleton (0, 0) 1) spiralCoordinates
+  where bigList = snd $ mapAccumL sumForCoordinate (Map.singleton (0, 0) 1) spiralCoordinates
+        sumForCoordinate m c = let neighborsSum = sum $ cellNeighbors c m
+          in (Map.insertWith (const id) c neighborsSum m, neighborsSum)
 
 manhattan :: Coordinate -> Integer
 manhattan (x, y) = abs x + abs y
