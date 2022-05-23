@@ -50,4 +50,4 @@ walkRight :: Coordinate -> Coordinate
 walkRight (x, y) = (x + 1, y)
 
 cellNeighbors :: Coordinate -> Map Coordinate Integer -> [Integer]
-cellNeighbors coord spiral = catMaybes [Map.lookup (walkUp coord) spiral, Map.lookup (walkDown coord) spiral, Map.lookup (walkLeft coord) spiral, Map.lookup (walkRight coord) spiral]
+cellNeighbors coord spiral = catMaybes $ map (\w -> Map.lookup (w coord) spiral) [walkUp, walkDown, walkLeft, walkRight]
