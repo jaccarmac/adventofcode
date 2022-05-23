@@ -12,35 +12,6 @@ part2 puzzle = 2
 manhattan :: Coordinate -> Integer
 manhattan (x, y) = abs x + abs y
 
-minimumNeighbor :: Integer -> Integer
-minimumNeighbor cell = minimum (cellNeighbors cell)
-
-cellNeighbors :: Integer -> [Integer]
-cellNeighbors cell = [cellForCoord (walkUp coord), cellForCoord (walkDown coord), cellForCoord (walkLeft coord), cellForCoord (walkRight coord)]
-  where coord = coordForCell cell
-
-cellsInRing :: Integer -> [Integer]
-cellsInRing 0 = [1]
-cellsInRing ring = take (fromIntegral (ringsDimension ring ^ 2 -
-                         ringsDimension (ring - 1) ^ 2))
-                   (drop (fromIntegral (ringsDimension (ring - 1) ^ 2)) [1..])
-
-ringsDimension :: Integer -> Integer
-ringsDimension rings = rings * 2 + 1
-
-ringForCell :: Integer -> Integer
-ringForCell cell = head (filter (\r -> cell `elem` cellsInRing r) [1..])
-
-cellForCoord :: Coordinate -> Integer
-cellForCoord (0, 0) = 1
-cellForCoord (x, y) = 1 + cellForCoord previousCoord
-  where previousCoord
-          | x > 0 && (x == -y + 1 || x == -y) = (x - 1, y)
-          | x > 0 && x >= abs y = (x, y - 1)
-          | y > 0 && y >= abs x = (x + 1, y)
-          | x < 0 && x <= y = (x, y + 1)
-          | y < 0 && abs y >= x = (x - 1, y)
-
 coordForCell :: Integer -> Coordinate
 coordForCell cell = spiralCoordinates !! fromIntegral (cell - 1)
 
@@ -73,3 +44,32 @@ walkLeft (x, y) = (x - 1, y)
 
 walkRight :: Coordinate -> Coordinate
 walkRight (x, y) = (x + 1, y)
+
+minimumNeighbor :: Integer -> Integer
+minimumNeighbor cell = minimum (cellNeighbors cell)
+
+cellNeighbors :: Integer -> [Integer]
+cellNeighbors cell = [cellForCoord (walkUp coord), cellForCoord (walkDown coord), cellForCoord (walkLeft coord), cellForCoord (walkRight coord)]
+  where coord = coordForCell cell
+
+cellsInRing :: Integer -> [Integer]
+cellsInRing 0 = [1]
+cellsInRing ring = take (fromIntegral (ringsDimension ring ^ 2 -
+                         ringsDimension (ring - 1) ^ 2))
+                   (drop (fromIntegral (ringsDimension (ring - 1) ^ 2)) [1..])
+
+ringsDimension :: Integer -> Integer
+ringsDimension rings = rings * 2 + 1
+
+ringForCell :: Integer -> Integer
+ringForCell cell = head (filter (\r -> cell `elem` cellsInRing r) [1..])
+
+cellForCoord :: Coordinate -> Integer
+cellForCoord (0, 0) = 1
+cellForCoord (x, y) = 1 + cellForCoord previousCoord
+  where previousCoord
+          | x > 0 && (x == -y + 1 || x == -y) = (x - 1, y)
+          | x > 0 && x >= abs y = (x, y - 1)
+          | y > 0 && y >= abs x = (x + 1, y)
+          | x < 0 && x <= y = (x, y + 1)
+          | y < 0 && abs y >= x = (x - 1, y)
