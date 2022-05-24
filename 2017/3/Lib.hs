@@ -1,9 +1,10 @@
 module Lib (part1, part2) where
 
-import           Data.List     (mapAccumL)
-import           Data.Map.Lazy (Map)
-import qualified Data.Map.Lazy as Map
-import           Data.Maybe    (mapMaybe)
+import           Control.Applicative ((<**>))
+import           Data.List           (mapAccumL)
+import           Data.Map.Lazy       (Map)
+import qualified Data.Map.Lazy       as Map
+import           Data.Maybe          (mapMaybe)
 
 type Coordinate = (Integer, Integer)
 
@@ -42,7 +43,7 @@ nextCoordinate (x, y)
         bottom = y < 0 && -y > abs x
 
 cellNeighbors :: Coordinate -> [Coordinate]
-cellNeighbors coord = [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight] <*> pure coord
+cellNeighbors coord = pure coord <**> [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight]
 
 walkUp :: Coordinate -> Coordinate
 walkUp (x, y) = (x, y + 1)
