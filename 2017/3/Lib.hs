@@ -42,7 +42,7 @@ nextCoordinate (x, y)
         bottom = y < 0 && -y > abs x
 
 cellNeighbors :: Coordinate -> [Coordinate]
-cellNeighbors coord = map (\w -> w coord) [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight]
+cellNeighbors coord = [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight] <*> pure coord
 
 walkUp :: Coordinate -> Coordinate
 walkUp (x, y) = (x, y + 1)
