@@ -14,7 +14,7 @@ part1 cell = manhattan $ coordForCell cell
 part2 :: Integer -> Integer
 part2 puzzle = head $ dropWhile (<= puzzle) bigList
   where bigList = snd $ mapAccumL sumForCoordinate (Map.singleton (0, 0) 1) spiralCoordinates
-        sumForCoordinate m c = let neighborsSum = sum $ cellNeighbors c m
+        sumForCoordinate m c = let neighborsSum = sum $ mapMaybe (`Map.lookup` m) $ cellNeighbors c
           in (Map.insertWith (const id) c neighborsSum m, neighborsSum)
 
 manhattan :: Coordinate -> Integer
@@ -41,8 +41,8 @@ nextCoordinate (x, y)
         left = x < 0 && -x > abs y
         bottom = y < 0 && -y > abs x
 
-cellNeighbors :: Coordinate -> Map Coordinate Integer -> [Integer]
-cellNeighbors coord spiral = mapMaybe (\w -> Map.lookup (w coord) spiral) [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight]
+cellNeighbors :: Coordinate -> [Coordinate]
+cellNeighbors coord = map (\w -> w coord) [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight]
 
 walkUp :: Coordinate -> Coordinate
 walkUp (x, y) = (x, y + 1)
