@@ -3,10 +3,10 @@ module Lib (part1, part2) where
 import           Data.List
 
 part1 :: [String] -> Int
-part1 puzzle = occurrences goodPassphrase puzzle
+part1 = occurrences goodPassphrase
 
 part2 :: [String] -> Int
-part2 puzzle = occurrences noAnagramPassphrase puzzle
+part2 = occurrences noAnagramPassphrase
 
 occurrences :: (a -> Bool) -> [a] -> Int
 occurrences predicate = length . filter predicate
