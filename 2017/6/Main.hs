@@ -1,7 +1,6 @@
-import           Data.List  (elemIndex, mapAccumL)
-import           Data.Maybe (fromMaybe)
-import           Data.Set   (Set)
-import qualified Data.Set   as Set
+import           Data.List (elemIndex, mapAccumL)
+import           Data.Set  (Set)
+import qualified Data.Set  as Set
 
 main :: IO ()
 main = do
