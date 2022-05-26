@@ -14,7 +14,7 @@ part1 :: [Integer] -> Int
 part1 puzzle = length $ takeWhile not $ snd $ mapAccumL hasDuplicates Set.empty $ states puzzle
 
 part2 :: [Integer] -> Int
-part2 puzzle = fromMaybe 0 $ fmap (part1' -) $ elemIndex (states' !! part1') states'
+part2 puzzle = maybe 0 (part1' -) $ elemIndex (states' !! part1') states'
   where states' = states puzzle
         part1' = part1 puzzle
 
@@ -35,4 +35,4 @@ hasDuplicates :: Set [Integer] -> [Integer] -> (Set [Integer], Bool)
 hasDuplicates set memory = (Set.insert memory set, Set.member memory set)
 
 states :: [Integer] -> [[Integer]]
-states puzzle = iterate distribute puzzle
+states = iterate distribute
