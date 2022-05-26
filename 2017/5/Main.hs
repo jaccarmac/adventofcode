@@ -13,13 +13,16 @@ part1 (offset:succeeding) = jumpsUntilExit 0 (Offsets [] offset succeeding)
 data JumpState = Exited | Offsets [Integer] Integer [Integer] deriving (Show)
 
 jump :: JumpState -> JumpState
-jump Exited = Exited
-jump (Offsets p 0 s) = Offsets p 1 s
-jump (Offsets preceding offset succeeding)
-  | fromIntegral offset > length succeeding = Exited
-  | - fromIntegral offset > length preceding = Exited
-  | offset > 0 = Offsets (preceding ++ [offset + 1] ++ take (fromIntegral offset - 1) succeeding) (succeeding !! (fromIntegral offset - 1)) (drop (fromIntegral offset) succeeding)
-  | offset < 0 = Offsets (take (length preceding + fromIntegral offset) preceding) (preceding !! (length preceding + fromIntegral offset)) (drop (length preceding + fromIntegral offset + 1) preceding ++ [offset + 1] ++ succeeding)
+jump Exited          = Exited
+jump (Offsets p o s) = move o (Offsets p (o + 1) s)
+
+move :: Integer -> JumpState -> JumpState
+move 0 s = s
+move _ Exited = Exited
+move j (Offsets [] _ _) | j < 0 = Exited
+move j (Offsets _ _ []) | j > 0 = Exited
+move j (Offsets (p:ps) c ss) | j < 0 = move (j + 1) (Offsets ps p (c:ss))
+move j (Offsets ps c (s:ss)) | j > 0 = move (j - 1) (Offsets (c:ps) s ss)
 
 jumpsUntilExit :: Integer -> JumpState -> Integer
 jumpsUntilExit j Exited = j
