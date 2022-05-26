@@ -32,5 +32,5 @@ move j (Offsets ps c (s:ss)) | j > 0 = move (j - 1) (Offsets (c:ps) s ss)
 
 jumpsUntilExit :: (Integer -> Integer) -> JumpState -> Integer
 jumpsUntilExit f s = fromIntegral $ length $ takeWhile isNotExited $ iterate (jump f) s
-  where isNotExited Exited          = False
-        isNotExited (Offsets _ _ _) = True
+  where isNotExited Exited     = False
+        isNotExited Offsets {} = True
