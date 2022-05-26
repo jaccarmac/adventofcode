@@ -10,6 +10,12 @@ main = do
 part1 :: [Integer] -> Integer
 part1 (offset:succeeding) = jumpsUntilExit 0 (+ 1) (Offsets [] offset succeeding)
 
+part2 :: [Integer] -> Integer
+part2 (offset:succeeding) = jumpsUntilExit 0 onJump (Offsets [] offset succeeding)
+  where onJump offset
+          | offset >= 3 = offset - 1
+          | otherwise = offset + 1
+
 data JumpState = Exited | Offsets [Integer] Integer [Integer] deriving (Show)
 
 jump :: (Integer -> Integer) -> JumpState -> JumpState
@@ -27,9 +33,3 @@ move j (Offsets ps c (s:ss)) | j > 0 = move (j - 1) (Offsets (c:ps) s ss)
 jumpsUntilExit :: Integer -> (Integer -> Integer) -> JumpState -> Integer
 jumpsUntilExit j _ Exited = j
 jumpsUntilExit j f s      = jumpsUntilExit (j + 1) f (jump f s)
-
-part2 :: [Integer] -> Integer
-part2 (offset:succeeding) = jumpsUntilExit 0 onJump (Offsets [] offset succeeding)
-  where onJump offset
-          | offset >= 3 = offset - 1
-          | otherwise = offset + 1
