@@ -8,10 +8,10 @@ main = do
   print $ part2 puzzle
 
 part1 :: [Integer] -> Integer
-part1 (offset:succeeding) = jumpsUntilExit 0 (+ 1) (Offsets [] offset succeeding)
+part1 (offset:succeeding) = jumpsUntilExit (+ 1) (Offsets [] offset succeeding)
 
 part2 :: [Integer] -> Integer
-part2 (offset:succeeding) = jumpsUntilExit 0 onJump (Offsets [] offset succeeding)
+part2 (offset:succeeding) = jumpsUntilExit onJump (Offsets [] offset succeeding)
   where onJump offset
           | offset >= 3 = offset - 1
           | otherwise = offset + 1
@@ -30,6 +30,7 @@ move j (Offsets _ _ []) | j > 0 = Exited
 move j (Offsets (p:ps) c ss) | j < 0 = move (j + 1) (Offsets ps p (c:ss))
 move j (Offsets ps c (s:ss)) | j > 0 = move (j - 1) (Offsets (c:ps) s ss)
 
-jumpsUntilExit :: Integer -> (Integer -> Integer) -> JumpState -> Integer
-jumpsUntilExit j _ Exited = j
-jumpsUntilExit j f s      = jumpsUntilExit (j + 1) f (jump f s)
+jumpsUntilExit :: (Integer -> Integer) -> JumpState -> Integer
+jumpsUntilExit f s = fromIntegral $ length $ takeWhile isNotExited $ iterate (jump f) s
+  where isNotExited Exited          = False
+        isNotExited (Offsets _ _ _) = True
