@@ -29,18 +29,19 @@ spiralCoordinates = iterate nextCoordinate (0, 0)
 
 nextCoordinate :: Coordinate -> Coordinate
 nextCoordinate (x, y)
-  | bottomRight || bottomLeft || bottom = walkRight (x, y)
-  | right = walkUp (x, y)
-  | topRight || top = walkLeft (x, y)
+  | center || bottomRight || bottomLeft || bottom = walkRight (x, y)
   | topLeft || left = walkDown (x, y)
-  where bottomRight = x >= 0 && x == -y
-        topRight = x > 0 && x == y
-        topLeft = x < 0 && -x == y
-        bottomLeft = x < 0 && x == y
-        right = x > 0 && x > abs y
-        top = y > 0 && y > abs x
-        left = x < 0 && -x > abs y
-        bottom = y < 0 && -y > abs x
+  | topRight || top = walkLeft (x, y)
+  | right = walkUp (x, y)
+  where center = (x, y) == (0, 0)
+        right = x > 0 && x >= abs y
+        top = y > 0 && y >= abs x
+        left = x < 0 && -x >= abs y
+        bottom = y < 0 && -y >= abs x
+        topRight = top && right
+        topLeft = top && left
+        bottomRight = bottom && right
+        bottomLeft = bottom && left
 
 cellNeighbors :: Coordinate -> [Coordinate]
 cellNeighbors coord = pure coord <**> [walkUp, walkDown, walkLeft, walkRight, walkUpRight, walkUpLeft, walkDownLeft, walkDownRight]
