@@ -59,13 +59,13 @@ walkRight :: Coordinate -> Coordinate
 walkRight (x, y) = (x + 1, y)
 
 walkUpRight :: Coordinate -> Coordinate
-walkUpRight (x, y) = (x + 1, y + 1)
+walkUpRight = walkUp . walkRight
 
 walkUpLeft :: Coordinate -> Coordinate
-walkUpLeft (x, y) = (x - 1, y + 1)
+walkUpLeft = walkUp . walkLeft
 
 walkDownLeft :: Coordinate -> Coordinate
-walkDownLeft (x, y) = (x - 1, y - 1)
+walkDownLeft = walkDown . walkLeft
 
 walkDownRight :: Coordinate -> Coordinate
-walkDownRight (x, y) = (x + 1, y - 1)
+walkDownRight = walkDown . walkRight
