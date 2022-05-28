@@ -4,6 +4,7 @@ main :: IO ()
 main = do
   puzzleContents <- readFile "example.txt"
   let puzzle = map (parseInitial . words) $ lines puzzleContents
-        where parseInitial [n, w]     = (Program n (read w) [], [])
-              parseInitial (n:w:_:cs) = (Program n (read w) [], cs)
+        where parseInitial (name:weight:rest) = (Program name (read weight) [],
+                                                 case rest of [] -> []
+                                                              (_:children) -> children)
   print puzzle
