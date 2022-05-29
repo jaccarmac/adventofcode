@@ -11,3 +11,6 @@ main = do
 
 part1 :: [(Tower, [String])] -> Either [(Tower, [String])] String
 part1 [(Program name _ _, [])] = Right name
+
+append :: Tower -> Tower -> Tower
+append t (Program rootName rootWeight rootChildren) = Program rootName rootWeight $ t:rootChildren
