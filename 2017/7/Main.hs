@@ -12,13 +12,12 @@ main = do
                                                               (_:above) -> above)
   print $ part1 puzzle
 
-part1 :: [(Tower, [String])] -> Tower
+part1 :: [(Tower, [String])] -> Maybe Tower
 part1 puzzle = subTree "tknk" puzzle
 
-subTree :: String -> [(Tower, [String])] -> Tower
-subTree name fragments = Program name weight children
+subTree :: String -> [(Tower, [String])] -> Maybe Tower
+subTree name fragments = Just $ Program name weight children
   where (Program _ weight children) = maybe (Program "" 0 []) fst $ find finder fragments
-        finder :: (Tower, [String]) -> Bool
         finder ((Program n _ _), _) = n == name
 
 append :: Tower -> Tower -> Tower
