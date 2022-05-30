@@ -1,5 +1,4 @@
-import           Data.List  (find)
-import           Data.Maybe (fromMaybe)
+import           Data.List (find)
 
 data Tower = Program String Int [Tower] deriving (Show)
 
