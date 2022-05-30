@@ -22,7 +22,7 @@ subTree :: [(Tower, [String])] -> String -> Maybe Tower
 subTree fragments name = case children of Nothing -> Nothing
                                           Just ts -> (withChildren ts) . fst <$> found
   where found = find (\(Program n _ _, _) -> n == name) fragments
-        children = snd <$> found >>= childSubTrees fragments
+        children = childSubTrees fragments =<< snd <$> found
 
 childSubTrees :: [(Tower, [String])] -> [String] -> Maybe [Tower]
 childSubTrees fragments names = sequence $ (subTree fragments) <$> names
