@@ -16,12 +16,12 @@ part1 = flip subTree "tknk"
 
 subTree :: [(Tower, [String])] -> String -> Maybe Tower
 subTree fragments name = case children of Nothing -> Nothing
-                                          Just ts -> fst <$> found
+                                          Just ts -> (withChildren ts) . fst <$> found
   where found = find (\(Program n _ _, _) -> n == name) fragments
         children = snd <$> found >>= childSubTrees fragments
 
 childSubTrees :: [(Tower, [String])] -> [String] -> Maybe [Tower]
 childSubTrees fragments names = sequence $ (subTree fragments) <$> names
 
-append :: Tower -> Tower -> Tower
-append t (Program rootName rootWeight rootChildren) = Program rootName rootWeight $ t:rootChildren
+withChildren :: [Tower] -> Tower -> Tower
+withChildren ts (Program rootName rootWeight _) = Program rootName rootWeight ts
