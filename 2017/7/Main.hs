@@ -15,7 +15,9 @@ part1 :: [(Tower, [String])] -> Maybe Tower
 part1 = subTree "tknk"
 
 subTree :: String -> [(Tower, [String])] -> Maybe Tower
-subTree name fragments = fst <$> find (\(Program n _ _, _) -> n == name) fragments
+subTree name fragments = fst <$> found
+  where found = find (\(Program n _ _, _) -> n == name) fragments
+        children = (flip childSubTrees fragments) <$> snd <$> found
 
 childSubTrees :: [String] -> [(Tower, [String])] -> Maybe [Tower]
 childSubTrees names fragments = sequence $ map (flip subTree fragments) names
