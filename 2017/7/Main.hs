@@ -12,15 +12,15 @@ main = do
   print $ part1 puzzle
 
 part1 :: [(Tower, [String])] -> Maybe Tower
-part1 = subTree "tknk"
+part1 = flip subTree "tknk"
 
-subTree :: String -> [(Tower, [String])] -> Maybe Tower
-subTree name fragments = fst <$> found
+subTree :: [(Tower, [String])] -> String -> Maybe Tower
+subTree fragments name = fst <$> found
   where found = find (\(Program n _ _, _) -> n == name) fragments
-        children = (flip childSubTrees fragments) <$> snd <$> found
+        children = (childSubTrees fragments) <$> snd <$> found
 
-childSubTrees :: [String] -> [(Tower, [String])] -> Maybe [Tower]
-childSubTrees names fragments = sequence $ map (flip subTree fragments) names
+childSubTrees :: [(Tower, [String])] -> [String] -> Maybe [Tower]
+childSubTrees fragments names = sequence $ map (subTree fragments) names
 
 append :: Tower -> Tower -> Tower
 append t (Program rootName rootWeight rootChildren) = Program rootName rootWeight $ t:rootChildren
