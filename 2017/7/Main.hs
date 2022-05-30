@@ -13,7 +13,7 @@ main = do
   print $ part1 puzzle
 
 part1 :: [(Tower, [String])] -> Maybe Tower
-part1 puzzle = subTree "tknk" puzzle
+part1 = subTree "tknk"
 
 subTree :: String -> [(Tower, [String])] -> Maybe Tower
 subTree name fragments = found
