@@ -17,7 +17,7 @@ part1 = flip subTree "tknk"
 subTree :: [(Tower, [String])] -> String -> Maybe Tower
 subTree fragments name = fst <$> found
   where found = find (\(Program n _ _, _) -> n == name) fragments
-        children = (childSubTrees fragments) <$> snd <$> found
+        children = snd <$> found >>= childSubTrees fragments
 
 childSubTrees :: [(Tower, [String])] -> [String] -> Maybe [Tower]
 childSubTrees fragments names = sequence $ map (subTree fragments) names
