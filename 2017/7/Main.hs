@@ -15,7 +15,8 @@ part1 :: [(Tower, [String])] -> Maybe Tower
 part1 = flip subTree "tknk"
 
 subTree :: [(Tower, [String])] -> String -> Maybe Tower
-subTree fragments name = fst <$> found
+subTree fragments name = case children of Nothing -> Nothing
+                                          Just ts -> fst <$> found
   where found = find (\(Program n _ _, _) -> n == name) fragments
         children = snd <$> found >>= childSubTrees fragments
 
