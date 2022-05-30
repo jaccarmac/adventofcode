@@ -5,15 +5,19 @@ data Tower = Program String Int [Tower] deriving (Show)
 
 main :: IO ()
 main = do
-  puzzleContents <- readFile "puzzle.txt"
+  puzzleContents <- readFile "example.txt"
   let puzzle = (parseInitial . words) <$> lines puzzleContents
         where parseInitial (name:weight:rest) = (Program name (read weight) [],
                                                  case rest of []        -> []
                                                               (_:above) -> (filter (`notElem` ",")) <$> above)
   print $ part1 puzzle
 
-part1 :: [(Tower, [String])] -> Maybe Tower
-part1 puzzle = subTree puzzle =<< rootName
+part1 :: [(Tower, [String])] -> Maybe String
+part1 puzzle = case treeFromPuzzle puzzle of Nothing              -> Nothing
+                                             Just (Program n _ _) -> pure n
+
+treeFromPuzzle :: [(Tower, [String])] -> Maybe Tower
+treeFromPuzzle puzzle = subTree puzzle =<< rootName
   where rootName = S.lookupMin $ allNames `S.difference` childNames
         allNames = S.fromList [n | (Program n _ _, _) <- puzzle]
         childNames = S.unions [S.fromList ns | (_, ns) <- puzzle]
