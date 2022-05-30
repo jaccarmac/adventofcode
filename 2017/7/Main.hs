@@ -5,7 +5,7 @@ data Tower = Program String Int [Tower] deriving (Show)
 main :: IO ()
 main = do
   puzzleContents <- readFile "example.txt"
-  let puzzle = map (parseInitial . words) $ lines puzzleContents
+  let puzzle = (parseInitial . words) <$> lines puzzleContents
         where parseInitial (name:weight:rest) = (Program name (read weight) [],
                                                  case rest of []        -> []
                                                               (_:above) -> (filter (`notElem` ",")) <$> above)
@@ -21,7 +21,7 @@ subTree fragments name = case children of Nothing -> Nothing
         children = snd <$> found >>= childSubTrees fragments
 
 childSubTrees :: [(Tower, [String])] -> [String] -> Maybe [Tower]
-childSubTrees fragments names = sequence $ map (subTree fragments) names
+childSubTrees fragments names = sequence $ (subTree fragments) <$> names
 
 append :: Tower -> Tower -> Tower
 append t (Program rootName rootWeight rootChildren) = Program rootName rootWeight $ t:rootChildren
