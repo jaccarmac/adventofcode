@@ -13,8 +13,7 @@ main = do
   print $ part1 puzzle
 
 part1 :: [(Tower, [String])] -> Maybe String
-part1 puzzle = case treeFromPuzzle puzzle of Nothing              -> Nothing
-                                             Just (Program n _ _) -> pure n
+part1 puzzle = (\(Program n _ _) -> n) <$> treeFromPuzzle puzzle
 
 treeFromPuzzle :: [(Tower, [String])] -> Maybe Tower
 treeFromPuzzle puzzle = subTree puzzle =<< rootName
@@ -23,8 +22,7 @@ treeFromPuzzle puzzle = subTree puzzle =<< rootName
         childNames = S.unions [S.fromList ns | (_, ns) <- puzzle]
 
 subTree :: [(Tower, [String])] -> String -> Maybe Tower
-subTree fragments name = case children of Nothing -> Nothing
-                                          Just ts -> withChildren ts . fst <$> found
+subTree fragments name = (\ts -> withChildren ts . fst <$> found) =<< children
   where found = find (\(Program n _ _, _) -> n == name) fragments
         children = childSubTrees fragments . snd =<< found
 
