@@ -16,8 +16,8 @@ part1 :: [(Tower, [String])] -> Maybe Tower
 part1 puzzle = subTree "tknk" puzzle
 
 subTree :: String -> [(Tower, [String])] -> Maybe Tower
-subTree name fragments = Just $ Program name weight children
-  where (Program _ weight children) = maybe (Program "" 0 []) fst $ find finder fragments
+subTree name fragments = found
+  where found = fst <$> find finder fragments
         finder ((Program n _ _), _) = n == name
 
 append :: Tower -> Tower -> Tower
