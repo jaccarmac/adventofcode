@@ -15,9 +15,10 @@ part1 :: [(Tower, [String])] -> Maybe Tower
 part1 = subTree "tknk"
 
 subTree :: String -> [(Tower, [String])] -> Maybe Tower
-subTree name fragments = fst <$> found
-  where found = find (\(Program n _ _, _) -> n == name) fragments
-        children = snd <$> found
+subTree name fragments = do
+  found <- find (\(Program n _ _, _) -> n == name) fragments
+  let children = snd found
+  pure $ fst found
 
 append :: Tower -> Tower -> Tower
 append t (Program rootName rootWeight rootChildren) = Program rootName rootWeight $ t:rootChildren
