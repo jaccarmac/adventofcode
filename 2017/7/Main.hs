@@ -10,10 +10,15 @@ main = do
         where parseInitial (name:weight:rest) = (Program name (read weight) [],
                                                  case rest of []        -> []
                                                               (_:above) -> filter (`notElem` ",") <$> above)
+  print $ treeFromPuzzle puzzle
   print $ part1 puzzle
+  print $ part2 puzzle
 
 part1 :: [(Tower, [String])] -> Maybe String
 part1 puzzle = (\(Program n _ _) -> n) <$> treeFromPuzzle puzzle
+
+part2 :: [(Tower, [String])] -> Maybe Int
+part2 puzzle = (\(Program _ w _) -> w) <$> treeFromPuzzle puzzle
 
 treeFromPuzzle :: [(Tower, [String])] -> Maybe Tower
 treeFromPuzzle puzzle = subTree puzzle =<< rootName
@@ -31,3 +36,11 @@ childSubTrees fragments names = sequence $ subTree fragments <$> names
 
 withChildren :: [Tower] -> Tower -> Tower
 withChildren ts (Program rootName rootWeight _) = Program rootName rootWeight ts
+
+totalWeight :: Tower -> Int
+totalWeight (Program _ w ts) = w + sum (totalWeight <$> ts)
+
+balanced :: Tower -> Bool
+balanced (Program _ _ []) = True
+balanced (Program _ _ ts) = minimum weights == maximum weights
+  where weights = totalWeight <$> ts
