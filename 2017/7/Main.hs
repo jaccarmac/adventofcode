@@ -18,7 +18,7 @@ part1 :: [(Tower, [String])] -> Maybe String
 part1 puzzle = (\(Program n _ _) -> n) <$> treeFromPuzzle puzzle
 
 part2 :: [(Tower, [String])] -> Maybe Int
-part2 puzzle = (\(Program _ w _) -> w) <$> treeFromPuzzle puzzle
+part2 puzzle = part2' =<< treeFromPuzzle puzzle
 
 treeFromPuzzle :: [(Tower, [String])] -> Maybe Tower
 treeFromPuzzle puzzle = subTree puzzle =<< rootName
@@ -44,3 +44,6 @@ balanced :: Tower -> Bool
 balanced (Program _ _ []) = True
 balanced (Program _ _ ts) = minimum weights == maximum weights
   where weights = totalWeight <$> ts
+
+part2' :: Tower -> Maybe Int
+part2' t = Just 1
