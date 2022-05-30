@@ -8,7 +8,7 @@ main = do
   let puzzle = map (parseInitial . words) $ lines puzzleContents
         where parseInitial (name:weight:rest) = (Program name (read weight) [],
                                                  case rest of []        -> []
-                                                              (_:above) -> above)
+                                                              (_:above) -> (filter (`notElem` ",")) <$> above)
   print $ part1 puzzle
 
 part1 :: [(Tower, [String])] -> Maybe Tower
