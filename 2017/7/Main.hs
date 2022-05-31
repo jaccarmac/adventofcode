@@ -1,6 +1,5 @@
 import           Control.Arrow ((&&&))
 import           Data.List     (find, groupBy, maximumBy, minimumBy)
-import           Data.Maybe    (listToMaybe)
 import           Data.Ord      (comparing)
 import qualified Data.Set      as S
 
