@@ -1,16 +1,17 @@
-import           Data.List (find)
-import qualified Data.Set  as S
+import           Data.List  (find, group, maximumBy)
+import           Data.Maybe (listToMaybe)
+import           Data.Ord   (comparing)
+import qualified Data.Set   as S
 
 data Tower = Program String Int [Tower] deriving (Show)
 
 main :: IO ()
 main = do
-  puzzleContents <- readFile "example.txt"
+  puzzleContents <- readFile "puzzle.txt"
   let puzzle = parseInitial . words <$> lines puzzleContents
         where parseInitial (name:weight:rest) = (Program name (read weight) [],
                                                  case rest of []        -> []
                                                               (_:above) -> filter (`notElem` ",") <$> above)
-  print $ treeFromPuzzle puzzle
   print $ part1 puzzle
   print $ part2 puzzle
 
@@ -46,4 +47,6 @@ balanced (Program _ _ ts) = minimum weights == maximum weights
   where weights = totalWeight <$> ts
 
 part2' :: Tower -> Maybe Int
-part2' t = Just 1
+part2' (Program _ _ ts) | all balanced ts = listToMaybe $ maximumBy (comparing length) $ group weights
+                        | otherwise = part2' =<< find (not . balanced) ts
+                        where weights = totalWeight <$> ts
