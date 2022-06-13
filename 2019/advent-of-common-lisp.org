@@ -3,21 +3,11 @@ they are simple ones. Also an attempt to follow up last year's halfway Nim
 attempt with something which depends less on brittle Org templates. Thus, we
 primarily work within a REPL context this time around.
 
-Launch a REPL:
-
-#+begin_src sh
-  guix environment --ad-hoc sbcl cl-slime-swank -- sbcl --eval "(require 'asdf)" --eval "(require 'swank)" --eval "(swank:create-server)"
-#+end_src
-
-Connect to it:
+Launch and connect to a REPL:
 
 #+begin_example
-  M-x slime-connect RET RET
+  C-u M-x slime RET guix shell -m "manifest.scm" -- sbcl RET
 #+end_example
-
-(The two returns are accepting the default host and port, which are =localhost=
-and =4005= typically.)
-
 * TODO Load project.
 Eventually I'll need a way to effectively load the already-written
 days/code. But for now all REPL all the time.
