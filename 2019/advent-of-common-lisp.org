@@ -19,108 +19,103 @@ Connect to it:
 and =4005= typically.)
 
 * TODO Load project.
-
-  Eventually I'll need a way to effectively load the already-written
-  days/code. But for now all REPL all the time.
-
+Eventually I'll need a way to effectively load the already-written
+days/code. But for now all REPL all the time.
 * TODO Anaphoric macro?
+Look at converting the common loop parts into an anaphoric macro. Consider
+whether my solution is Lispy or just ~LOOP~ abuse. Macros are probably
+idiomatic but perhaps not iterating ones. See if streams solve the problem,
+consider libraries for sequences but stick to raw stdlib if possible.
 
-  Look at converting the common loop parts into an anaphoric macro. Consider
-  whether my solution is Lispy or just ~LOOP~ abuse. Macros are probably
-  idiomatic but perhaps not iterating ones. See if streams solve the problem,
-  consider libraries for sequences but stick to raw stdlib if possible.
+https://stackoverflow.com/a/555236 contains discussion around a similar
+issue.
 
-  https://stackoverflow.com/a/555236 contains discussion around a similar
-  issue.
-
-  https://letoverlambda.com/index.cl/guest/chap6.html is the canonical
-  reference point for anaphoric macros. Examples on Wikipedia:
-  https://en.wikipedia.org/wiki/Anaphoric_macro
-
+https://letoverlambda.com/index.cl/guest/chap6.html is the canonical
+reference point for anaphoric macros. Examples on Wikipedia:
+https://en.wikipedia.org/wiki/Anaphoric_macro
 * Day 1: The Tyranny of the Rocket Equation
+Real simple equation for the first part, the tests as given on the page.
 
-  Real simple equation for the first part, the tests as given on the page.
+#+begin_src lisp
+  (assert (= (fuel-to-launch-module 12)     2))
+  (assert (= (fuel-to-launch-module 14)     2))
+  (assert (= (fuel-to-launch-module 1969)   654))
+  (assert (= (fuel-to-launch-module 100756) 33583))
+#+end_src
 
-  #+begin_src lisp
-    (assert (= (fuel-to-launch-module 12)     2))
-    (assert (= (fuel-to-launch-module 14)     2))
-    (assert (= (fuel-to-launch-module 1969)   654))
-    (assert (= (fuel-to-launch-module 100756) 33583))
-  #+end_src
+That 1969 is cheeky.
 
-  That 1969 is cheeky.
+For good measure an example in the actual problem format. To construct it
+I've simply used all the given numbers.
 
-  For good measure an example in the actual problem format. To construct it
-  I've simply used all the given numbers.
+#+begin_src lisp
+  (assert (= (fuel-to-launch-all-modules "12
+  14
+  1969
+  100756") (+ 2 2 654 33583)))
+#+end_src
 
-  #+begin_src lisp
-    (assert (= (fuel-to-launch-all-modules "12
-    14
-    1969
-    100756") (+ 2 2 654 33583)))
-  #+end_src
+As stated, simple equation for the single-module case.
 
-  As stated, simple equation for the single-module case.
+#+begin_src lisp
+  (defun fuel-to-launch-module (mass)
+    (- (floor (/ mass 3)) 2))
+#+end_src
 
-  #+begin_src lisp
-    (defun fuel-to-launch-module (mass)
-      (- (floor (/ mass 3)) 2))
-  #+end_src
+The all-module case simply involves splitting the input, mapping over each
+string and parsing to an integer, then folding over the integers to sum.
 
-  The all-module case simply involves splitting the input, mapping over each
-  string and parsing to an integer, then folding over the integers to sum.
+#+begin_src lisp
+  (defun fuel-to-launch-all-modules (problem)
+    (flet ((newlinep (c) (char/= c #\newline)))
+      (loop for beg = (position-if #'newlinep problem)
+              then (position-if #'newlinep problem :start (1+ end))
+            for end = (and beg (position-if-not #'newlinep problem :start beg))
+            when beg sum (fuel-to-launch-module
+                          (parse-integer (subseq problem beg end)))
+              while end)))
+#+end_src
 
-  #+begin_src lisp
-    (defun fuel-to-launch-all-modules (problem)
-      (flet ((newlinep (c) (char/= c #\newline)))
-        (loop for beg = (position-if #'newlinep problem)
-           then (position-if #'newlinep problem :start (1+ end))
-           for end = (and beg (position-if-not #'newlinep problem :start beg))
-           when beg sum (fuel-to-launch-module
-                         (parse-integer (subseq problem beg end)))
-           while end)))
-  #+end_src
+The second part just forces us to calculate the fuel requirement for the fuel
+itself until we hit 0 or a negative number.
 
-  The second part just forces us to calculate the fuel requirement for the fuel
-  itself until we hit 0 or a negative number.
+Given examples for the second part.
 
-  Given examples for the second part.
+#+begin_src lisp
+  (assert (= (fuel-to-launch-module-with-fuel 12)     2))
+  (assert (= (fuel-to-launch-module-with-fuel 14)     2))
+  (assert (= (fuel-to-launch-module-with-fuel 1969)   966))
+  (assert (= (fuel-to-launch-module-with-fuel 100756) 50346))
+#+end_src
 
-  #+begin_src lisp
-    (assert (= (fuel-to-launch-module-with-fuel 12)     2))
-    (assert (= (fuel-to-launch-module-with-fuel 14)     2))
-    (assert (= (fuel-to-launch-module-with-fuel 1969)   966))
-    (assert (= (fuel-to-launch-module-with-fuel 100756) 50346))
-  #+end_src
+The big sum of our own devising.
 
-  The big sum of our own devising.
+#+begin_src lisp
+  (assert (= (fuel-to-launch-all-modules-with-fuel "12
+  14
+  1969
+  100756") (+ 2 2 966 50346)))
+#+end_src
 
-  #+begin_src lisp
-    (assert (= (fuel-to-launch-all-modules-with-fuel "12
-    14
-    1969
-    100756") (+ 2 2 966 50346)))
-  #+end_src
+The way to recursively calculate with-fuel weights for each module.
 
-  The way to recursively calculate with-fuel weights for each module.
+#+begin_src lisp
+  (defun fuel-to-launch-module-with-fuel (mass)
+    (loop for fuel = (fuel-to-launch-module mass)
+          while (< 0 fuel)
+          sum fuel
+          do (setf mass fuel)))
+#+end_src
 
-  #+begin_src lisp
-    (defun fuel-to-launch-module-with-fuel (mass)
-      (loop for fuel = (fuel-to-launch-module mass)
-         while (< 0 fuel)
-         sum fuel
-         do (setf mass fuel)))
-  #+end_src
+Finally, a slight variant on the loop above.
 
-  Finally, a slight variant on the loop above.
-
-  #+begin_src lisp
-    (defun fuel-to-launch-all-modules-with-fuel (problem)
-          (flet ((newlinep (c) (char/= c #\newline)))
-            (loop for beg = (position-if #'newlinep problem)
-               then (position-if #'newlinep problem :start (1+ end))
-               for end = (and beg (position-if-not #'newlinep problem :start beg))
-               when beg sum (fuel-to-launch-module-with-fuel
-                             (parse-integer (subseq problem beg end)))
-               while end)))
-  #+end_src
+#+begin_src lisp
+  (defun fuel-to-launch-all-modules-with-fuel (problem)
+    (flet ((newlinep (c) (char/= c #\newline)))
+      (loop for beg = (position-if #'newlinep problem)
+              then (position-if #'newlinep problem :start (1+ end))
+            for end = (and beg (position-if-not #'newlinep problem :start beg))
+            when beg sum (fuel-to-launch-module-with-fuel
+                          (parse-integer (subseq problem beg end)))
+              while end)))
+#+end_src
