@@ -27,10 +27,11 @@ https://en.wikipedia.org/wiki/Anaphoric_macro
 Real simple equation for the first part, the tests as given on the page.
 
 #+begin_src lisp
-  (assert (= (fuel-to-launch-module 12)     2))
-  (assert (= (fuel-to-launch-module 14)     2))
-  (assert (= (fuel-to-launch-module 1969)   654))
-  (assert (= (fuel-to-launch-module 100756) 33583))
+  (fiveam:test fuel-to-launch-module
+    (fiveam:is (= (fuel-to-launch-module 12)     2))
+    (fiveam:is (= (fuel-to-launch-module 14)     2))
+    (fiveam:is (= (fuel-to-launch-module 1969)   654))
+    (fiveam:is (= (fuel-to-launch-module 100756) 33583)))
 #+end_src
 
 That 1969 is cheeky.
@@ -39,10 +40,11 @@ For good measure an example in the actual problem format. To construct it
 I've simply used all the given numbers.
 
 #+begin_src lisp
-  (assert (= (fuel-to-launch-all-modules "12
+  (fiveam:test fuel-to-launch-all-modules
+    (fiveam:is (= (fuel-to-launch-all-modules "12
   14
   1969
-  100756") (+ 2 2 654 33583)))
+  100756") (+ 2 2 654 33583))))
 #+end_src
 
 As stated, simple equation for the single-module case.
@@ -72,19 +74,21 @@ itself until we hit 0 or a negative number.
 Given examples for the second part.
 
 #+begin_src lisp
-  (assert (= (fuel-to-launch-module-with-fuel 12)     2))
-  (assert (= (fuel-to-launch-module-with-fuel 14)     2))
-  (assert (= (fuel-to-launch-module-with-fuel 1969)   966))
-  (assert (= (fuel-to-launch-module-with-fuel 100756) 50346))
+  (fiveam:test fuel-to-launch-module-with-fuel
+    (fiveam:is (= (fuel-to-launch-module-with-fuel 12)     2))
+    (fiveam:is (= (fuel-to-launch-module-with-fuel 14)     2))
+    (fiveam:is (= (fuel-to-launch-module-with-fuel 1969)   966))
+    (fiveam:is (= (fuel-to-launch-module-with-fuel 100756) 50346)))
 #+end_src
 
 The big sum of our own devising.
 
 #+begin_src lisp
-  (assert (= (fuel-to-launch-all-modules-with-fuel "12
+  (fiveam:test fuel-to-launch-all-modules-with-fuel
+    (fiveam:is (= (fuel-to-launch-all-modules-with-fuel "12
   14
   1969
-  100756") (+ 2 2 966 50346)))
+  100756") (+ 2 2 966 50346))))
 #+end_src
 
 The way to recursively calculate with-fuel weights for each module.
@@ -108,4 +112,10 @@ Finally, a slight variant on the loop above.
             when beg sum (fuel-to-launch-module-with-fuel
                           (parse-integer (subseq problem beg end)))
               while end)))
+#+end_src
+* Day 2: 1202 Program Alarm
+** A preliminary test for the first Intcode example.
+#+begin_src common-lisp
+  (fiveam:test intcode
+    (is (string= "3500,9,10,70,2,3,11,0,99,30,40,50" (intcode-final-state-as-str "1,9,10,3,2,3,11,0,99,30,40,50"))))
 #+end_src
