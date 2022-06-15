@@ -6,7 +6,7 @@ primarily work within a REPL context this time around.
 Launch and connect to a REPL:
 
 #+begin_example
-  C-u M-x slime RET guix shell -m "manifest.scm" -- sbcl RET
+  C-u M-x slime RET guix shell -m manifest.scm -- sbcl RET
 #+end_example
 * TODO Load project.
 Eventually I'll need a way to effectively load the already-written
