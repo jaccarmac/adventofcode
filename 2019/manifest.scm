@@ -1,2 +1,2 @@
 (specifications->manifest
- '("sbcl"))
+ '("sbcl" "sbcl-fiveam"))
