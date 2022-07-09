@@ -1,11 +1,11 @@
 module Lib (inverseCaptcha, inverseHalfwayCaptcha) where
 
 inverseCaptcha :: Integer -> Integer
-inverseCaptcha number = sum (map fst (filter uncurry (==) (zip numerals (rotate 1 numerals))))
+inverseCaptcha number = sum (map fst (filter (uncurry (==)) (zip numerals (rotate 1 numerals))))
   where numerals = digits number
 
 inverseHalfwayCaptcha :: Integer -> Integer
-inverseHalfwayCaptcha number = sum (map fst (filter uncurry (==) (zip numerals (rotate halfway numerals))))
+inverseHalfwayCaptcha number = sum (map fst (filter (uncurry (==)) (zip numerals (rotate halfway numerals))))
   where numerals = digits number
         halfway = length numerals `div` 2
 
