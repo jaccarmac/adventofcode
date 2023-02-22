@@ -3,7 +3,7 @@
              (gnu packages lisp-xyz))
 
 (define sbcl-april-master
-  (let ((commit "4eb76ea01499f3413e23f4bcf9f807b89fad8d3e")
+  (let ((commit "615aa21081fe155f56aeba7140c876d176c80a09")
         (revision "1"))
     (package
       (inherit sbcl-april)
@@ -16,7 +16,7 @@
                (commit commit)))
          (file-name (git-file-name "cl-april" version))
          (sha256
-          (base32 "016mfldk98j1kbj8fpqwzhvdkfbmqsfbzjaawnlz9q5pr6srv26r"))
+          (base32 "00j5ghxb01rc110nim7yf02afc5mbnb36f0jxr7mbpl48s80yjh4"))
          (modules '((guix build utils)))
          (snippet '(begin
                      ;; Remove bundled Apache-relicensed MaxPC.
@@ -24,8 +24,8 @@
                      ;; Ensure references are to upstream MaxPC.
                      (substitute* "vex/vex.asd"
                        (("maxpc-apache") "maxpc"))))))
-      (inputs(cons (list "sbcl-cl-unicode" sbcl-cl-unicode)
-                   (package-inputs sbcl-april))))))
+      (inputs (cons (list "sbcl-serapeum" sbcl-serapeum) (cons (list "sbcl-cl-unicode" sbcl-cl-unicode)
+                                                               (package-inputs sbcl-april)))))))
 
 (concatenate-manifests
  (list
