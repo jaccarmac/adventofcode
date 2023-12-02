@@ -1,2 +1,2 @@
 (specifications->manifest
- '("elm-compiler"))
+ '("elm" "nss-certs"))

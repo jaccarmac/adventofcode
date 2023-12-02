@@ -3,7 +3,7 @@
              (gnu packages lisp-xyz))
 
 (define sbcl-april-master
-  (let ((commit "c9a79a1034c2aa27b4987d87cbb434162cb5c150")
+  (let ((commit "9ed8b6ffa03fbe28abfcd946a898084e1036fdbd")
         (revision "1"))
     (package
       (inherit sbcl-april)
@@ -11,12 +11,12 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/jaccarmac/april")
+                      (url "https://github.com/phantomics/april")
                       (commit commit)))
                 (file-name (git-file-name "cl-april" version))
                 (sha256
                  (base32
-                  "0rxm1fvfbnfsgzkdvxzxdmv5qcz1irwq921dhh4wnfl58q5rs1n7"))
+                  "1kll35yv1c9jfxr23bm0dgm3n4n10xbw6bns404116p0339wy9ki"))
                 (modules '((guix build utils)))
                 (snippet '(begin
                             ;; Remove bundled Apache-relicensed MaxPC.
