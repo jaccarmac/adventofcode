@@ -1,5 +1,11 @@
 (defmodule |2023|
-  (export (main 1)))
+  (export (main 1))
+  (import
+   (from file (read_file 1))
+   (from filename (join 1))
+   (from lfe_io (format 2))
+   (from lists (sum 1))
+   (from string (split 3))))
 
 ;;; --------------------
 ;;; entry point function
@@ -7,9 +13,9 @@
 
 (defun main
   (((list day data))
-   (let (((tuple 'ok contents) (file:read_file (filename:join `("data" ,data)))))
-     (lfe_io:format "~w~n" `(,(one-one (string:split contents "\n" 'all))))
-     (erlang:halt 0))))
+   (let (((tuple 'ok contents) (read_file (join `("data" ,data)))))
+     (format "~w~n" `(,(one-one (split contents "\n" 'all))))
+     (halt 0))))
 
 ;;; -----------------------
 ;;; miscellaneous functions
@@ -39,7 +45,7 @@
                             (spawn_link (lambda ()
                                           (! s (tuple (self) (+ (* 10 (first-number line)) (last-number line)))))))
                           lines)))
-    (lists:sum (gather pids))))
+    (sum (gather pids))))
 
 (defun gather
   ((()) ())
