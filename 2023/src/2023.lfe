@@ -5,9 +5,10 @@
 ;;; entry point function
 ;;; --------------------
 
-(defun main (args)
-  (lfe_io:format "~w~n" `(,(one-one '["1abc2" "pqr3stu8vwx" "a1b2c3d4e5f" "treb7uchet"])))
-  (erlang:halt 0))
+(defun main
+  (((list day data))
+   (lfe_io:format "~w~n" `(,(one-one '["1abc2" "pqr3stu8vwx" "a1b2c3d4e5f" "treb7uchet"])))
+   (erlang:halt 0)))
 
 ;;; -----------------------
 ;;; miscellaneous functions
