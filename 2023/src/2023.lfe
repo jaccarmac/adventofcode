@@ -5,6 +5,7 @@
    (from filename (join 1))
    (from lfe_io (format 2))
    (from lists (sum 1))
+   (rename lists ((map 2) mapcar))
    (from string (split 3))))
 
 ;;; --------------------
@@ -59,7 +60,7 @@
 
 (defun one-one (lines)
   (let* ((s (self))
-         (pids (lists:map (lambda (line)
+         (pids (mapcar (lambda (line)
                             (spawn_link (lambda ()
                                           (! s (tuple (self) (+ (* 10 (first-number line)) (last-number line)))))))
                           lines)))
