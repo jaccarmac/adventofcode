@@ -16,21 +16,21 @@
 ;;; -----------------------
 
 (defun first-number
-  ((()) 0)
-  (((cons h t)) (when (and (>= h #\0) (>= #\9 h)))
+  ((#B()) 0)
+  (((binary h (t binary))) (when (and (>= h #\0) (>= #\9 h)))
    (- h #\0))
-  (((cons _ t))
+  (((binary _ (t binary)))
    (first-number t)))
 
 (defun last-number (s) (last-number s 0))
 
 (defun last-number
-  ((() 0) 0)
-  ((() acc)
+  ((#B() 0) 0)
+  ((#B() acc)
    (- acc #\0))
-  (((cons h t) acc) (when (and (>= h #\0) (>= #\9 h)))
+  (((binary h (t binary)) acc) (when (and (>= h #\0) (>= #\9 h)))
    (last-number t h))
-  (((cons _ t) acc)
+  (((binary _ (t binary)) acc)
    (last-number t acc)))
 
 (defun one-one (lines)
@@ -38,7 +38,7 @@
          (pids (lists:map (lambda (line)
                             (spawn_link (lambda ()
                                           (! s (tuple (self) (+ (* 10 (first-number line)) (last-number line)))))))
-                          (lists:map #'binary_to_list/1 lines))))
+                          lines)))
     (lists:sum (gather pids))))
 
 (defun gather
