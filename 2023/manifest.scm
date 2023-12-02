@@ -1,1 +1,1 @@
-(specifications->manifest '("rebar3"))
+(specifications->manifest '("erlang-lfe" "coreutils" "sed" "findutils"))
