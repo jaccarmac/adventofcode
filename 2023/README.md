@@ -1,10 +1,9 @@
 # 2023
 
-[![Build Status][travis badge]][travis]
+[![Build Status][gh-actions-badge]][gh-actions]
 [![LFE Versions][lfe badge]][lfe]
-[![Erlang Versions][erlang badge]][versions]
-[![Tag][github tag badge]][github tag]
-[![Downloads][hex downloads]][hex package]
+[![Erlang Versions][erlang badge]][version]
+[![Tags][github tags badge]][github tags]
 
 [![Project Logo][logo]][logo-large]
 
@@ -38,7 +37,7 @@ $ rebar3 lfe repl
 # Tests [&#x219F;](#table-of-contents)
 
 ```shell
-$ rebar3 lfe test
+$ rebar3 as test lfe test
 ```
 
 ## Usage [&#x219F;](#table-of-contents)
@@ -57,17 +56,12 @@ Copyright © 2023, Jacob MacDonald <jaccarmac@gmail.com>.
 [logo-large]: https://avatars1.githubusercontent.com/u/3434967
 [github]: https://github.com/ORG/2023
 [gitlab]: https://gitlab.com/ORG/2023
-[travis]: https://travis-ci.org/ORG/2023
-[travis badge]: https://img.shields.io/travis/ORG/2023.svg
-[gh-actions-badge]: https://github.com/ORG/2023/workflows/Go/badge.svg
-[gh-actions]: https://github.com/ORG/2023/actions
-[lfe]: https://github.com/rvirding/lfe
-[lfe badge]: https://img.shields.io/badge/lfe-1.3.0-blue.svg
-[erlang badge]: https://img.shields.io/badge/erlang-19%20to%2023-blue.svg
-[version]: https://github.com/ORG/2023/blob/master/.travis.yml
+[gh-actions-badge]: https://github.com/ORG/2023/workflows/build/badge.svg
+[gh-actions]: https://github.com/ORG/2023/actions?query=workflow%3Abuild+
+[lfe]: https://github.com/lfe/lfe
+[lfe badge]: https://img.shields.io/badge/lfe-2.1-blue.svg
+[erlang badge]: https://img.shields.io/badge/erlang-19%20to%2025-blue.svg
+[version]: https://github.com/ORG/2023/blob/master/.github/workflows/cicd.yml
 [github tags]: https://github.com/ORG/2023/tags
 [github tags badge]: https://img.shields.io/github/tag/ORG/2023.svg
 [github downloads]: https://img.shields.io/github/downloads/ORG/2023/total.svg
-[hex badge]: https://img.shields.io/hexpm/v/2023.svg?maxAge=2592000
-[hex package]: https://hex.pm/packages/2023
-[hex downloads]: https://img.shields.io/hexpm/dt/2023.svg
