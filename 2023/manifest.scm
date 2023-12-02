@@ -1,0 +1,1 @@
+(specifications->manifest '("rebar3"))
