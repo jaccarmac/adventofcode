@@ -7,22 +7,25 @@
 
 (defun main
   (((list day data))
-   (lfe_io:format "~w~n" `(,(one-one '["1abc2" "pqr3stu8vwx" "a1b2c3d4e5f" "treb7uchet"])))
-   (erlang:halt 0)))
+   (let (((tuple 'ok contents) (file:read_file (filename:join `("data" ,data)))))
+     (lfe_io:format "~w~n" `(,(one-one (string:split contents "\n" 'all))))
+     (erlang:halt 0))))
 
 ;;; -----------------------
 ;;; miscellaneous functions
 ;;; -----------------------
 
 (defun first-number
+  ((()) 0)
   (((cons h t)) (when (and (>= h #\0) (>= #\9 h)))
    (- h #\0))
   (((cons _ t))
    (first-number t)))
 
-(defun last-number (s) (last-number s ()))
+(defun last-number (s) (last-number s 0))
 
 (defun last-number
+  ((() 0) 0)
   ((() acc)
    (- acc #\0))
   (((cons h t) acc) (when (and (>= h #\0) (>= #\9 h)))
@@ -35,7 +38,7 @@
          (pids (lists:map (lambda (line)
                             (spawn_link (lambda ()
                                           (! s (tuple (self) (+ (* 10 (first-number line)) (last-number line)))))))
-                          lines)))
+                          (lists:map #'binary_to_list/1 lines))))
     (lists:sum (gather pids))))
 
 (defun gather
