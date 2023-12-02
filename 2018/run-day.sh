@@ -14,4 +14,4 @@ solutions=(
     ["13"]="mine_cart_madness"
     ["14"]="chocolate_charts")
 
-nim c -r src/${solutions[$DAY]}.nim data/$DAY.txt
+nim compile --run src/${solutions[$DAY]}.nim data/$DAY.txt
