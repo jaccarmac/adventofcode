@@ -1,1 +1,1 @@
-(specifications->manifest '("erlang-lfe" "coreutils" "sed" "findutils"))
+(specifications->manifest '("make" "erlang-lfe" "coreutils" "sed" "findutils"))

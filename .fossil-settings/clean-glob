@@ -13,3 +13,4 @@
 2018/src/chocolate_charts
 *.jar
 **/_build/
+*.beam
