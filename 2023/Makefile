@@ -1,4 +1,4 @@
-DAYS=build/day-1.beam
+DAYS=build/day-1.beam build/day-3.beam
 
 build/2023.beam: $(DAYS)
 
