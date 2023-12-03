@@ -57,7 +57,7 @@
                                                   #(,(+ x 1) ,(+ y 1))
                                                   #(,(+ x 1) ,y)
                                                   #(,(+ x 1) ,(- y 1))
-                                                  #(,(- x 1) ,y)
+                                                  #(,x ,(- y 1))
                                                   #(,(- x 1) ,(- y 1))))))
 
 (defun next-char
@@ -67,10 +67,7 @@
   ((`#(,l ,c)) `#(,(+ 1 l) 0)))
 
 (defun check-number (me neighbors syms summer)
-  (! syms `#(check ,(self) ,(sets:to_list neighbors)))
-  (receive
-    ('true (! summer me))
-    ('false (! summer 0))))
+  (! syms `#(check ,(sets:to_list neighbors) ,me ,summer)))
 
 (defun symbol-registry ()
   (symbol-registry #M()))
@@ -82,6 +79,8 @@
 
 (defun symbol-check (syms)
   (receive
-    (`#(check ,p ,coords)
-     (! p (lists:any (lambda (c) (maps:is_key c syms)) coords))
+    (`#(check ,coords ,part ,summer)
+     (if (lists:any (lambda (c) (maps:is_key c syms)) coords)
+       (! summer part)
+       (! summer 0))
      (symbol-check syms))))
