@@ -1,7 +1,9 @@
 DAY=$1
 DATA=$2
 
-lfe -eval "(c \"src/2023\")" -eval "(|2023:main| '(\"$DAY\" \"$DATA\"))"
+lfe -eval "(c \"src/day-1\")"
+lfe -eval "(c \"src/2023\")"
+lfe -eval "(|2023:main| '(\"$DAY\" \"$DATA\"))"
 
 # TERM=vt100 guix shell -CNm manifest.scm -E TERM -- lfe
 #
