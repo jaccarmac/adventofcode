@@ -82,7 +82,7 @@
     (lambda (m1 m2) (merge_with
                      (lambda (k1 v1 v2) (max v1 v2))
                      m1 m2))
-                #M(#"red" 0 #"green" 0 #"blue" 0) pulls)))
+    #M(#"red" 0 #"green" 0 #"blue" 0) pulls)))
 
 (defun power (m)
   (* (get #"red" m 0) (get #"green" m 0) (get #"blue" m 0)))

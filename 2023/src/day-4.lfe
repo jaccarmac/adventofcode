@@ -25,11 +25,11 @@
 
 (defun cards (cards)
   (mapcar #'binary-to-card/1
-             (split cards #"\n" '(global trim))))
+          (split cards #"\n" '(global trim))))
 
 (defun binary-to-card (b)
   (let* ((`#(,win ,have) (splitwith (lambda (p) (/= #"|" p))
-                                          (split b #" " '(global trim_all))))
+                                    (split b #" " '(global trim_all))))
          (`(,id . ,win) (nthtail 1 win))
          (have (nthtail 1 have)))
     `#(card ,id ,win ,have)))

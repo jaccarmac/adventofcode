@@ -42,9 +42,9 @@
 
 (defun gear-sum (gears)
   (sum (mapcar (match-lambda
-                          ((`#(,_ (,g1 ,g2))) (* g1 g2))
-                          ((_) 0))
-                        (map-to-list gears))))
+                 ((`#(,_ (,g1 ,g2))) (* g1 g2))
+                 ((_) 0))
+               (map-to-list gears))))
 
 (defun scan (grid summer)
   (scan grid #(0 0) 0 (spawn #'symbol-registry/0) summer))
@@ -79,14 +79,14 @@
 
 (defun add-neighbors (neighbors at)
   (foldl #'sets:add_element/2 neighbors (let ((`#(,x ,y) at))
-                                                `(#(,(- x 1) ,y)
-                                                  #(,(- x 1) ,(+ y 1))
-                                                  #(,x ,(+ y 1))
-                                                  #(,(+ x 1) ,(+ y 1))
-                                                  #(,(+ x 1) ,y)
-                                                  #(,(+ x 1) ,(- y 1))
-                                                  #(,x ,(- y 1))
-                                                  #(,(- x 1) ,(- y 1))))))
+                                          `(#(,(- x 1) ,y)
+                                            #(,(- x 1) ,(+ y 1))
+                                            #(,x ,(+ y 1))
+                                            #(,(+ x 1) ,(+ y 1))
+                                            #(,(+ x 1) ,y)
+                                            #(,(+ x 1) ,(- y 1))
+                                            #(,x ,(- y 1))
+                                            #(,(- x 1) ,(- y 1))))))
 
 (defun next-char
   ((`#(,l ,c)) `#(,l ,(+ 1 c))))
