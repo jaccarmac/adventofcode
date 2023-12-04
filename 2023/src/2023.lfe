@@ -19,5 +19,4 @@
        ("1" (format "~w~n~w~n" `(,(one-one (split contents "\n" 'all)) ,(one-two (split contents "\n" 'all)))))
        ("2" (format "~w~n" `(,(day-two contents))))
        ("3" (format "~w~n" `(,(three-one contents))))
-       ("4" (format "~p~n" `(,(day-four contents)))))
-     (halt 0))))
+       ("4" (format "~p~n" `(,(day-four contents))))))))
