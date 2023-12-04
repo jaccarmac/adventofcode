@@ -26,7 +26,7 @@
 
 (defun gear-sum (gears)
   (lists:sum (lists:map (match-lambda
-                          (((tuple _ `(,g1 ,g2))) (* g1 g2))
+                          ((`#(,_ (,g1 ,g2))) (* g1 g2))
                           ((_) 0))
                         (maps:to_list gears))))
 
