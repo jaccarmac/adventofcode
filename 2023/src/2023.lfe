@@ -13,8 +13,8 @@
    (from string (split 3))))
 
 (defun main
-  (((list day data))
-   (let (((tuple 'ok contents) (read_file (join `("data" ,data)))))
+  ((`(,day ,data))
+   (let ((`#(ok ,contents) (read_file (join `("data" ,data)))))
      (case day
        ("1" (format "~w~n~w~n" `(,(one-one (split contents "\n" 'all)) ,(one-two (split contents "\n" 'all)))))
        ("2" (format "~w~n" `(,(day-two contents))))
