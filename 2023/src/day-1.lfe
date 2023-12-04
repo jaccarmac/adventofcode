@@ -63,7 +63,7 @@
   (let* ((s (self))
          (pids (mapcar (lambda (line)
                          (spawn_link (lambda ()
-                                       (! s (tuple (self) (+ (* 10 (first-numeral line)) (last-numeral line)))))))
+                                       (! s `#(,(self) ,(+ (* 10 (first-numeral line)) (last-numeral line)))))))
                        lines))
          )
     (sum (gather pids))))
@@ -72,12 +72,12 @@
   (let* ((s (self))
          (pids (mapcar (lambda (line)
                          (spawn_link (lambda ()
-                                       (! s (tuple (self) (+ (* 10 (first-number line)) (last-number line)))))))
+                                       (! s `#(,(self) ,(+ (* 10 (first-number line)) (last-number line)))))))
                        lines)))
     (sum (gather pids))))
 
 (defun gather
   ((()) ())
   ((`(,h . ,t))
-   (receive ((tuple sender n) (when (== sender h))
+   (receive (`#(,sender ,n) (when (== sender h))
              `(,n . ,(gather t))))))
