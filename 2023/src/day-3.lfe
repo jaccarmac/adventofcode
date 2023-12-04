@@ -5,18 +5,30 @@
   (let* ((s (self))
          (summer (spawn (lambda () (summer s)))))
     (scan grid summer)
-    (receive (n n))))
+    (receive (solution solution))))
 
 (defun summer (top)
   (receive
     (`#(nums ,nums) (summer top nums))))
 
 (defun summer (top remaining)
-  (summer top remaining 0))
+  (summer top remaining 0 #M()))
 
 (defun summer
-  ((top 0 sum) (! top sum))
-  ((top remaining sum) (receive (n (summer top (- remaining 1) (+ sum n))))))
+  ((top 0 sum gears) (! top `#(,sum ,(gear-sum gears))))
+  ((top remaining sum gears)
+   (receive
+     (`#(gear ,at ,n) (summer top remaining sum (update-gears gears at n)))
+     (`#(part ,n) (summer top (- remaining 1) (+ sum n) gears)))))
+
+(defun update-gears (gears at n)
+  (maps:update_with at (lambda (ns) (cons n ns)) `(,n) gears))
+
+(defun gear-sum (gears)
+  (lists:sum (lists:map (match-lambda
+                          (((tuple _ (list g1 g2))) (* g1 g2))
+                          ((_) 0))
+                        (maps:to_list gears))))
 
 (defun scan (grid summer)
   (scan grid #(0 0) 0 (spawn #'symbol-registry/0) summer))
@@ -80,7 +92,7 @@
 (defun symbol-check (syms)
   (receive
     (`#(check ,coords ,part ,summer)
-     (if (lists:any (lambda (c) (maps:is_key c syms)) coords)
-       (! summer part)
-       (! summer 0))
-     (symbol-check syms))))
+     (let ((adjacents (lists:filtermap (lambda (c) (maps:is_key c syms)) coords)))
+       (lists:map (lambda (c) (if (== #\* (maps:get c syms)) (! summer `#(gear ,c ,part)))) adjacents)
+       (! summer `#(part ,(case adjacents (() 0) (_ part))))
+       (symbol-check syms)))))
