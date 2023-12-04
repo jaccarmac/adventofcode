@@ -3,7 +3,7 @@
 
 (defun day-four (input)
   (let ((cards (cards input)))
-    (lists:sum (lists:map #'score/1 cards))))
+    (lists:sum (lists:map #'match-score/1 (lists:map #'score/1 cards)))))
 
 (defun cards (cards)
   (lists:map #'binary-to-card/1
@@ -20,7 +20,7 @@
   ((`#(card ,_ ,win ,have))
    (let ((win (sets:from_list win))
          (have (sets:from_list have)))
-     (match-score (sets:size (sets:intersection win have))))))
+     (sets:size (sets:intersection win have)))))
 
 (defun match-score
   ((0) 0)
