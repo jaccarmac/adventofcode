@@ -1,10 +1,20 @@
 (defmodule day-2
-  (export (day-two 1)))
+  (export (day-two 1))
+  (import (from lists
+                (all 2)
+                (filtermap 2)
+                (foldl 3)
+                (sum 1))
+          (rename lists ((map 2) mapcar))
+          (from maps
+                (get 3)
+                (merge_with 3)
+                (update_with 4))))
 
 (defun day-two (record)
   (let ((games (parse-games record)))
-    `#(,(lists:sum (lists:filtermap #'legal-value/1 games))
-       ,(lists:sum (lists:map #'power/1 (lists:map #'minimum-cubes/1 games))))))
+    `#(,(sum (filtermap #'legal-value/1 games))
+       ,(sum (mapcar #'power/1 (mapcar #'minimum-cubes/1 games))))))
 
 (defun parse-games (rest)
   (case rest
@@ -46,7 +56,7 @@
 (defun add-to-pull
   ((`#(game ,id ,pulls) color count)
    (let ((`(,pull . ,pulls) pulls))
-     `#(game ,id (,(maps:update_with color (lambda (n) (+ n count)) count pull) . ,pulls)))))
+     `#(game ,id (,(update_with color (lambda (n) (+ n count)) count pull) . ,pulls)))))
 
 (defun gather-games (games)
   (receive
@@ -54,12 +64,12 @@
     ('done games)))
 
 (defun legal-game?
-  ((`#(game ,_ ,pulls)) (lists:all #'legal-pull?/1 pulls)))
+  ((`#(game ,_ ,pulls)) (all #'legal-pull?/1 pulls)))
 
 (defun legal-pull? (m)
-  (and (>= 12 (maps:get #"red" m 0))
-       (>= 13 (maps:get #"green" m 0))
-       (>= 14(maps:get #"blue" m 0))))
+  (and (>= 12 (get #"red" m 0))
+       (>= 13 (get #"green" m 0))
+       (>= 14(get #"blue" m 0))))
 
 (defun legal-value
   ((`#(game ,id ,pulls))
@@ -68,11 +78,11 @@
 
 (defun minimum-cubes
   ((`#(game ,_ ,pulls))
-   (lists:foldl
-    (lambda (m1 m2) (maps:merge_with
+   (foldl
+    (lambda (m1 m2) (merge_with
                      (lambda (k1 v1 v2) (max v1 v2))
                      m1 m2))
                 #M(#"red" 0 #"green" 0 #"blue" 0) pulls)))
 
 (defun power (m)
-  (* (maps:get #"red" m 0) (maps:get #"green" m 0) (maps:get #"blue" m 0)))
+  (* (get #"red" m 0) (get #"green" m 0) (get #"blue" m 0)))

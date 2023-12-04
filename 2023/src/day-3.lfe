@@ -1,5 +1,21 @@
 (defmodule day-3
-  (export (three-one 1)))
+  (export (three-one 1))
+  (import
+   (from lists
+         (filtermap 2)
+         (foldl 3)
+         (sum 1))
+   (rename lists ((map 2) mapcar))
+   (from maps
+         (get 2)
+         (is_key 2)
+         (update_with 4))
+   (rename maps ((to_list 1) map-to-list))
+   (from sets
+         (new 0))
+   (rename sets
+           ((new 0) new-set)
+           ((to_list 1) set-to-list))))
 
 (defun three-one (grid)
   (let* ((s (self))
@@ -22,13 +38,13 @@
      (`#(part ,n) (summer top (- remaining 1) (+ sum n) gears)))))
 
 (defun update-gears (gears at n)
-  (maps:update_with at (lambda (ns) `(,n . ,ns)) `(,n) gears))
+  (update_with at (lambda (ns) `(,n . ,ns)) `(,n) gears))
 
 (defun gear-sum (gears)
-  (lists:sum (lists:map (match-lambda
+  (sum (mapcar (match-lambda
                           ((`#(,_ (,g1 ,g2))) (* g1 g2))
                           ((_) 0))
-                        (maps:to_list gears))))
+                        (map-to-list gears))))
 
 (defun scan (grid summer)
   (scan grid #(0 0) 0 (spawn #'symbol-registry/0) summer))
@@ -49,7 +65,7 @@
      (scan rest (next-char at) nums syms summer))))
 
 (defun scan-number (grid at nums syms summer)
-  (scan-number grid at nums syms summer 0 (sets:new)))
+  (scan-number grid at nums syms summer 0 (new-set)))
 
 (defun scan-number (grid at nums syms summer num neighbors)
   (case grid
@@ -62,7 +78,7 @@
      (scan grid at (+ 1 nums) syms summer))))
 
 (defun add-neighbors (neighbors at)
-  (lists:foldl #'sets:add_element/2 neighbors (let ((`#(,x ,y) at))
+  (foldl #'sets:add_element/2 neighbors (let ((`#(,x ,y) at))
                                                 `(#(,(- x 1) ,y)
                                                   #(,(- x 1) ,(+ y 1))
                                                   #(,x ,(+ y 1))
@@ -79,7 +95,7 @@
   ((`#(,l ,c)) `#(,(+ 1 l) 0)))
 
 (defun check-number (me neighbors syms summer)
-  (! syms `#(check ,(sets:to_list neighbors) ,me ,summer)))
+  (! syms `#(check ,(set-to-list neighbors) ,me ,summer)))
 
 (defun symbol-registry ()
   (symbol-registry #M()))
@@ -92,7 +108,7 @@
 (defun symbol-check (syms)
   (receive
     (`#(check ,coords ,part ,summer)
-     (let ((adjacents (lists:filtermap (lambda (c) (maps:is_key c syms)) coords)))
-       (lists:map (lambda (c) (if (== #\* (maps:get c syms)) (! summer `#(gear ,c ,part)))) adjacents)
+     (let ((adjacents (filtermap (lambda (c) (is_key c syms)) coords)))
+       (mapcar (lambda (c) (if (== #\* (get c syms)) (! summer `#(gear ,c ,part)))) adjacents)
        (! summer `#(part ,(case adjacents (() 0) (_ part))))
        (symbol-check syms)))))

@@ -1,28 +1,44 @@
 (defmodule day-4
-  (export (day-four 1)))
+  (export (day-four 1))
+  (import
+   (from binary (split 3))
+   (from lists
+         (foldl 3)
+         (nthtail 2)
+         (splitwith 2)
+         (sublist 2)
+         (sum 1))
+   (rename lists ((map 2) mapcar))
+   (from maps
+         (update_with 4)
+         (values 1))
+   (from sets
+         (from_list 1)
+         (intersection 2))
+   (rename sets ((size 1) set-size))))
 
 (defun day-four (input)
   (let* ((cards (cards input))
-         (scores (lists:map #'score/1 cards)))
-    `#(,(lists:sum (lists:map #'match-score/1 scores))
-       ,(lists:sum (maps:values (process-cards cards #M()))))))
+         (scores (mapcar #'score/1 cards)))
+    `#(,(sum (mapcar #'match-score/1 scores))
+       ,(sum (values (process-cards cards #M()))))))
 
 (defun cards (cards)
-  (lists:map #'binary-to-card/1
-             (binary:split cards #"\n" '(global trim))))
+  (mapcar #'binary-to-card/1
+             (split cards #"\n" '(global trim))))
 
 (defun binary-to-card (b)
-  (let* ((`#(,win ,have) (lists:splitwith (lambda (p) (/= #"|" p))
-                                          (binary:split b #" " '(global trim_all))))
-         (`(,id . ,win) (lists:nthtail 1 win))
-         (have (lists:nthtail 1 have)))
+  (let* ((`#(,win ,have) (splitwith (lambda (p) (/= #"|" p))
+                                          (split b #" " '(global trim_all))))
+         (`(,id . ,win) (nthtail 1 win))
+         (have (nthtail 1 have)))
     `#(card ,id ,win ,have)))
 
 (defun score
   ((`#(card ,_ ,win ,have))
-   (let ((win (sets:from_list win))
-         (have (sets:from_list have)))
-     (sets:size (sets:intersection win have)))))
+   (let ((win (from_list win))
+         (have (from_list have)))
+     (set-size (intersection win have)))))
 
 (defun match-score
   ((0) 0)
@@ -35,9 +51,9 @@
    (let* ((current `#(card ,id ,win ,have))
           (copies (add-copies 1 id copies))
           (of-current (map-get copies id))
-          (to-copy (lists:sublist rest (score current)))
-          (copies (lists:foldl (match-lambda ((`#(card ,id ,_ ,_) copies) (add-copies of-current id copies))) copies to-copy)))
+          (to-copy (sublist rest (score current)))
+          (copies (foldl (match-lambda ((`#(card ,id ,_ ,_) copies) (add-copies of-current id copies))) copies to-copy)))
      (process-cards rest copies))))
 
 (defun add-copies (count id copies)
-  (maps:update_with id (lambda (n) (+ count n)) count copies))
+  (update_with id (lambda (n) (+ count n)) count copies))
