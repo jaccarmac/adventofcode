@@ -78,6 +78,6 @@
 
 (defun gather
   ((()) ())
-  (((cons h t))
+  ((`(,h . ,t))
    (receive ((tuple sender n) (when (== sender h))
-             (cons n (gather t))))))
+             `(,n . ,(gather t))))))

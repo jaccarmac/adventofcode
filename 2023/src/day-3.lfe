@@ -22,7 +22,7 @@
      (`#(part ,n) (summer top (- remaining 1) (+ sum n) gears)))))
 
 (defun update-gears (gears at n)
-  (maps:update_with at (lambda (ns) (cons n ns)) `(,n) gears))
+  (maps:update_with at (lambda (ns) `(,n . ,ns)) `(,n) gears))
 
 (defun gear-sum (gears)
   (lists:sum (lists:map (match-lambda

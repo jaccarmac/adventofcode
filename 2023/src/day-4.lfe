@@ -14,7 +14,7 @@
 (defun binary-to-card (b)
   (let* ((`#(,win ,have) (lists:splitwith (lambda (p) (/= #"|" p))
                                           (binary:split b #" " '(global trim_all))))
-         ((cons id win) (lists:nthtail 1 win))
+         (`(,id . ,win) (lists:nthtail 1 win))
          (have (lists:nthtail 1 have)))
     `#(card ,id ,win ,have)))
 
@@ -31,7 +31,7 @@
 
 (defun process-cards
   ((() copies) copies)
-  (((cons `#(card ,id ,win ,have) rest) copies)
+  ((`(#(card ,id ,win ,have) . ,rest) copies)
    (let* ((current `#(card ,id ,win ,have))
           (copies (add-copies 1 id copies))
           (of-current (map-get copies id))

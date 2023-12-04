@@ -24,7 +24,7 @@
 
 (defun parse-pull (rest game)
   (let ((`#(game ,id ,pulls) game))
-    (parse-pull-number rest 0 `#(game ,id ,(cons #M() pulls)))))
+    (parse-pull-number rest 0 `#(game ,id (#M() . ,pulls)))))
 
 (defun parse-pull-number
   (((binary n (rest binary)) count game) (when (and (=< #\0 n) (=< n #\9)))
@@ -45,12 +45,12 @@
 
 (defun add-to-pull
   ((`#(game ,id ,pulls) color count)
-   (let (((cons pull pulls) pulls))
-     `#(game ,id ,(cons (maps:update_with color (lambda (n) (+ n count)) count pull) pulls)))))
+   (let ((`(,pull . ,pulls) pulls))
+     `#(game ,id (,(maps:update_with color (lambda (n) (+ n count)) count pull) . ,pulls)))))
 
 (defun gather-games (games)
   (receive
-    (`#(game ,id ,pulls) (gather-games (cons `#(game ,id ,pulls) games)))
+    (`#(game ,id ,pulls) (gather-games `(#(game ,id ,pulls) . ,games)))
     ('done games)))
 
 (defun legal-game?
