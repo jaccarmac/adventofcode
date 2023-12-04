@@ -1,5 +1,6 @@
 (defmodule day-1
-  (export (one-one 1))
+  (export (one-one 1)
+          (one-two 1))
   (import
    (from lists (sum 1))
    (rename lists ((map 2) mapcar))))
@@ -19,6 +20,13 @@
   (((binary "nine" (t binary))) 9)
   (((binary _ (t binary)))
    (first-number t)))
+
+(defun first-numeral
+  ((#B()) 0)
+  (((binary h (t binary))) (when (and (>= h #\0) (>= #\9 h)))
+   (- h #\0))
+  (((binary _ (t binary)))
+   (first-numeral t)))
 
 (defun last-number (s) (last-number s 0))
 
@@ -40,12 +48,32 @@
   (((binary _ (t binary)) acc)
    (last-number t acc)))
 
+(defun last-numeral (s) (last-numeral s 0))
+
+(defun last-numeral
+  ((#B() 0) 0)
+  ((#B() acc)
+   (- acc #\0))
+  (((binary h (t binary)) acc) (when (and (>= h #\0) (>= #\9 h)))
+   (last-numeral t h))
+  (((binary _ (t binary)) acc)
+   (last-numeral t acc)))
+
 (defun one-one (lines)
   (let* ((s (self))
          (pids (mapcar (lambda (line)
-                            (spawn_link (lambda ()
-                                          (! s (tuple (self) (+ (* 10 (first-number line)) (last-number line)))))))
-                          lines)))
+                         (spawn_link (lambda ()
+                                       (! s (tuple (self) (+ (* 10 (first-numeral line)) (last-numeral line)))))))
+                       lines))
+         )
+    (sum (gather pids))))
+
+(defun one-two (lines)
+  (let* ((s (self))
+         (pids (mapcar (lambda (line)
+                         (spawn_link (lambda ()
+                                       (! s (tuple (self) (+ (* 10 (first-number line)) (last-number line)))))))
+                       lines)))
     (sum (gather pids))))
 
 (defun gather
