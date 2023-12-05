@@ -2,8 +2,7 @@
   (export (one-one 1)
           (one-two 1))
   (import
-   (from lists (sum 1))
-   (rename lists ((map 2) mapcar))))
+   (from lists (sum 1))))
 
 (defun first-number
   (((binary "one" (t binary)) _) 1)
@@ -51,19 +50,16 @@
 
 (defun one-one (lines)
   (let* ((s (self))
-         (pids (mapcar (lambda (line)
-                         (spawn_link (lambda ()
-                                       (! s `#(,(self) ,(+ (* 10 (first-numeral line #'first-numeral/2)) (last-numeral line)))))))
-                       lines))
-         )
+         (pids (lc ((<- line lines))
+                 (spawn_link (lambda ()
+                               (! s `#(,(self) ,(+ (* 10 (first-numeral line #'first-numeral/2)) (last-numeral line)))))))))
     (sum (gather pids))))
 
 (defun one-two (lines)
   (let* ((s (self))
-         (pids (mapcar (lambda (line)
-                         (spawn_link (lambda ()
-                                       (! s `#(,(self) ,(+ (* 10 (first-number line #'first-number/2)) (last-number line)))))))
-                       lines)))
+         (pids (lc ((<- line lines))
+                 (spawn_link (lambda ()
+                               (! s `#(,(self) ,(+ (* 10 (first-number line #'first-number/2)) (last-number line)))))))))
     (sum (gather pids))))
 
 (defun gather
