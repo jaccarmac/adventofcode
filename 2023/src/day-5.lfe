@@ -5,15 +5,18 @@
   (let ((`#(,seeds ,rest) (seeds input)))
     (lists:min (lc ((<- seed seeds)) (seed-through (mappings rest) seed)))))
 
+(defun seed-through (mappings seed)
+  (seed-through
+   (lists:foldl (match-lambda ((`#(,from ,to ,mapping) m)
+                               (mset m from `#(,mapping ,to))))
+                #M() mappings)
+   #"seed"
+   seed))
+
 (defun seed-through
-  ((`(#(,_ ,_ ,seventh)
-      #(,_ ,_ ,sixth)
-      #(,_ ,_ ,fifth)
-      #(,_ ,_ ,fourth)
-      #(,_ ,_ ,third)
-      #(,_ ,_ ,second)
-      #(,_ ,_ ,first)) seed)
-   (do-map seventh (do-map sixth (do-map fifth (do-map fourth (do-map third (do-map second (do-map first seed)))))))))
+  ((_ #"location" num) num)
+  ((mappings step num) (let ((`#(,ranges ,to) (mref mappings step)))
+                         (seed-through mappings to (num-through ranges num)))))
 
 (defun seeds
   (((binary "seeds: " (rest binary)))
@@ -103,9 +106,9 @@
   ((sdr rest)
    `#(,sdr ,rest)))
 
-(defun do-map (ranges seed)
+(defun num-through (ranges num)
   (case (lists:search (match-lambda ((`#(,source ,_ ,range))
-                                     (andalso (>= seed source) (< seed (+ source range)))))
+                                     (andalso (>= num source) (< num (+ source range)))))
                       ranges)
-    (`#(value #(,source ,destination ,_)) (+ seed (- destination source)))
-    ('false seed)))
+    (`#(value #(,source ,destination ,_)) (+ num (- destination source)))
+    ('false num)))
