@@ -23,7 +23,7 @@
      (seeds-through mappings to (sort-merge-ranges out))))
   ((mappings step `(,range . ,rest) out)
    (let ((`#(,filters ,_) (mref mappings step)))
-     (seeds-through mappings step rest `(,(range-through filters `(,range)) . ,out)))))
+     (seeds-through mappings step rest (++ (range-through filters `(,range)) out)))))
 
 (defun sort-merge-ranges (ranges)
   (let ((ranges (lists:sort (match-lambda ((`#(,f1 ,_) `#(,f2 ,_)) (=< f1 f2))) ranges)))
@@ -122,14 +122,14 @@
    `#(,sdr ,rest)))
 
 (defun range-through (filters inputs)
-  (let ((`(,singleton-range) (range-through filters inputs ())))
-    `#(,singleton-range ,singleton-range)))
+  (range-through filters inputs ()))
 
 (defun range-through
   ((_ () outputs) outputs)
   ((filters `(#(,from ,to) . ,rest) outputs) (when (== from to))
-   (range-through filters rest `(,(case (lists:search (match-lambda ((`#(,source ,_ ,range))
-                                                                     (andalso (>= from source) (< from (+ source range)))))
-                                                      filters)
-                                    (`#(value #(,source ,destination ,_)) (+ from (- destination source)))
-                                    ('false from)) . ,outputs))))
+   (let ((mapped (case (lists:search (match-lambda ((`#(,source ,_ ,range))
+                                                    (andalso (>= from source) (< from (+ source range)))))
+                                     filters)
+                   (`#(value #(,source ,destination ,_)) (+ from (- destination source)))
+                   ('false from))))
+     (range-through filters rest `(#(,mapped ,mapped) . ,outputs)))))
