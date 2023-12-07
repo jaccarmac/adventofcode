@@ -125,13 +125,6 @@
 
 (defun range-through
   ((_ () outputs) outputs)
-  ((filters `(#(,from ,to) . ,rest) outputs) (when (== from to))
-   (let ((mapped (case (lists:search (match-lambda ((`#(,source ,_ ,range))
-                                                    (andalso (>= from source) (< from (+ source range)))))
-                                     filters)
-                   (`#(value #(,source ,destination ,_)) (+ from (- destination source)))
-                   ('false from))))
-     (range-through filters rest `(#(,mapped ,mapped) . ,outputs))))
   ((filters `(#(,from ,to) . ,rest) outputs)
    (let* ((used (lists:dropwhile (match-lambda ((`#(,source ,_ ,range))
                                                 (>= from (+ source range)))) filters))
