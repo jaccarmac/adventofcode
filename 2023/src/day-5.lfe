@@ -14,9 +14,9 @@
    seed))
 
 (defun seed-through
-  ((_ #"location" num) num)
-  ((mappings step num) (let ((`#(,ranges ,to) (mref mappings step)))
-                         (seed-through mappings to (num-through ranges num)))))
+  ((_ #"location" range) range)
+  ((mappings step range) (let ((`#(,filters ,to) (mref mappings step)))
+                           (seed-through mappings to (range-through filters `(,range))))))
 
 (defun seeds
   (((binary "seeds: " (rest binary)))
@@ -24,12 +24,16 @@
 
 (defun seeds
   ((nums (binary "\n\n" (rest binary)))
-   `#(,nums ,rest))
+   `#(,(nums-to-ranges nums) ,rest))
   ((nums (binary " " (rest binary)))
    (seeds nums rest))
   ((nums rest)
    (let ((`#(,num ,rest) (num rest)))
      (seeds `(,num . ,nums) rest))))
+
+(defun nums-to-ranges (nums)
+  (lc ((<- num nums))
+    `#(,num ,num)))
 
 (defun num (input)
   (num #"" input))
@@ -106,9 +110,15 @@
   ((sdr rest)
    `#(,sdr ,rest)))
 
-(defun num-through (ranges num)
-  (case (lists:search (match-lambda ((`#(,source ,_ ,range))
-                                     (andalso (>= num source) (< num (+ source range)))))
-                      ranges)
-    (`#(value #(,source ,destination ,_)) (+ num (- destination source)))
-    ('false num)))
+(defun range-through (filters inputs)
+  (let ((`(,singleton-range) (range-through filters inputs ())))
+    `#(,singleton-range ,singleton-range)))
+
+(defun range-through
+  ((_ () outputs) outputs)
+  ((filters `(#(,from ,to) . ,rest) outputs) (when (== from to))
+   (range-through filters rest `(,(case (lists:search (match-lambda ((`#(,source ,_ ,range))
+                                                                     (andalso (>= from source) (< from (+ source range)))))
+                                                      filters)
+                                    (`#(value #(,source ,destination ,_)) (+ from (- destination source)))
+                                    ('false from)) . ,outputs))))
