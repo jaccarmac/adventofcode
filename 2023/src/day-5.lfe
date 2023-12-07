@@ -13,17 +13,11 @@
    #"seed"
    seeds))
 
-(defun seeds-through (mappings step ranges)
-  (seeds-through mappings step ranges ()))
-
 (defun seeds-through
-  ((_ #"location" ranges _) ranges)
-  ((mappings step () out)
-   (let ((`#(,_ ,to) (mref mappings step)))
-     (seeds-through mappings to (sort-merge-ranges out))))
-  ((mappings step `(,range . ,rest) out)
-   (let ((`#(,filters ,_) (mref mappings step)))
-     (seeds-through mappings step rest (++ (range-through filters `(,range)) out)))))
+  ((_ #"location" ranges) (sort-merge-ranges ranges))
+  ((mappings step ranges)
+   (let ((`#(,filters ,to) (mref mappings step)))
+     (seeds-through mappings to (range-through filters ranges)))))
 
 (defun sort-merge-ranges (ranges)
   (let ((ranges (lists:sort (match-lambda ((`#(,f1 ,_) `#(,f2 ,_)) (=< f1 f2))) ranges)))
