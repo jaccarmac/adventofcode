@@ -3,20 +3,31 @@
 
 (defun day-five (input)
   (let ((`#(,seeds ,rest) (seeds input)))
-    (lists:min (lc ((<- seed seeds)) (seed-through (mappings rest) seed)))))
+    (seeds-through (mappings rest) seeds)))
 
-(defun seed-through (mappings seed)
-  (seed-through
+(defun seeds-through (mappings seeds)
+  (seeds-through
    (lists:foldl (match-lambda ((`#(,from ,to ,mapping) m)
                                (mset m from `#(,mapping ,to))))
                 #M() mappings)
    #"seed"
-   seed))
+   seeds))
 
-(defun seed-through
-  ((_ #"location" range) range)
-  ((mappings step range) (let ((`#(,filters ,to) (mref mappings step)))
-                           (seed-through mappings to (range-through filters `(,range))))))
+(defun seeds-through (mappings step ranges)
+  (seeds-through mappings step ranges ()))
+
+(defun seeds-through
+  ((_ #"location" ranges _) ranges)
+  ((mappings step () out)
+   (let ((`#(,_ ,to) (mref mappings step)))
+     (seeds-through mappings to (sort-merge-ranges out))))
+  ((mappings step `(,range . ,rest) out)
+   (let ((`#(,filters ,_) (mref mappings step)))
+     (seeds-through mappings step rest `(,(range-through filters `(,range)) . ,out)))))
+
+(defun sort-merge-ranges (ranges)
+  (let ((ranges (lists:sort (match-lambda ((`#(,f1 ,_) `#(,f2 ,_)) (=< f1 f2))) ranges)))
+    ranges))
 
 (defun seeds
   (((binary "seeds: " (rest binary)))
