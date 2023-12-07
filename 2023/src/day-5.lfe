@@ -130,4 +130,6 @@
                    (`#(value #(,source ,destination ,_)) (+ from (- destination source)))
                    ('false from))))
      (range-through filters rest `(#(,mapped ,mapped) . ,outputs))))
-  ((filters ranges outputs) (lfe_io:format "Filters: ~p~nRanges: ~p~nOutputs: ~p~n~n" `(,filters ,ranges ,outputs))))
+  ((filters `(#(,from ,to) . ,rest) outputs)
+   (lfe_io:format "Filters: ~p~nRange: ~w to ~w~nOutputs: ~p~n~n" `(,filters ,from ,to ,outputs))
+   ()))
