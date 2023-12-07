@@ -3,7 +3,14 @@
 
 (defun day-five (input)
   (let ((`#(,seeds ,rest) (seeds input)))
-    (seeds-through (mappings rest) seeds)))
+    (seeds-through (mappings rest) (seeds-to-ranges seeds))))
+
+(defun seeds-to-ranges (seeds)
+  (seeds-to-ranges seeds ()))
+
+(defun seeds-to-ranges
+  ((() ranges) ranges)
+  ((`(,length ,start . ,rest) ranges) (seeds-to-ranges rest `(#(,start ,(+ start (- length 1))) . ,ranges))))
 
 (defun seeds-through (mappings seeds)
   (seeds-through
@@ -29,16 +36,12 @@
 
 (defun seeds
   ((nums (binary "\n\n" (rest binary)))
-   `#(,(nums-to-ranges nums) ,rest))
+   `#(,nums ,rest))
   ((nums (binary " " (rest binary)))
    (seeds nums rest))
   ((nums rest)
    (let ((`#(,num ,rest) (num rest)))
      (seeds `(,num . ,nums) rest))))
-
-(defun nums-to-ranges (nums)
-  (lc ((<- num nums))
-    `#(,num ,num)))
 
 (defun num (input)
   (num #"" input))
@@ -126,4 +129,5 @@
                                      filters)
                    (`#(value #(,source ,destination ,_)) (+ from (- destination source)))
                    ('false from))))
-     (range-through filters rest `(#(,mapped ,mapped) . ,outputs)))))
+     (range-through filters rest `(#(,mapped ,mapped) . ,outputs))))
+  ((filters ranges outputs) (lfe_io:format "Filters: ~p~nRanges: ~p~nOutputs: ~p~n~n" `(,filters ,ranges ,outputs))))
