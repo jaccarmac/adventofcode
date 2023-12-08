@@ -5,8 +5,7 @@
   (let* ((lines (string:lexemes input "\n"))
          (`(,instructions . ,network) lines)
          (network (lc ((<- node network)) (string:lexemes node " =(,)")))
-         (network (lists:foldl (match-lambda ((`(,node ,l ,r) network) (mset network node `#(,l ,r)))) #M() network))
-         ((binary i (rest binary)) instructions))
+         (network (lists:foldl (match-lambda ((`(,node ,l ,r) network) (mset network node `#(,l ,r)))) #M() network)))
     `#(,(length (follow network #"AAA" (lambda (n) (== #"ZZZ" n)) instructions ())))))
 
 (defun next (network node instruction)
