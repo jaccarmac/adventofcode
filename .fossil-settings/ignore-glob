@@ -1,5 +1,7 @@
 **/.tern-port
 2016/**/problem.txt
 2018/data
+2020/*.zip
+2020/kotlinc
 2021/data
 2023/data
