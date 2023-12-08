@@ -1,4 +1,6 @@
-all: build/2023.beam build/day-1.beam build/day-2.beam build/day-3.beam build/day-4.beam build/day-5.beam build/day-6.beam build/day-7.beam build/day-8.beam
+DAYS=1 2 3 4 5 6 7 8
+
+all: build/2023.beam $(patsubst %,build/day-%.beam,$(DAYS))
 .PHONY: all
 
 build/%.beam: src/%.lfe
