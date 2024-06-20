@@ -8,26 +8,25 @@
     (package
       (inherit sbcl-april)
       (version (git-version "1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/phantomics/april")
-                      (commit commit)))
-                (file-name (git-file-name "cl-april" version))
-                (sha256
-                 (base32
-                  "18jggcz2bsg3jnxh7hjalqq1rhvarbvhirrirsv7igdhv7fzib0m"))
-                (modules '((guix build utils)))
-                (snippet '(begin
-                            ;; Remove bundled Apache-relicensed MaxPC.
-                            (delete-file-recursively "maxpc-apache")
-                            ;; Ensure references are to upstream MaxPC.
-                            (substitute* "vex/vex.asd"
-                              (("maxpc-apache")
-                               "maxpc"))))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/phantomics/april")
+               (commit commit)))
+         (file-name (git-file-name "cl-april" version))
+         (sha256
+          (base32 "18jggcz2bsg3jnxh7hjalqq1rhvarbvhirrirsv7igdhv7fzib0m"))
+         (modules '((guix build utils)))
+         (snippet '(begin
+                     ;; Remove bundled Apache-relicensed MaxPC.
+                     (delete-file-recursively "maxpc-apache")
+                     ;; Ensure references are to upstream MaxPC.
+                     (substitute* "vex/vex.asd"
+                       (("maxpc-apache")
+                        "maxpc"))))))
       (arguments
-       `(#:asd-systems '("april"
-                         "april-lib.dfns.array"
+       `(#:asd-systems '("april" "april-lib.dfns.array"
                          "april-lib.dfns.string"
                          "april-lib.dfns.power"
                          "april-lib.dfns.tree"
