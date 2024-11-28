@@ -1,6 +1,7 @@
 (use-modules (guix packages)
              (guix git-download)
-             (gnu packages lisp-xyz))
+             (gnu packages lisp-xyz)
+             (guix build-system asdf))
 
 (define sbcl-april-master
   (let ((commit "fdb651498768c7e4b2e62ea68ce3954e1fee18c0")
@@ -36,5 +37,5 @@
                     (cons (list "sbcl-cl-unicode" sbcl-cl-unicode)
                           (package-inputs sbcl-april)))))))
 
-(concatenate-manifests (list (specifications->manifest '("sbcl"))
-                             (packages->manifest (list sbcl-april-master))))
+(concatenate-manifests (list (specifications->manifest '("sbcl" "sbcl-croatoan"))
+                             (packages->manifest (list (sbcl-package->cl-source-package sbcl-april-master)))))
