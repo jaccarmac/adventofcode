@@ -44,11 +44,13 @@
                         (("^ok \\(try \\$htmlpath\\.IO\\.s .*")
                          ""))
                       (substitute* "t/02-rakudo/repl.t"
-                                   (("^# https://github\\.com/Raku/old-issue-tracker/issues/5444\n")
-                                    "todo 'works outside the Guix build';"))
+                        (("^# https://github\\.com/Raku/old-issue-tracker/issues/5444
+")
+                         "todo 'works outside the Guix build';"))
                       (substitute* "t/05-messages/03-errors.t"
-                                   (("^# https://github\\.com/Raku/old-issue-tracker/issues/6683\n")
-                                    "todo 'works outside the Guix build';"))))
+                        (("^# https://github\\.com/Raku/old-issue-tracker/issues/6683
+")
+                         "todo 'works outside the Guix build';"))))
                   (add-after 'patch-source-shebangs 'patch-more-shebangs
                     (lambda _
                       (substitute* '("src/core.c/Proc.rakumod"
