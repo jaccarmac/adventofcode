@@ -36,19 +36,19 @@
                   ;; These tests pass when run manually.
                   (add-after 'fix-paths 'disable-failing-tests
                     (lambda _
-                      (substitute* "t/02-rakudo/repl.t"
-                        (("^plan 47;\n")
-                         "plan 46;\n"))
-                      (invoke "perl" "-ni" "-e"
-                       "printf if not /^    \\(temp %\\*ENV\\)/ .. /^    }/"
-                       "t/02-rakudo/repl.t")
                       (substitute* "t/09-moar/01-profilers.t"
                         (("^plan 12;\n")
                          "plan 10;\n")
                         (("^ok \\$htmlpath\\.IO\\.f, .*")
                          "")
                         (("^ok \\(try \\$htmlpath\\.IO\\.s .*")
-                         ""))))
+                         ""))
+                      (substitute* "t/02-rakudo/repl.t"
+                                   (("^# https://github\\.com/Raku/old-issue-tracker/issues/5444\n")
+                                    "todo 'works outside the Guix build';"))
+                      (substitute* "t/05-messages/03-errors.t"
+                                   (("^# https://github\\.com/Raku/old-issue-tracker/issues/6683\n")
+                                    "todo 'works outside the Guix build';"))))
                   (add-after 'patch-source-shebangs 'patch-more-shebangs
                     (lambda _
                       (substitute* '("src/core.c/Proc.rakumod"
@@ -77,8 +77,7 @@
                         (install-file "tools/install-dist.raku" dest)
                         (substitute* (string-append dest "/install-dist.raku")
                           (("/usr/bin/env raku")
-                           (string-append out "/bin/raku"))))))
-                  (delete 'check))))
+                           (string-append out "/bin/raku")))))))))
     (native-inputs (modify-inputs (package-native-inputs rakudo)
                      (replace "nqp-configure" nqp-configure-latest)))
     (inputs (modify-inputs (package-inputs rakudo)
