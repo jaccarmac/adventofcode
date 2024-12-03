@@ -1,4 +1,4 @@
-my @problem = lines.map:{.words.Array};
+my @problem = lines».words».Array;
 
 sub reactorok($r) {
   given reduce -> ($l, $d), $n {$n, (|$d, $n - $l)}, (0, ()), |$r
